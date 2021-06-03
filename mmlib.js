@@ -43,6 +43,13 @@ const humanToBool = (str) => {
   }
 };
 
+/*
+  Do next:
+  2. solve the ascend/descend problem
+  3. fill in for Rs
+
+  note: maybe tonal simplify all recieved notes
+*/
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
@@ -51,7 +58,7 @@ const makeMelody = (params) => {
     upperBound, //notes will not be higher than this. Bounds are 1-7
     lowerBound, //notes will not be lower than this
     pattern, //rhythm pattern
-    notes, //note pattern
+    notes, //note pattern array
     repeatNotes, //have multiple random notes
     sizzle, //velocity
     pitchDirrection, //ascending or descending or any melody?
@@ -81,39 +88,35 @@ const makeMelody = (params) => {
   //deciding whether we repeat random notes
   const rep = (() => {
     let preRep = humanToBool(repeatNotes);
+    if (preRep === true) return preRep;
+    //TODO: compare finalMode to notes
 
-    const strPresent = (str, match) => {
-      const matching = str.indexOf(match);
-      return matching === -1 ? 0 : 1;
-    };
+    const uniqueNotes = [...new Set(notes)]; //deduplication with Set, https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
+    let notesTaken = 0; //write into notes remaining and test for off by one errors
 
-    console.log(strPresent('R R C1 C#1 Db1', ''));
+    uniqueNotes.forEach((note, noteIndex) => {
+      if (finalMode.indexOf(note) !== -1) notesTaken++;
+    });
 
-    const numOfDiffNotes = [];
+    notesTaken;
+    finalMode;
 
-    const numOfRandNotes = (notes.match(/R/g) || []).length;
-    const randNoteRange = upperBound + lowerBound * -1;
-
-    if (numOfRandNotes > randNoteRange) preRep = true;
+    const numOfRandNotes = (notes.join().match(/R/g) || []).length;
+    numOfRandNotes;
+    if (numOfRandNotes > notesTaken) preRep = true;
 
     return preRep;
   })();
 
-  /*
-  Do next:
-  0. solve the ascend/descend problem
-  1. declare mode array
-  2. fill in for numbers
-  3. fill in for Rs
-  */
+  rep;
 };
 
 console.log(
   makeMelody({
-    repeatNotes: 1,
-    notes: 'R R R C1',
+    repeatNotes: 'off',
+    notes: ['R', 'R', 'R', 'C1', 'C1', 'D1', 'C#1', 'R', 'A1', '7', 'B1'],
     upperBound: 7,
-    lowerBound: -6,
+    lowerBound: -7,
     rootNote: 'A',
     octave: 1,
     mode: 'minor',
