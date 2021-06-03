@@ -19,6 +19,7 @@
   "dependencies": {
     "@magenta/music": "^1.21.0",
     "@tonaljs/tonal": "^4.6.0",
+    "random-js": "^2.1.0",
     "scribbletune": "^4.0.2"
   }
 }
