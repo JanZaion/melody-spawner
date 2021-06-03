@@ -1,0 +1,24 @@
+{
+  "name": "melody-with-magenta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mmlib.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanZaion/melody-with-magenta.git"
+  },
+  "author": "Zaion",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JanZaion/melody-with-magenta/issues"
+  },
+  "homepage": "https://github.com/JanZaion/melody-with-magenta#readme",
+  "dependencies": {
+    "@magenta/music": "^1.21.0",
+    "@tonaljs/tonal": "^4.6.0",
+    "scribbletune": "^4.0.2"
+  }
+}
