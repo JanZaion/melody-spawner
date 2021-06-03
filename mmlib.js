@@ -85,38 +85,32 @@ const makeMelody = (params) => {
     return lowerMode.concat(upperMode);
   })();
 
-  //deciding whether we repeat random notes
+  //deciding whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare rep true
   const rep = (() => {
     let preRep = humanToBool(repeatNotes);
     if (preRep === true) return preRep;
-    //TODO: compare finalMode to notes
 
     const uniqueNotes = [...new Set(notes)]; //deduplication with Set, https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-    let notesTaken = 0; //write into notes remaining and test for off by one errors
+    let notesRemaining = finalMode.length;
 
-    uniqueNotes.forEach((note, noteIndex) => {
-      if (finalMode.indexOf(note) !== -1) notesTaken++;
+    uniqueNotes.forEach((note) => {
+      if (finalMode.indexOf(note) !== -1) notesRemaining -= 1;
     });
 
-    notesTaken;
-    finalMode;
-
     const numOfRandNotes = (notes.join().match(/R/g) || []).length;
-    numOfRandNotes;
-    if (numOfRandNotes > notesTaken) preRep = true;
+
+    if (numOfRandNotes > notesRemaining) preRep = true;
 
     return preRep;
   })();
-
-  rep;
 };
 
 console.log(
   makeMelody({
     repeatNotes: 'off',
     notes: ['R', 'R', 'R', 'C1', 'C1', 'D1', 'C#1', 'R', 'A1', '7', 'B1'],
-    upperBound: 7,
-    lowerBound: -7,
+    upperBound: 1,
+    lowerBound: -6,
     rootNote: 'A',
     octave: 1,
     mode: 'minor',
