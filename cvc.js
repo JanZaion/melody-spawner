@@ -35,7 +35,7 @@ lower(Etwo);
 higher(Etwo);
 console.log(Etwo); //output: { name: 'E', octave: 1 }
 
-//This is composite functional syntax. I have no idea how to make it so that hajr changes the octave value. Solution here: https://www.youtube.com/watch?v=XskMWBXNbp0
+//This is composite functional syntax. I have no idea how to make it so that hajr changes the octave value. Solution here: https://www.youtube.com/watch?v=XskMWBXNbp0 and here https://www.youtube.com/watch?v=zE9iro4r918
 const NoteFunction = (props) => {
   return {
     hajr: () => console.log(props.octave + 1),

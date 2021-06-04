@@ -86,7 +86,7 @@ const makeMelody = (params) => {
   })();
 
   //deciding whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare rep true
-  const rep = (() => {
+  const repeatActually = (() => {
     let preRep = humanToBool(repeatNotes);
     if (preRep === true) return preRep;
 
@@ -102,6 +102,15 @@ const makeMelody = (params) => {
     if (numOfRandNotes > notesRemaining) preRep = true;
 
     return preRep;
+  })();
+
+  const finalNotes = (() => {
+    switch (repeatActually) {
+      case true: // 3 cases, any notes
+        return;
+      case false: // 3 cases, diff notes
+        return;
+    }
   })();
 };
 
