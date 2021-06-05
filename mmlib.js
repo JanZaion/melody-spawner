@@ -148,12 +148,12 @@ const makeMelody = (params) => {
     return preRep;
   })();
 
-  const finalNotes = (() => {
+  const finalNoteIntegers = (() => {
     switch (repeatActually) {
       case true: // 3 cases, any notes
         switch (pitchDirrection) {
           case 'any':
-            return diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes);
+            return diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes); // these are just numbers, not notes. make it so that it returns an array of notes
 
           case 'descend':
             return diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes);
