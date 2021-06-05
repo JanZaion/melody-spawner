@@ -55,9 +55,6 @@ function diceMultiRollUnsorted(max, min, rolls) {
   return arr;
 }
 
-const a = diceMultiRollUnsorted(1, 5, 3);
-console.log(a);
-
 const humanToBool = (str) => {
   switch (str) {
     case 'yes':
@@ -131,41 +128,50 @@ const makeMelody = (params) => {
   //we get the # of R notes
   const numOfRandNotes = (notes.join().match(/R/g) || []).length;
 
-  //deciding whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare rep true
-  const repeatActually = (() => {
-    let preRep = humanToBool(repeatNotes);
-    if (preRep === true) return preRep;
+  //we convert repeatNotes to boolean
+  const preRep = humanToBool(repeatNotes);
 
+  //we define the number of notes that are not present in case we dont want to repeat any notes
+  const notesRemaining = (() => {
+    if (preRep === true) return []; //guard clause
     const uniqueNotes = [...new Set(notes)]; //deduplication with Set, https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-    let notesRemaining = finalMode.length; //abstract away from this fn and make it an array of actual notes
+    // let notesRemaining = finalMode.length; //abstract away from this fn and make it an array of actual notes
+    const notesArr = [];
 
     uniqueNotes.forEach((note) => {
-      if (finalMode.indexOf(note) !== -1) notesRemaining -= 1;
+      if (finalMode.indexOf(note) !== -1) notesArr.push(note);
     });
 
-    if (numOfRandNotes > notesRemaining) preRep = true;
+    return notesArr;
+  })();
+
+  //deciding whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare rep true
+  const repeatActually = (() => {
+    if (numOfRandNotes > finalMode - notesRemaining.length) return true;
 
     return preRep;
   })();
 
+  //we get integers of the final notes in the notesRemaining or finalMode
   const finalNoteIntegers = (() => {
-    switch (repeatActually) {
-      case true: // 3 cases, any notes
-        switch (pitchDirrection) {
-          case 'any':
-            return diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes); // these are just numbers, not notes. make it so that it returns an array of notes
+    switch (pitchDirrection) {
+      case 'any':
+        return repeatActually; // there is a bug somewhere in reteatActually. finalMode.length is shorter than numofrn, so repeatActually should be false
+      // ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
+      // : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
 
-          case 'descend':
-            return diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes);
+      case 'descend':
+        return repeatActually
+          ? diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollSortedASC(notesRemaining.length, 0, numOfRandNotes);
 
-          case 'ascend':
-            return diceMultiRollSortedDSC(finalMode.length, 0, numOfRandNotes);
-        }
-
-      case false: // 3 cases, diff notes
-        return;
+      case 'ascend':
+        return repeatActually
+          ? diceMultiRollSortedDSC(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollSortedDSC(notesRemaining.length, 0, numOfRandNotes);
     }
   })();
+  finalNoteIntegers;
 };
 
 console.log(
@@ -177,5 +183,6 @@ console.log(
     rootNote: 'A',
     octave: 1,
     mode: 'minor',
+    pitchDirrection: 'any',
   })
 );
