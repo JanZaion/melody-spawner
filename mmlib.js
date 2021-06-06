@@ -135,30 +135,29 @@ const makeMelody = (params) => {
   const notesRemaining = (() => {
     if (preRep === true) return []; //guard clause
     const uniqueNotes = [...new Set(notes)]; //deduplication with Set, https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-    // let notesRemaining = finalMode.length; //abstract away from this fn and make it an array of actual notes
     const notesArr = [];
 
     uniqueNotes.forEach((note) => {
-      if (finalMode.indexOf(note) !== -1) notesArr.push(note);
+      if (finalMode.indexOf(note) !== -1) notesArr.push(note); //refactor with map
     });
 
     return notesArr;
   })();
 
-  //deciding whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare rep true
+  //we decide whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
   const repeatActually = (() => {
-    if (numOfRandNotes > finalMode - notesRemaining.length) return true;
+    if (numOfRandNotes > notesRemaining.length) return true;
 
     return preRep;
   })();
 
   //we get integers of the final notes in the notesRemaining or finalMode
-  const finalNoteIntegers = (() => {
+  const noteIntegers = (() => {
     switch (pitchDirrection) {
       case 'any':
-        return repeatActually; // there is a bug somewhere in reteatActually. finalMode.length is shorter than numofrn, so repeatActually should be false
-      // ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
-      // : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
+        return repeatActually // there is a bug somewhere in reteatActually. finalMode.length is shorter than numofrn, so repeatActually should be false
+          ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
 
       case 'descend':
         return repeatActually
@@ -171,7 +170,11 @@ const makeMelody = (params) => {
           : diceMultiRollSortedDSC(notesRemaining.length, 0, numOfRandNotes);
     }
   })();
-  finalNoteIntegers;
+
+  //we finalize the array of notes that will be sent to Scribbletune
+  const finalNotes = noteIntegers.map((noteInteger) => {
+    return finalMode[noteInteger];
+  });
 };
 
 console.log(
@@ -183,6 +186,7 @@ console.log(
     rootNote: 'A',
     octave: 1,
     mode: 'minor',
-    pitchDirrection: 'any',
+    pitchDirrection: 'descend',
   })
 );
+const arr = [1, 2, 3, 4];
