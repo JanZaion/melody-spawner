@@ -104,7 +104,7 @@ const makeMelody = (params) => {
     pitchDirrection, //ascending or descending or any melody?
   } = params;
 
-  //creating mode by bounds
+  //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges bz the bounderies set in params
   const finalMode = (() => {
     const RN = rootNote + octave;
     const upperMode = Mode.notes(mode, RN);
@@ -125,33 +125,26 @@ const makeMelody = (params) => {
     return lowerMode.concat(upperMode);
   })();
 
-  //we get the # of R notes
+  //numOfRandNotes is the # of R utterances in notes
   const numOfRandNotes = (notes.join().match(/R/g) || []).length;
 
-  //we convert repeatNotes to boolean
-  const preRep = humanToBool(repeatNotes);
+  //uniqueNotes is an array where each note from notes is present precisely once
+  const uniqueNotes = [...new Set(notes)];
 
-  //we define the number of notes that are not present in case we dont want to repeat any notes
-  const notesRemaining = (() => {
-    if (preRep === true) return []; //guard clause
-    const uniqueNotes = [...new Set(notes)]; //deduplication with Set, https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-    const notesArr = [];
+  //notesRemaining is an array of notes that are NOT present in the notes array
+  const notesRemaining = uniqueNotes.filter((note) => {
+    return finalMode.indexOf(note) !== -1;
+  });
 
-    uniqueNotes.forEach((note) => {
-      if (finalMode.indexOf(note) !== -1) notesArr.push(note); //refactor with map
-    });
-
-    return notesArr;
-  })();
-
-  //we decide whether we repeat random notes. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
+  //repeatActually is a check that decides whether we can actually enforce the rule of not repeating notes when R. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
   const repeatActually = (() => {
+    const preRep = humanToBool(repeatNotes);
     if (numOfRandNotes > notesRemaining.length) return true;
 
     return preRep;
   })();
 
-  //we get integers of the final notes in the notesRemaining or finalMode
+  //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
   const noteIntegers = (() => {
     switch (pitchDirrection) {
       case 'any':
@@ -171,7 +164,7 @@ const makeMelody = (params) => {
     }
   })();
 
-  //we finalize the array of notes that will be sent to Scribbletune
+  //finalNotes is the final array of notes that will be sent to Scribbletune
   const finalNotes = noteIntegers.map((noteInteger) => {
     return finalMode[noteInteger];
   });
@@ -189,4 +182,3 @@ console.log(
     pitchDirrection: 'descend',
   })
 );
-const arr = [1, 2, 3, 4];
