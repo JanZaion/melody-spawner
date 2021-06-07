@@ -103,15 +103,40 @@ const makeMelody = (params) => {
     pitchDirrection, //ascending or descending or any melody?
   } = params;
 
-  //finalNotes is an array of notes that will be sent to Scribbletune. All Rs are transformed into absolute notes (tones I guess)
-  const finalNotes = (() => {
+  //notesNoNums is an array of notes where all numbers were transformed into tones
+  //Closures: mode, rootNote, octave, notes
+  const notesNoNums = (() => {
+    const upperMode = Mode.notes(mode, rootNote + octave);
+    const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
+    const finalMode = lowerMode.concat(upperMode);
+
+    //converts number to an index of an array so that it works with upperMode/lowerMode
+    const indexConvert = (number) => {
+      if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
+      if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
+      return 7; //any other number, 7 is root note of the finalMode
+    };
+
+    const notesDuplicate = notes;
+
+    notesDuplicate.forEach((note, noteIndex) => {
+      if (!isNaN(note)) notesDuplicate[noteIndex] = finalMode[indexConvert(note)];
+    });
+
+    return notesDuplicate;
+  })();
+
+  //notesNoRs is an array of notes that will be sent to Scribbletune. All Rs are transformed into tones
+  //Closures: mode, rootNote, octave, notesNoNums, upperBound, lowerBound, repeatNotes, pitchDirrection
+  const notesNoRs = (() => {
     //numOfRandNotes is the # of R utterances in notes
-    const numOfRandNotes = (notes.join().match(/R/g) || []).length;
+    const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
     //guard clause. If there are no Rs, we avoid all the R-related processing
-    if (numOfRandNotes === 0) return notes;
+    if (numOfRandNotes === 0) return notesNoNums;
 
     //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges bz the bounderies set in params
+    //Closures: mode, rootNote, octave, upperBound, lowerBound
     const finalMode = (() => {
       const RN = rootNote + octave;
       const upperMode = Mode.notes(mode, RN);
@@ -133,14 +158,17 @@ const makeMelody = (params) => {
     })();
 
     //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
+    //Closures: notesNoNums, finalMode
     const notesRemaining = finalMode.filter((note) => {
-      return notes.indexOf(note) === -1;
+      return notesNoNums.indexOf(note) === -1;
     });
 
-    //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
-    const noteIntegers = (() => {
-      const repeatNotesBool = humanToBool(repeatNotes);
+    //repeatNotesBool is boolean that reflexts max input
+    const repeatNotesBool = humanToBool(repeatNotes);
 
+    //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
+    //Closures: finalMode, numOfRandNotes, pitchDirrection, repeatNotesBool, notesRemaining
+    const noteIntegers = (() => {
       //rolls is the number of rolls for the following dice rolls
       const rolls = (() => {
         switch (repeatNotesBool) {
@@ -172,70 +200,51 @@ const makeMelody = (params) => {
       }
     })();
 
-    //absoluteNotes is the initial note array except all the Rs are now absolute notes
+    //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
+    //Closures: finalMode, noteIntegers, repeatNotesBool, notesRemaining
+    const absoluteRs = (() => {
+      switch (repeatNotesBool) {
+        case true:
+          return noteIntegers.map((noteInteger) => {
+            return finalMode[noteInteger];
+          });
+        case false:
+          return noteIntegers.map((noteInteger) => {
+            return notesRemaining[noteInteger];
+          });
+      }
+    })();
+
+    //absoluteNotes is an array of all the notes while Rs are transformed
+    //Closures: notesNoNums, absoluteRs
     const absoluteNotes = (() => {
-      notes.forEach((note, noteIndex) => {});
+      const notesDuplicate = notesNoNums;
+      let counter = 0;
+      notesDuplicate.forEach((note, noteIndex) => {
+        if (note === 'R') {
+          notesDuplicate[noteIndex] = absoluteRs[counter];
+          counter < absoluteRs.length - 1 ? (counter += 1) : (counter = 0);
+        }
+      });
+
+      return notesDuplicate;
     })();
 
     return absoluteNotes;
   })();
 
-  console.log(finalNotes);
+  console.log(notesNoRs);
 };
 
 console.log(
   makeMelody({
     repeatNotes: 'off',
-    notes: ['R', 'C1', 'D1', 'R', 'R'],
-    upperBound: 3,
-    lowerBound: -1,
+    notes: [-2, 'C1', 'D1', 'R', 'R', 'R', 'R', 1, 'R', 'R', 'R'],
+    upperBound: 1,
+    lowerBound: -5,
     rootNote: 'C',
     octave: 1,
     mode: 'major',
-    pitchDirrection: 'any',
+    pitchDirrection: 'descend',
   })
 );
-
-const mabe = () => {
-  //repeatActually is a check that decides whether we can actually enforce the rule of not repeating notes when R. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
-  const repeatActually = (() => {
-    const preRep = humanToBool(repeatNotes);
-    if (numOfRandNotes > notesRemaining.length) return true;
-
-    return preRep;
-  })();
-
-  //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
-  const noteIntegers = (() => {
-    switch (pitchDirrection) {
-      case 'any':
-        return repeatActually
-          ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
-          : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
-
-      case 'ascend':
-        return repeatActually
-          ? diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes)
-          : diceMultiRollSortedASC(notesRemaining.length, 0, numOfRandNotes);
-
-      case 'descend':
-        return repeatActually
-          ? diceMultiRollSortedDSC(finalMode.length, 0, numOfRandNotes)
-          : diceMultiRollSortedDSC(notesRemaining.length, 0, numOfRandNotes);
-    }
-  })();
-
-  //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
-  const absoluteRs = (() => {
-    switch (repeatActually) {
-      case true:
-        return noteIntegers.map((noteInteger) => {
-          return finalMode[noteInteger];
-        });
-      case false:
-        return noteIntegers.map((noteInteger) => {
-          return notesRemaining[noteInteger];
-        });
-    }
-  })();
-};
