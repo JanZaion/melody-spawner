@@ -95,7 +95,7 @@ const makeMelody = (params) => {
     mode, //mode from which to construct
     octave, //pitch of the melody
     upperBound, //notes will not be higher than this. Bounds are 1-7
-    lowerBound, //notes will not be lower than this
+    lowerBound, //notes will not be lower than this. Bounds are 0 to -7
     pattern, //rhythm pattern
     notes, //note pattern array
     repeatNotes, //have multiple random notes
@@ -132,60 +132,110 @@ const makeMelody = (params) => {
       return lowerMode.concat(upperMode);
     })();
 
-    //uniqueNotes is an array where each note from notes is present precisely once
-    const uniqueNotes = [...new Set(notes)];
-
-    //notesRemaining is an array of notes that are NOT present in the notes array
-    const notesRemaining = uniqueNotes.filter((note) => {
-      return finalMode.indexOf(note) !== -1;
+    //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
+    const notesRemaining = finalMode.filter((note) => {
+      return notes.indexOf(note) === -1;
     });
-
-    //repeatActually is a check that decides whether we can actually enforce the rule of not repeating notes when R. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
-    const repeatActually = (() => {
-      const preRep = humanToBool(repeatNotes);
-      if (numOfRandNotes > notesRemaining.length) return true;
-
-      return preRep;
-    })();
 
     //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
     const noteIntegers = (() => {
+      const repeatNotesBool = humanToBool(repeatNotes);
+
+      //rolls is the number of rolls for the following dice rolls
+      const rolls = (() => {
+        switch (repeatNotesBool) {
+          //repeat: If the number of random notes exceeds the number of finalMode notes, then finalMode.length is rolls
+          case true:
+            return numOfRandNotes > finalMode.length ? finalMode.length : numOfRandNotes;
+
+          //norepeat: If the number of random notes exceeds the number of notesRemaining, then notesReamining.length is rolls
+          case false:
+            return numOfRandNotes > notesRemaining.length ? notesRemaining.length : numOfRandNotes;
+        }
+      })();
+
       switch (pitchDirrection) {
         case 'any':
-          return repeatActually // there is a bug somewhere in reteatActually. finalMode.length is shorter than numofrn, so repeatActually should be false
-            ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
-            : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
-
-        case 'descend':
-          return repeatActually
-            ? diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes)
-            : diceMultiRollSortedASC(notesRemaining.length, 0, numOfRandNotes);
+          return repeatNotesBool
+            ? diceMultiRollUnsorted(finalMode.length, 0, rolls)
+            : diceMultiRollUnsorted(notesRemaining.length, 0, rolls);
 
         case 'ascend':
-          return repeatActually
-            ? diceMultiRollSortedDSC(finalMode.length, 0, numOfRandNotes)
-            : diceMultiRollSortedDSC(notesRemaining.length, 0, numOfRandNotes);
+          return repeatNotesBool
+            ? diceMultiRollSortedASC(finalMode.length, 0, rolls)
+            : diceMultiRollSortedASC(notesRemaining.length, 0, rolls);
+
+        case 'descend':
+          return repeatNotesBool
+            ? diceMultiRollSortedDSC(finalMode.length, 0, rolls)
+            : diceMultiRollSortedDSC(notesRemaining.length, 0, rolls);
       }
     })();
 
-    //absoluteNotes is an array of notes that has all the notes from notes an all the Rs made into absolute notes
-    const absoluteNotes = noteIntegers.map((noteInteger) => {
-      return finalMode[noteInteger];
-    });
+    //absoluteNotes is the initial note array except all the Rs are now absolute notes
+    const absoluteNotes = (() => {
+      notes.forEach((note, noteIndex) => {});
+    })();
 
     return absoluteNotes;
   })();
+
+  console.log(finalNotes);
 };
 
 console.log(
   makeMelody({
     repeatNotes: 'off',
-    notes: ['C1', 'C1', 'D1', 'C#1', 'A1', '7', 'B1'],
-    upperBound: 1,
-    lowerBound: -6,
-    rootNote: 'A',
+    notes: ['R', 'C1', 'D1', 'R', 'R'],
+    upperBound: 3,
+    lowerBound: -1,
+    rootNote: 'C',
     octave: 1,
-    mode: 'minor',
-    pitchDirrection: 'descend',
+    mode: 'major',
+    pitchDirrection: 'any',
   })
 );
+
+const mabe = () => {
+  //repeatActually is a check that decides whether we can actually enforce the rule of not repeating notes when R. If there are more Rs than unused notes in notes array and repeatNotes is false, we declare repeatActually true - we actually repeat although the repeat parameter is off
+  const repeatActually = (() => {
+    const preRep = humanToBool(repeatNotes);
+    if (numOfRandNotes > notesRemaining.length) return true;
+
+    return preRep;
+  })();
+
+  //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
+  const noteIntegers = (() => {
+    switch (pitchDirrection) {
+      case 'any':
+        return repeatActually
+          ? diceMultiRollUnsorted(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollUnsorted(notesRemaining.length, 0, numOfRandNotes);
+
+      case 'ascend':
+        return repeatActually
+          ? diceMultiRollSortedASC(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollSortedASC(notesRemaining.length, 0, numOfRandNotes);
+
+      case 'descend':
+        return repeatActually
+          ? diceMultiRollSortedDSC(finalMode.length, 0, numOfRandNotes)
+          : diceMultiRollSortedDSC(notesRemaining.length, 0, numOfRandNotes);
+    }
+  })();
+
+  //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
+  const absoluteRs = (() => {
+    switch (repeatActually) {
+      case true:
+        return noteIntegers.map((noteInteger) => {
+          return finalMode[noteInteger];
+        });
+      case false:
+        return noteIntegers.map((noteInteger) => {
+          return notesRemaining[noteInteger];
+        });
+    }
+  })();
+};
