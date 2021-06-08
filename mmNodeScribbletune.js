@@ -1,17 +1,14 @@
 const maxApi = require('max-api');
 const scribble = require('scribbletune');
-const lib = require('./mmlib');
+const mmlib = require('./mmlib');
 
 maxApi.addHandler('makeClip', () => {
   const constructClip = (async () => {
     const full = await maxApi.getDict('full');
+    const clipMade = mmlib.makeMelody(full);
 
-    const { notes, pattern } = full;
-
-    const clip = scribble.clip({
-      notes,
-      pattern,
-    });
+    const clip = clipMade[0];
+    const names = clipMade[1].join(', ');
 
     await Promise.all([
       maxApi.setDict('noteNames', {

@@ -87,7 +87,8 @@ const humanToBool = (str) => {
   Do next:
   test & debug
 
-  note: maybe tonal simplify all recieved notes
+  bugs to fix at the final stage:
+  -scribbletune +1 octave
 */
 const makeMelody = (params) => {
   const {
@@ -95,12 +96,13 @@ const makeMelody = (params) => {
     mode, //mode from which to construct
     octave, //pitch of the melody
     upperBound, //notes will not be higher than this. Bounds are 1-7
-    lowerBound, //notes will not be lower than this. Bounds are 0 to -7
+    lowerBound, //notes will not be lower than this. Bounds are -1 to -7
     pattern, //rhythm pattern
     notes, //note pattern array
     repeatNotes, //have multiple random notes
     sizzle, //velocity
     pitchDirrection, //ascending or descending or any melody?
+    subdiv, //subdiv
   } = params;
 
   //notesNoNums is an array of notes where all numbers were transformed into tones
@@ -233,18 +235,30 @@ const makeMelody = (params) => {
     return absoluteNotes;
   })();
 
-  console.log(notesNoRs);
+  //scribbleClip is a clip with the final melody
+  const scribbleClip = scribble.clip({
+    notes: notesNoRs,
+    pattern,
+    subdiv,
+    sizzle,
+  });
+
+  return [scribbleClip, notesNoRs];
 };
 
 console.log(
   makeMelody({
     repeatNotes: 'off',
-    notes: [-2, 'C1', 'D1', 'R', 'R', 'R', 'R', 1, 'R', 'R', 'R'],
+    notes: ['C1', 'D1', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],
     upperBound: 1,
     lowerBound: -5,
     rootNote: 'C',
     octave: 1,
     mode: 'major',
+    subdiv: '4n',
     pitchDirrection: 'descend',
+    pattern: 'xxx',
   })
 );
+
+module.exports = { makeMelody };
