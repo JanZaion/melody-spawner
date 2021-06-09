@@ -83,13 +83,127 @@ const humanToBool = (str) => {
   }
 };
 
-/*
-  Do next:
-  test & debug
+function redeclareScribbleClip(scribbleClip) {
+  for (let i = 0; i < scribbleClip.length; i++) {
+    var newNote = [];
+    scribbleClip[i].note === null ? (newNote = null) : newNote.push(...scribbleClip[i].note);
+    let newPart = { note: newNote, length: scribbleClip[i].length, level: scribbleClip[i].level };
+    scribbleClip.splice(i, 1);
+    scribbleClip.insert(i, newPart);
+  }
+  return scribbleClip;
+}
 
-  bugs to fix at the final stage:
-  -scribbletune +1 octave
-*/
+Array.prototype.insert = function (index, item) {
+  //Inserts item to an array and changes the length (index, item)
+  this.splice(index, 0, item);
+};
+
+function transposeNotesInChord(scribbleClip, firstChord, numOfChords, numNote, interval) {
+  if (isNaN(interval) == false) interval = Interval.fromSemitones(interval);
+  if (contingency(scribbleClip, numOfChords, firstChord, false, false)) return nullCleanup(scribbleClip);
+  if (firstChord < 1) return nullCleanup(scribbleClip);
+  redeclareScribbleClip(scribbleClip);
+  if (numNote === 'all') numNote = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; //lame af, I know. If we want to transpose all notes in a chord, then we just make sure there are more chord to transpose than a chord can have
+
+  for (let i = 0; i < firstChord - 1; i++) {
+    if (scribbleClip[i].note == null) firstChord++;
+  }
+
+  if (scribbleClip.length - firstChord < numOfChords) {
+    var lastChord = scribbleClip.length;
+  } else {
+    var lastChord = firstChord - 1 + numOfChords;
+  }
+
+  for (let i = firstChord - 1; i < lastChord; i++) {
+    if (scribbleClip[i].note != null) {
+      for (let n = 0; n < numNote.length; n++) {
+        if (numNote[n] < scribbleClip[i].note.length + 1) {
+          var newNote = Note.simplify(Note.transpose(scribbleClip[i].note[numNote[n] - 1], interval));
+          var currentChord = scribbleClip[i].note;
+
+          for (let j = 0; j < currentChord.length; j++) {
+            if (j + 1 == numNote[n]) currentChord[j] = newNote;
+          }
+
+          var newPart = { note: currentChord, length: scribbleClip[i].length, level: scribbleClip[i].level };
+          scribbleClip.splice(i, 1);
+          scribbleClip.insert(i, newPart);
+        }
+      }
+    } else {
+      lastChord++;
+      if (lastChord > scribbleClip.length) var lastChord = scribbleClip.length;
+    }
+  }
+  nullCleanup(scribbleClip);
+  notesToArray(scribbleClip);
+  return scribbleClip;
+}
+
+function nullCleanup(scribbleClip) {
+  for (var q = 0; q < scribbleClip.length; q++) {
+    if (q != scribbleClip.length - 1 && scribbleClip[q].note == null && scribbleClip[q + 1].note == null) {
+      var newNullLength = scribbleClip[q].length + scribbleClip[q + 1].length;
+      var newPart = { note: null, length: newNullLength, level: scribbleClip[q].level };
+      scribbleClip.splice(q, 2);
+      scribbleClip.insert(q, newPart);
+      var q = q - 1;
+    }
+  }
+  return scribbleClip;
+}
+
+function notesToArray(scribbleClip) {
+  for (let i = 0; i < scribbleClip.length; i++) {
+    if (Array.isArray(scribbleClip[i].note) == false && scribbleClip[i].note != null) {
+      var noteInArray = [];
+      noteInArray.push(scribbleClip[i].note);
+      var newPart = { note: noteInArray, length: scribbleClip[i].length, level: scribbleClip[i].level };
+      scribbleClip.splice(i, 1);
+      scribbleClip.insert(i, newPart);
+    }
+  }
+
+  return scribbleClip;
+}
+
+function contingency(scribbleClip, numOfNotes, firstNote, RN, transposeRN) {
+  var RNamount = 0;
+  var Nullamount = 0;
+
+  for (let i = 0; i < scribbleClip.length; i++) {
+    if (scribbleClip[i].note == null) {
+      Nullamount++;
+    } else if (scribbleClip[i].note.join('') == RN) {
+      RNamount++;
+    }
+  }
+
+  var nonRNamount = scribbleClip.length - RNamount - Nullamount;
+
+  if (transposeRN && nonRNamount + RNamount < 1) {
+    return true;
+  } else if (transposeRN == false && nonRNamount < 1) {
+    return true;
+  } else if (numOfNotes < 1) {
+    return true;
+  } else if (firstNote > scribbleClip.length) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function notesToOctave(scribbleClip, octave) {
+  //var octave = octave +1 //because scribblemax exports them octave lower, than scribbleclip sais.
+  const defOctave = 3; //default octave, where Scribbletune exports chords
+  const transp = octave - defOctave;
+
+  return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '8P');
+}
+
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
@@ -105,8 +219,16 @@ const makeMelody = (params) => {
     subdiv, //subdiv
   } = params;
 
+  //notesArray is notes. If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
+  //Closures: notes
+  const notesArray = (() => {
+    const arr = [];
+    arr.push(notes);
+    return Array.isArray(notes) ? notes : arr;
+  })();
+
   //notesNoNums is an array of notes where all numbers were transformed into tones
-  //Closures: mode, rootNote, octave, notes
+  //Closures: mode, rootNote, octave, notesArray
   const notesNoNums = (() => {
     const upperMode = Mode.notes(mode, rootNote + octave);
     const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
@@ -119,7 +241,7 @@ const makeMelody = (params) => {
       return 7; //any other number, 7 is root note of the finalMode
     };
 
-    const notesDuplicate = notes;
+    const notesDuplicate = notesArray;
 
     notesDuplicate.forEach((note, noteIndex) => {
       if (!isNaN(note)) notesDuplicate[noteIndex] = finalMode[indexConvert(note)];
@@ -243,13 +365,18 @@ const makeMelody = (params) => {
     sizzle,
   });
 
-  return [scribbleClip, notesNoRs];
+  // fixedscribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
+  const fixedscribbleClip = (() => {
+    return notesToArray(notesToOctave(scribbleClip, octave));
+  })();
+
+  return [fixedscribbleClip, notesNoRs];
 };
 
 console.log(
   makeMelody({
     repeatNotes: 'off',
-    notes: ['C1', 'D1', 'R', 'R', 'R', 'R', 'R', 'R', 'R'],
+    notes: ['C1', 'R'],
     upperBound: 1,
     lowerBound: -5,
     rootNote: 'C',
@@ -257,7 +384,7 @@ console.log(
     mode: 'major',
     subdiv: '4n',
     pitchDirrection: 'descend',
-    pattern: 'xxx',
+    pattern: 'x-x',
   })
 );
 
