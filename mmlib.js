@@ -204,6 +204,8 @@ function notesToOctave(scribbleClip, octave) {
   return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '8P');
 }
 
+//the "non-chords-coppied" part starts below
+
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
