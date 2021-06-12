@@ -99,6 +99,83 @@ Array.prototype.insert = function (index, item) {
   this.splice(index, 0, item);
 };
 
+function chopOrSplit(scribbleClip, splitter, splitChop) {
+  redeclareScribbleClip(scribbleClip);
+
+  if (splitter === 1) {
+    var splitter2 = 5;
+  }
+  if (splitter === 2) {
+    var splitter2 = 4;
+  }
+  if (splitter === 3) {
+    var splitter2 = 3;
+  }
+  if (splitter === 4) {
+    var splitter2 = 2;
+  }
+  if (splitter === 5) {
+    var splitter2 = 1;
+  }
+
+  switch (splitter2) {
+    case 5: //1/8
+      var chopLength = 128;
+      break;
+
+    case 4: //1/4
+      var chopLength = 256;
+      break;
+
+    case 3: //1/2
+      var chopLength = 512;
+      break;
+
+    case 2: //1
+      var chopLength = 2048;
+      break;
+
+    case 1: //2
+      var chopLength = 4096;
+      break;
+  }
+
+  var newClip = [];
+
+  for (let i = 0; i < scribbleClip.length; i++) {
+    const partLength = scribbleClip[i].length;
+
+    const chops = Math.trunc(partLength) / chopLength;
+
+    const newPart = { note: scribbleClip[i].note, length: partLength / chops, level: scribbleClip[i].level };
+
+    for (let j = 0; j < chops; j++) {
+      if (splitChop === 0) {
+        //split
+        newClip.push(newPart);
+      } else if (splitChop === 1) {
+        //chop
+        const newPartNull = { note: null, length: partLength / chops, level: scribbleClip[i].level };
+        j % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
+      }
+    }
+    if (splitChop === 2) {
+      //halve
+      var partLengthHalved = partLength;
+      var exp = 2;
+      for (let k = 0; k < splitter; k++) var partLengthHalved = partLengthHalved / 2;
+      for (let m = 0; m < splitter - 1; m++) var exp = exp * 2;
+      const newPartHalved = { note: scribbleClip[i].note, length: partLengthHalved, level: scribbleClip[i].level };
+      for (let l = 0; l < exp; l++) newClip.push(newPartHalved);
+    }
+  }
+
+  //We return new clip, so scribbleclip needs to be redeclared
+  nullCleanup(newClip);
+  notesToArray(newClip);
+  return newClip;
+}
+
 function transposeNotesInChord(scribbleClip, firstChord, numOfChords, numNote, interval) {
   if (isNaN(interval) == false) interval = Interval.fromSemitones(interval);
   if (contingency(scribbleClip, numOfChords, firstChord, false, false)) return nullCleanup(scribbleClip);
@@ -219,6 +296,8 @@ const makeMelody = (params) => {
     sizzle, //velocity
     pitchDirrection, //ascending or descending or any melody?
     subdiv, //subdiv
+    splitter, //splitter
+    splitChop, //splitchop
   } = params;
 
   //notesArray is notes. If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
@@ -367,12 +446,19 @@ const makeMelody = (params) => {
     sizzle,
   });
 
-  // fixedscribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
-  const fixedscribbleClip = (() => {
+  //fixedScribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
+  const fixedScribbleClip = (() => {
     return notesToArray(notesToOctave(scribbleClip, octave));
   })();
 
-  return [fixedscribbleClip, notesNoRs];
+  //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
+  //Closures: fixedScribbleClip, splitter, splitChop
+  const choppedScribbleClip = (() => {
+    if (splitter === 0) return fixedScribbleClip;
+    if (splitter !== 0) return chopOrSplit(fixedScribbleClip, splitter, splitChop);
+  })();
+
+  return [choppedScribbleClip, notesNoRs];
 };
 
 console.log(
