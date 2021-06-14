@@ -8,7 +8,7 @@ maxApi.addHandler('makeClip', () => {
     const clipMade = mmlib.makeMelody(full);
 
     const clip = clipMade[0];
-    const names = clipMade[1].join(', ');
+    const names = clipMade[1].join(' ');
 
     await Promise.all([
       maxApi.setDict('noteNames', {
