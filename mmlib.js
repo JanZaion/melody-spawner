@@ -481,4 +481,5 @@ module.exports = { makeMelody };
 /*
 TODO:
 -once everything is complete, add "init" button to device and make it loadbang
+-refactor from the current garbage
 */
