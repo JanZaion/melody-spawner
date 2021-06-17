@@ -463,17 +463,22 @@ const makeMelody = (params) => {
 
 console.log(
   makeMelody({
-    repeatNotes: 'off',
-    notes: ['C1', 'R'],
-    upperBound: 1,
-    lowerBound: -5,
+    octave: 5,
+    subdiv: '4m',
+    splitter: 0,
+    mode: 'Major',
     rootNote: 'C',
-    octave: 1,
-    mode: 'major',
-    subdiv: '4n',
+    chordPatterns: 'R R R R',
+    notes: ['R', 'R', 'R', 'R'],
+    lowerBound: -3,
+    patterns: 'xxxx',
+    pattern: 'xx-xx_',
     pitchDirrection: 'descend',
-    pattern: 'x-x',
-  })
+    repeatNotes: 'off',
+    sizzle: 'cos',
+    splitChop: 0,
+    upperBound: 5,
+  })[0]
 );
 
 module.exports = { makeMelody };
