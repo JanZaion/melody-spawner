@@ -464,7 +464,7 @@ const makeMelody = (params) => {
 console.log(
   makeMelody({
     octave: 5,
-    subdiv: '4m',
+    subdiv: '1n',
     splitter: 0,
     mode: 'Major',
     rootNote: 'C',
@@ -472,7 +472,7 @@ console.log(
     notes: ['R', 'R', 'R', 'R'],
     lowerBound: -3,
     patterns: 'xxxx',
-    pattern: 'xx-xx_',
+    pattern: 'x_x-xx_',
     pitchDirrection: 'descend',
     repeatNotes: 'off',
     sizzle: 'cos',
