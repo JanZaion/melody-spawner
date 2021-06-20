@@ -75,26 +75,24 @@ const scribbleClipToRNN = async (params) => {
 
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
-  const clip = [];
 
-  for (let step = 0; step < unquantizedMelody.notes.length; step++) {
-    const currentStep = unquantizedMelody.notes[step];
-    const currentStepStartTime = unquantizedMelody.notes[step].startTime;
+  const clip = unquantizedMelody.notes.map((step, index) => {
+    const currentStepStartTime = step.startTime;
     let previousStepEndTime;
-    step > 0
-      ? (previousStepEndTime = unquantizedMelody.notes[step - 1].endTime)
+    index > 0
+      ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
       : (previousStepEndTime = currentStepStartTime);
 
     if (currentStepStartTime === previousStepEndTime) {
-      clip.push({
-        note: Note.fromMidi(currentStep.pitch),
-        length: (currentStep.endTime - currentStep.startTime) * 512,
+      return {
+        note: Note.fromMidi(step.pitch),
+        length: (step.endTime - step.startTime) * 512,
         level: 100,
-      });
+      };
     } else {
-      clip.push({ note: null, length: (currentStepStartTime - previousStepEndTime) * 512, level: 100 });
+      return { note: null, length: (currentStepStartTime - previousStepEndTime) * 512, level: 100 };
     }
-  }
+  });
 
   return clip;
 };
