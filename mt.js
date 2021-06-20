@@ -61,7 +61,8 @@ const scribbleClipToRNN = async (params) => {
     scribbleClip,
     steps = 8,
     temperature = 1.1,
-    checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
+    // checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
+    checkpoint = './checkpoints/melodyRNN',
   } = params;
 
   //ATM we are inicializing the RNN at every call of the fn. Prly suboptimal, maybe abstract away later
@@ -105,14 +106,14 @@ const sc = [
   { note: ['C6'], length: 1024, level: 81 },
 ];
 
-const ddd = async () => {
-  const asd = await scribbleClipToRNN({ scribbleClip: sc, steps: 60 });
-  console.log(quantizedMelodyToScribbleClip(asd));
-  return asd;
-};
+// const ddd = async () => {
+//   const asd = await scribbleClipToRNN({ scribbleClip: sc, steps: 60 });
+//   console.log(quantizedMelodyToScribbleClip(asd));
+//   return asd;
+// };
 
-// console.log(ddd());
-ddd();
+// ddd();
+console.log(`${process.resourcesPath}`);
 
 /*
 TODO:
