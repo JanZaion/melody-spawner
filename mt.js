@@ -1,10 +1,10 @@
 const mvae = require('@magenta/music/node/music_vae');
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
-const { midi, Note } = require('@tonaljs/tonal');
-// const mvae = require('@magenta/music/node/music_vae');
-// const mrnn = require('@magenta/music/node/music_rnn');
-// const core = require('@magenta/music/node/core');
+const { Note } = require('@tonaljs/tonal');
+
+// const process = require('process');
+// const path = require('path');
 
 //2 tested checkpoints:
 // without chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
@@ -61,8 +61,12 @@ const scribbleClipToRNN = async (params) => {
     scribbleClip,
     steps = 8,
     temperature = 1.1,
-    // checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
-    checkpoint = './checkpoints/melodyRNN',
+    checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
+    // checkpoint = 'C:/Users/zajic/Desktop/melody-with-magenta/checkpoints/melody_rnn/',
+    // checkpoint = `${currentPath}`,
+    // checkpoint = currentPath,
+    // checkpoint = path.resolve(process.cwd(), '/checkpoints/melody_rnn'),
+    // checkpoint = './checkpoints/melody_rnn/',
   } = params;
 
   //ATM we are inicializing the RNN at every call of the fn. Prly suboptimal, maybe abstract away later
@@ -106,14 +110,13 @@ const sc = [
   { note: ['C6'], length: 1024, level: 81 },
 ];
 
-// const ddd = async () => {
-//   const asd = await scribbleClipToRNN({ scribbleClip: sc, steps: 60 });
-//   console.log(quantizedMelodyToScribbleClip(asd));
-//   return asd;
-// };
+const ddd = async () => {
+  const asd = await scribbleClipToRNN({ scribbleClip: sc, steps: 60 });
+  console.log(quantizedMelodyToScribbleClip(asd));
+  return asd;
+};
 
-// ddd();
-console.log(`${process.resourcesPath}`);
+ddd();
 
 /*
 TODO:
