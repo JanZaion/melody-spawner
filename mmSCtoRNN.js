@@ -37,7 +37,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     return accumulator + note.length;
   }, 0);
 
-  const notes = scribbleClipToUnquantizedNotes(sc);
+  const notes = scribbleClipToUnquantizedNotes(scribbleClip);
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
@@ -68,7 +68,6 @@ const scribbleClipToRNN = async (params) => {
     // checkpoint = path.resolve(process.cwd(), '/checkpoints/melody_rnn'),
     // checkpoint = './checkpoints/melody_rnn/',
   } = params;
-
   //ATM we are inicializing the RNN at every call of the fn. Prly suboptimal, maybe abstract away later
   const RNN = new mm.MusicRNN(checkpoint);
 
@@ -80,7 +79,7 @@ const scribbleClipToRNN = async (params) => {
 
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
-
+  console.log(unquantizedMelody); // dont forget me!
   const clip = unquantizedMelody.notes.map((step, index) => {
     const currentStepStartTime = step.startTime;
     let previousStepEndTime;
@@ -102,24 +101,24 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
   return clip;
 };
 
-const sc = [
-  { note: ['G6'], length: 1024, level: 100 },
-  { note: ['F6'], length: 512, level: 81 },
-  { note: null, length: 512, level: 31 },
-  { note: ['D6'], length: 512, level: 31 },
-  { note: ['C6'], length: 1024, level: 81 },
-];
-
-const ddd = async () => {
-  const asd = await scribbleClipToRNN({ scribbleClip: sc, steps: 60 });
-  console.log(quantizedMelodyToScribbleClip(asd));
-  return asd;
+const magentize = async (params) => {
+  const magentaMelody = await scribbleClipToRNN(params);
+  const magentaScribbleClip = quantizedMelodyToScribbleClip(magentaMelody);
+  return magentaScribbleClip;
 };
 
-ddd();
+module.exports = { magentize };
 
-/*
-TODO:
-put it into final product, test & debug
+(async () => {
+  const asd = await magentize({
+    scribbleClip: [
+      { note: 'C2', length: 256, level: 100 },
+      { note: 'B2', length: 256, level: 100 },
+    ],
+    steps: 20,
+    temperature: 1,
+  });
+  console.log(asd);
+})();
 
-*/
+//run this thing and see that major debuggin is necessary

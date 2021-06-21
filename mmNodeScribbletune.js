@@ -1,5 +1,38 @@
+/*
+TODO:
+-once everything is complete, add "init" button to device and make it loadbang
+-refactor mmlib from the current garbage
+-make it so that - notes are accepted
+
+magenta:
+-figure out local setup for checkpoint
+-sometimes it doesent produce clip. Why?
+-magenta studios has fixed length. How?
+-make RNN initialization on loadbang
+-returns C-1 for no reason sometimes. Why?
+*/
 const maxApi = require('max-api');
 const mmlib = require('./mmlib');
+const mmSCtoRNN = require('./mmSCtoRNN');
+
+const joinClips = async (params) => {
+  const { AI, scribbleClip } = params;
+  let AIclip;
+
+  switch (AI) {
+    case 0:
+      return scribbleClip;
+
+    case 1:
+      AIclip = await mmSCtoRNN.magentize(params);
+      return AIclip;
+
+    case 2:
+      AIclip = await mmSCtoRNN.magentize(params);
+      const finClip = scribbleClip.concat(AIclip);
+      return finClip;
+  }
+};
 
 maxApi.addHandler('makeClip', () => {
   const constructClip = (async () => {
@@ -7,7 +40,11 @@ maxApi.addHandler('makeClip', () => {
 
     const clipMade = mmlib.makeMelody(full);
 
-    const clip = clipMade[0];
+    const scribbleClip = clipMade[0];
+    full.scribbleClip = scribbleClip;
+
+    const finalClip = await joinClips(full);
+
     const names = clipMade[1].join(' ');
 
     await Promise.all([
@@ -15,7 +52,7 @@ maxApi.addHandler('makeClip', () => {
         notes: names,
       }),
       maxApi.setDict('clip1', {
-        scribbleObjects: clip,
+        scribbleObjects: finalClip,
       }),
     ]);
 
