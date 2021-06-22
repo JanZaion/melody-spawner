@@ -45,3 +45,10 @@ const NoteFunction = (props) => {
 const Ethree = NoteFunction({ note: 'E', octave: 3 });
 Ethree.hajr();
 console.log(Ethree); //output: { hajr: [Function: hajr], note: 'E', octave: 3 }
+
+/*
+eventualy make an ultimate js cheat sheet, topics to cover:
+-objects and value vs reference from kyle and jeff https://www.youtube.com/watch?v=napDjGFjHR0
+-closures from kyle and jeff
+-all kyle js techniques that nobody uses vids
+*/
