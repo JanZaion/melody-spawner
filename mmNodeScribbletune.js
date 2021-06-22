@@ -9,7 +9,9 @@ magenta:
 -sometimes it doesent produce clip. Why?
 -magenta studios has fixed length. How?
 -make RNN initialization on loadbang
--returns C-1 for no reason sometimes. Why?
+-returns C-1 for no reason sometimes. Why? because it wasnt in an array, fixed now
+
+1. notes must always be in an array, now they are not
 */
 const maxApi = require('max-api');
 const mmlib = require('./mmlib');

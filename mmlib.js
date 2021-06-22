@@ -235,9 +235,9 @@ function nullCleanup(scribbleClip) {
 function notesToArray(scribbleClip) {
   for (let i = 0; i < scribbleClip.length; i++) {
     if (Array.isArray(scribbleClip[i].note) == false && scribbleClip[i].note != null) {
-      var noteInArray = [];
+      const noteInArray = [];
       noteInArray.push(scribbleClip[i].note);
-      var newPart = { note: noteInArray, length: scribbleClip[i].length, level: scribbleClip[i].level };
+      const newPart = { note: noteInArray, length: scribbleClip[i].length, level: scribbleClip[i].level };
       scribbleClip.splice(i, 1);
       scribbleClip.insert(i, newPart);
     }
@@ -483,4 +483,4 @@ console.log(
 
 const notesFromScribbleClip = (scribbleClip) => {};
 
-module.exports = { makeMelody, notesFromScribbleClip };
+module.exports = { makeMelody, notesFromScribbleClip, notesToArray };

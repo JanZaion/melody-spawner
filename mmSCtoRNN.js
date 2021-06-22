@@ -89,7 +89,7 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
 
     if (currentStepStartTime === previousStepEndTime) {
       return {
-        note: Note.fromMidi(step.pitch),
+        note: [Note.fromMidi(step.pitch)],
         length: (step.endTime - step.startTime) * 512,
         level: 100,
       };
@@ -112,8 +112,14 @@ module.exports = { magentize };
 (async () => {
   const asd = await magentize({
     scribbleClip: [
-      { note: 'C2', length: 256, level: 100 },
-      { note: 'B2', length: 256, level: 100 },
+      { note: ['C2'], length: 256, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+      { note: ['C2'], length: 256, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+      { note: ['C2'], length: 256, level: 100 },
+      { note: null, length: 256, level: 100 },
+      { note: ['C2'], length: 256, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
     ],
     steps: 20,
     temperature: 1,
