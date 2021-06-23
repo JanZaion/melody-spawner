@@ -7,17 +7,17 @@ TODO:
 magenta:
 -figure out local setup for checkpoint
 -sometimes it doesent produce clip. Why?
--magenta studios has fixed length. How?
+-magenta studios has fixed length. How? Steps per quarter might need to be dealt with by subdiv. Number of steps combined with subdiv might give out total length. In Mstudio, 1 bar = 16 steps
 -make RNN initialization on loadbang
 -returns C-1 for no reason sometimes. Why? because it wasnt in an array, fixed now
 
-1. notes must always be in an array, now they are not
+/notes must always be in an array, now they are not
 */
 const maxApi = require('max-api');
 const mmlib = require('./mmlib');
 const mmSCtoRNN = require('./mmSCtoRNN');
 
-const joinClips = async (params) => {
+const joinWithAI = async (params) => {
   const { AI, scribbleClip } = params;
   let AIclip;
 
@@ -45,7 +45,7 @@ maxApi.addHandler('makeClip', () => {
     const scribbleClip = clipMade[0];
     full.scribbleClip = scribbleClip;
 
-    const finalClip = await joinClips(full);
+    const finalClip = await joinWithAI(full);
 
     const names = clipMade[1].join(' ');
 
