@@ -78,33 +78,7 @@ const scribbleClipToRNN = async (params) => {
 };
 
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
-  // dont forget about the case where total time is higher than the end time of the final step!!!
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
-  console.log(unquantizedMelody); // dont forget me!
-
-  // unquantizedMelody.notes.forEach((step, index) => {
-  //   const currentStepStartTime = step.startTime;
-  //   const currentStepEndTime = step.endTime;
-  //   let previousStepEndTime;
-  //   let followingStepStartTime;
-  //   let nullPush = false;
-
-  //   index > 0
-  //     ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
-  //     : (previousStepEndTime = currentStepStartTime);
-
-  //   index < notes.length
-  //     ? (followingStepStartTime = unquantizedMelody.notes[index + 1].startTime)
-  //     : (followingStepStartTime = 0);
-
-  //   if (nullPush) {
-  //     if (currentStepStartTime === previousStepEndTime) {
-  //       clipNullFill.push(step);
-  //     } else {
-  //       return { pitch: null, startTime: (currentStepStartTime - previousStepEndTime) * 512, endTime: 100 };
-  //     }
-  //   }
-  // });
 
   const times = (() => {
     const arr = [];
@@ -131,46 +105,31 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
   };
 
   const clipFinal = (() => {
-    const arr = [mmStepToScribbleStep(unquantizedMelody.notes[0])];
+    const clip = [mmStepToScribbleStep(unquantizedMelody.notes[0])];
 
     let j = 1;
     for (let i = 1; i < times.length - 1; i += 2) {
       if (times[i] === times[i + 1]) {
-        arr.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
+        clip.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
       } else {
-        arr.push(mmStepToScribbleStep({ pitch: null, startTime: times[i], endTime: times[i + 1] }));
-        arr.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
+        clip.push(mmStepToScribbleStep({ pitch: null, startTime: times[i], endTime: times[i + 1] }));
+        clip.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
       }
       j++;
     }
 
-    return arr;
+    if (unquantizedMelody.totalTime !== times[times.length - 1]) {
+      clip.push(
+        mmStepToScribbleStep({
+          pitch: null,
+          startTime: times[times.length - 1],
+          endTime: unquantizedMelody.totalTime,
+        })
+      );
+    }
+
+    return clip;
   })();
-
-  // console.log(times);
-  // console.log(clipNullFill);
-  // console.log(unquantizedMelody.notes.length);
-  // console.log(clipNullFill.length);
-
-  // const clipFinal = unquantizedMelody.notes.map((step, index) => {
-  //   const currentStepStartTime = step.startTime;
-  //   let previousStepEndTime;
-  //   index > 0
-  //     ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
-  //     : (previousStepEndTime = currentStepStartTime);
-
-  //   if (currentStepStartTime === previousStepEndTime) {
-  //     //this is soooo stooopid!
-  //     //this sometimes evaluates as it shouldnt, nulls more often, look into scribbleClipToUnquantizedNotes
-  //     return {
-  //       note: [Note.fromMidi(step.pitch)],
-  //       length: (step.endTime - step.startTime) * 512,
-  //       level: 100,
-  //     };
-  //   } else {
-  //     return { note: null, length: (currentStepStartTime - previousStepEndTime) * 512, level: 100 };
-  //   }
-  // });
 
   return clipFinal;
 };
