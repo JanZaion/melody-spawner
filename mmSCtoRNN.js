@@ -11,10 +11,10 @@ const { Note } = require('@tonaljs/tonal');
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
 const scribbleClipToUnquantizedNotes = (scribbleClip) => {
+  //the problem is prly somwhere here
   let startTime = 0;
   let endTime = 0;
   const notesArr = [];
-
   for (const step of scribbleClip) {
     endTime += step.length;
 
@@ -53,7 +53,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     notes,
   };
 
-  return core.sequences.quantizeNoteSequence(unqunatizedSequence, 1);
+  return core.sequences.quantizeNoteSequence(unqunatizedSequence, 4); //second arg is steps per quarter, find out what it is
 };
 
 const scribbleClipToRNN = async (params) => {
@@ -78,27 +78,101 @@ const scribbleClipToRNN = async (params) => {
 };
 
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
+  // dont forget about the case where total time is higher than the end time of the final step!!!
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
   console.log(unquantizedMelody); // dont forget me!
-  const clip = unquantizedMelody.notes.map((step, index) => {
-    const currentStepStartTime = step.startTime;
-    let previousStepEndTime;
-    index > 0
-      ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
-      : (previousStepEndTime = currentStepStartTime);
 
-    if (currentStepStartTime === previousStepEndTime) {
-      return {
-        note: [Note.fromMidi(step.pitch)],
-        length: (step.endTime - step.startTime) * 512,
-        level: 100,
-      };
-    } else {
-      return { note: null, length: (currentStepStartTime - previousStepEndTime) * 512, level: 100 };
+  // unquantizedMelody.notes.forEach((step, index) => {
+  //   const currentStepStartTime = step.startTime;
+  //   const currentStepEndTime = step.endTime;
+  //   let previousStepEndTime;
+  //   let followingStepStartTime;
+  //   let nullPush = false;
+
+  //   index > 0
+  //     ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
+  //     : (previousStepEndTime = currentStepStartTime);
+
+  //   index < notes.length
+  //     ? (followingStepStartTime = unquantizedMelody.notes[index + 1].startTime)
+  //     : (followingStepStartTime = 0);
+
+  //   if (nullPush) {
+  //     if (currentStepStartTime === previousStepEndTime) {
+  //       clipNullFill.push(step);
+  //     } else {
+  //       return { pitch: null, startTime: (currentStepStartTime - previousStepEndTime) * 512, endTime: 100 };
+  //     }
+  //   }
+  // });
+
+  const times = (() => {
+    const arr = [];
+    for (const step of unquantizedMelody.notes) {
+      arr.push(step.startTime);
+      arr.push(step.endTime);
     }
-  });
 
-  return clip;
+    return arr;
+  })();
+
+  const mmStepToScribbleStep = (mmStep) => {
+    switch (mmStep.pitch) {
+      case null:
+        return { note: null, length: (mmStep.endTime - mmStep.startTime) * 512, level: 100 };
+
+      default:
+        return {
+          note: [Note.fromMidi(mmStep.pitch)],
+          length: (mmStep.endTime - mmStep.startTime) * 512,
+          level: 100,
+        };
+    }
+  };
+
+  const clipFinal = (() => {
+    const arr = [mmStepToScribbleStep(unquantizedMelody.notes[0])];
+
+    let j = 1;
+    for (let i = 1; i < times.length - 1; i += 2) {
+      if (times[i] === times[i + 1]) {
+        arr.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
+      } else {
+        arr.push(mmStepToScribbleStep({ pitch: null, startTime: times[i], endTime: times[i + 1] }));
+        arr.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
+      }
+      j++;
+    }
+
+    return arr;
+  })();
+
+  // console.log(times);
+  // console.log(clipNullFill);
+  // console.log(unquantizedMelody.notes.length);
+  // console.log(clipNullFill.length);
+
+  // const clipFinal = unquantizedMelody.notes.map((step, index) => {
+  //   const currentStepStartTime = step.startTime;
+  //   let previousStepEndTime;
+  //   index > 0
+  //     ? (previousStepEndTime = unquantizedMelody.notes[index - 1].endTime)
+  //     : (previousStepEndTime = currentStepStartTime);
+
+  //   if (currentStepStartTime === previousStepEndTime) {
+  //     //this is soooo stooopid!
+  //     //this sometimes evaluates as it shouldnt, nulls more often, look into scribbleClipToUnquantizedNotes
+  //     return {
+  //       note: [Note.fromMidi(step.pitch)],
+  //       length: (step.endTime - step.startTime) * 512,
+  //       level: 100,
+  //     };
+  //   } else {
+  //     return { note: null, length: (currentStepStartTime - previousStepEndTime) * 512, level: 100 };
+  //   }
+  // });
+
+  return clipFinal;
 };
 
 const magentize = async (params) => {
@@ -121,10 +195,17 @@ module.exports = { magentize };
       { note: ['C2'], length: 256, level: 100 },
       { note: ['B2'], length: 256, level: 100 },
     ],
-    steps: 20,
+    steps: 40,
     temperature: 1,
   });
   console.log(asd);
+
+  console.log(
+    asd.reduce((accumulator, step) => {
+      // the outcome of this must be deterministic
+      return accumulator + step.length;
+    }, 0)
+  );
 })();
 
 //run this thing and see that major debuggin is necessary
