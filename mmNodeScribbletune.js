@@ -2,14 +2,12 @@
 TODO:
 -once everything is complete, add "init" button to device and make it loadbang
 -refactor mmlib from the current garbage
--make it so that - notes are accepted
+-make the generate button unavailable when magenta is generating clip
 
 magenta:
 -figure out local setup for checkpoint
--sometimes it doesent produce clip. Why?
--magenta studios has fixed length. How? Steps per quarter might need to be dealt with by subdiv. Number of steps combined with subdiv might give out total length. In Mstudio, 1 bar = 16 steps
+-sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil or even better, ditch Scribbleformax in favor of magenta solution
 -make RNN initialization on loadbang
--returns C-1 for no reason sometimes. Why? because it wasnt in an array, fixed now
 
 /notes must always be in an array, now they are not
 */

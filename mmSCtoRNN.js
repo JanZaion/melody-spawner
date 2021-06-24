@@ -5,13 +5,13 @@ const { Note } = require('@tonaljs/tonal');
 
 // const process = require('process');
 // const path = require('path');
+// const fs = require('fs');
 
 //2 tested checkpoints:
 // without chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
 const scribbleClipToUnquantizedNotes = (scribbleClip) => {
-  //the problem is prly somwhere here
   let startTime = 0;
   let endTime = 0;
   const notesArr = [];
@@ -53,7 +53,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     notes,
   };
 
-  return core.sequences.quantizeNoteSequence(unqunatizedSequence, 4); //second arg is steps per quarter, find out what it is
+  return core.sequences.quantizeNoteSequence(unqunatizedSequence, 4);
 };
 
 const scribbleClipToRNN = async (params) => {
@@ -118,11 +118,23 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
       j++;
     }
 
-    if (unquantizedMelody.totalTime !== times[times.length - 1]) {
+    const theVeryStartTime = unquantizedMelody.notes[0].startTime;
+    if (theVeryStartTime !== 0) {
+      clip.unshift(
+        mmStepToScribbleStep({
+          pitch: null,
+          startTime: 0,
+          endTime: theVeryStartTime,
+        })
+      );
+    }
+
+    const theVeryEndTime = times[times.length - 1];
+    if (unquantizedMelody.totalTime !== theVeryEndTime) {
       clip.push(
         mmStepToScribbleStep({
           pitch: null,
-          startTime: times[times.length - 1],
+          startTime: theVeryEndTime,
           endTime: unquantizedMelody.totalTime,
         })
       );
@@ -142,29 +154,25 @@ const magentize = async (params) => {
 
 module.exports = { magentize };
 
-(async () => {
-  const asd = await magentize({
-    scribbleClip: [
-      { note: ['C2'], length: 256, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-      { note: ['C2'], length: 256, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-      { note: ['C2'], length: 256, level: 100 },
-      { note: null, length: 256, level: 100 },
-      { note: ['C2'], length: 256, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-    ],
-    steps: 40,
-    temperature: 1,
-  });
-  console.log(asd);
+// (async () => {
+//   const asd = await magentize({
+//     scribbleClip: [
+//       { note: ['C2'], length: 256, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//       { note: ['C2'], length: 256 * 4, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//     ],
+//     steps: 40,
+//     temperature: 2,
+//   });
+//   console.log(asd);
 
-  console.log(
-    asd.reduce((accumulator, step) => {
-      // the outcome of this must be deterministic
-      return accumulator + step.length;
-    }, 0)
-  );
-})();
+//   console.log(
+//     asd.reduce((accumulator, step) => {
+//       // the outcome of this must be deterministic
+//       return accumulator + step.length;
+//     }, 0)
+//   );
+// })();
 
 //run this thing and see that major debuggin is necessary
