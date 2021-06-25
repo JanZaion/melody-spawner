@@ -283,6 +283,32 @@ function notesToOctave(scribbleClip, octave) {
 
 //the "non-chords-coppied" part starts below
 
+const transposeNegativeFirstNotesInScribbleclip = (scribbleClip) => {
+  const newClip = [];
+
+  for (const step of scribbleClip) {
+    if (step.note !== null && step.note[0].indexOf('-') !== -1) {
+      newClip.push({ note: [Note.transpose(step.note[0], '8P')], length: step.length, level: step.level });
+    } else {
+      const newStep = {};
+      Object.assign(newStep, step);
+      newClip.push(newStep);
+    }
+  }
+
+  return newClip;
+};
+
+const transposeNegativesInArray = (arr) => {
+  return arr.map((note) => {
+    if (note.indexOf('-') !== -1) {
+      return Note.transpose(note, '8P');
+    } else {
+      return note;
+    }
+  });
+};
+
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
@@ -371,7 +397,7 @@ const makeMelody = (params) => {
     //repeatNotesBool is boolean that reflexts max input
     const repeatNotesBool = humanToBool(repeatNotes);
 
-    //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays
+    //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays. Note: rename it to indexes when refactoring
     //Closures: finalMode, numOfRandNotes, pitchDirrection, repeatNotesBool, notesRemaining
     const noteIntegers = (() => {
       //rolls is the number of rolls for the following dice rolls
@@ -438,9 +464,15 @@ const makeMelody = (params) => {
     return absoluteNotes;
   })();
 
+  //notesNoNegatives is an array where all the C-1s etc where transposed an octave above
+  //Closures: notesNoRs
+  const notesNoNegatives = (() => {
+    return transposeNegativesInArray(notesNoRs);
+  })();
+
   //scribbleClip is a clip with the final melody
   const scribbleClip = scribble.clip({
-    notes: notesNoRs,
+    notes: notesNoNegatives,
     pattern,
     subdiv,
     sizzle,
@@ -458,29 +490,27 @@ const makeMelody = (params) => {
     if (splitter !== 0) return chopOrSplit(fixedScribbleClip, splitter, splitChop);
   })();
 
-  return [choppedScribbleClip, notesNoRs];
+  return [choppedScribbleClip, notesNoNegatives];
 };
 
-console.log(
-  makeMelody({
-    octave: 5,
-    subdiv: '1n',
-    splitter: 0,
-    mode: 'Major',
-    rootNote: 'C',
-    chordPatterns: 'R R R R',
-    notes: ['R', 'R', 'R', 'R'],
-    lowerBound: -3,
-    patterns: 'xxxx',
-    pattern: 'x_x-xx_',
-    pitchDirrection: 'descend',
-    repeatNotes: 'off',
-    sizzle: 'cos',
-    splitChop: 0,
-    upperBound: 5,
-  })[0]
-);
+const clipp = makeMelody({
+  octave: 5,
+  subdiv: '1n',
+  splitter: 0,
+  mode: 'Major',
+  rootNote: 'C',
+  chordPatterns: 'R R R R',
+  notes: ['C-1', 'R', 'R', 'D1'],
+  lowerBound: -3,
+  patterns: 'xxxx',
+  pattern: 'x__xxx__',
+  pitchDirrection: 'descend',
+  repeatNotes: 'off',
+  sizzle: 'cos',
+  splitChop: 0,
+  upperBound: 5,
+})[0];
 
-const notesFromScribbleClip = (scribbleClip) => {};
+console.log(clipp);
 
-module.exports = { makeMelody, notesFromScribbleClip, notesToArray };
+module.exports = { makeMelody, notesToArray, transposeNegativeFirstNotesInScribbleclip };
