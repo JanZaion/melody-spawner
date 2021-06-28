@@ -21,8 +21,8 @@ const scribbleClipToUnquantizedNotes = (scribbleClip) => {
     if (step.note !== null) {
       notesArr.push({
         pitch: Note.midi(step.note[0]),
-        startTime: (startTime / 128) * 0.125,
-        endTime: (endTime / 128) * 0.125,
+        startTime: (startTime / 128) * 0.25,
+        endTime: (endTime / 128) * 0.25,
       });
     }
 
@@ -41,7 +41,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
-    totalTime: (totalScribbleClipTime / 128) * 0.125,
+    totalTime: (totalScribbleClipTime / 128) * 0.25,
     timeSignatures: [
       {
         time: 0,
