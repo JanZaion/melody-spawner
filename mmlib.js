@@ -273,12 +273,14 @@ function contingency(scribbleClip, numOfNotes, firstNote, RN, transposeRN) {
   }
 }
 
-function notesToOctave(scribbleClip, octave) {
-  //var octave = octave +1 //because scribblemax exports them octave lower, than scribbleclip sais.
-  const defOctave = 3; //default octave, where Scribbletune exports chords
-  const transp = octave - defOctave;
-
+function notesUpAnOctave(scribbleClip) {
+  redeclareScribbleClip(scribbleClip);
   return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '8P');
+}
+
+function notesDownAnOctave(scribbleClip) {
+  redeclareScribbleClip(scribbleClip);
+  return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '-8P');
 }
 
 //the "non-chords-coppied" part starts below
@@ -307,6 +309,17 @@ const transposeNegativesInArray = (arr) => {
       return note;
     }
   });
+};
+
+const noteNamesFromScribbleclip = (scribbleClip) => {
+  const notesArr = scribbleClip.map((step) => {
+    if (step.note !== null) {
+      let currentStep = step.note[0];
+      return Note.simplify(Note.transpose(currentStep, '-8P'));
+    }
+  });
+
+  return notesArr.join(' ');
 };
 
 const makeMelody = (params) => {
@@ -479,9 +492,7 @@ const makeMelody = (params) => {
   });
 
   //fixedScribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
-  const fixedScribbleClip = (() => {
-    return notesToArray(notesToOctave(scribbleClip, octave));
-  })();
+  const fixedScribbleClip = notesToArray(notesUpAnOctave(scribbleClip));
 
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
   //Closures: fixedScribbleClip, splitter, splitChop
@@ -490,27 +501,34 @@ const makeMelody = (params) => {
     if (splitter !== 0) return chopOrSplit(fixedScribbleClip, splitter, splitChop);
   })();
 
-  return [choppedScribbleClip, notesNoNegatives];
+  return choppedScribbleClip;
 };
 
-const clipp = makeMelody({
-  octave: 5,
-  subdiv: '1n',
-  splitter: 0,
-  mode: 'Major',
-  rootNote: 'C',
-  chordPatterns: 'R R R R',
-  notes: ['C-1', 'R', 'R', 'D1'],
-  lowerBound: -3,
-  patterns: 'xxxx',
-  pattern: 'x__xxx__',
-  pitchDirrection: 'descend',
-  repeatNotes: 'off',
-  sizzle: 'cos',
-  splitChop: 0,
-  upperBound: 5,
-})[0];
+// const mmSCtoRNN = require('./mmSCtoRNN');
+// const dd = (async () => {
+//   const clipp = makeMelody({
+//     octave: 1,
+//     subdiv: '4n',
+//     splitter: 0,
+//     mode: 'Phrygian',
+//     rootNote: 'C',
+//     notes: ['R', 'R', 'R', 'R'],
+//     lowerBound: 0,
+//     pattern: 'x__xxx__',
+//     pitchDirrection: 'descend',
+//     repeatNotes: 'off',
+//     sizzle: 'cos',
+//     splitChop: 0,
+//     upperBound: 5,
+//   })[0];
+//   // console.log(clipp);
+//   let asd = await mmSCtoRNN.magentize({
+//     scribbleClip: clipp,
+//     temperature: 0,
+//     steps: 4 * 32,
+//   });
+//   // let asd = await mmSCtoRNN.magentize(clipp);
+//   console.log(asd);
+// })();
 
-console.log(clipp);
-
-module.exports = { makeMelody, notesToArray, transposeNegativeFirstNotesInScribbleclip };
+module.exports = { makeMelody, notesToArray, transposeNegativeFirstNotesInScribbleclip, noteNamesFromScribbleclip };
