@@ -2,14 +2,14 @@
 const scribble = require('scribbletune');
 const {
   Note,
-  Key,
+  // Key,
   Interval,
-  Scale,
-  transpose,
-  interval,
-  ScaleType,
-  RomanNumeral,
-  Progression,
+  // Scale,
+  // transpose,
+  // interval,
+  // ScaleType,
+  // RomanNumeral,
+  // Progression,
   Mode,
 } = require('@tonaljs/tonal');
 
