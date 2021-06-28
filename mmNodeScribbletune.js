@@ -11,6 +11,7 @@ magenta:
 -figure out local setup for checkpoint
 -sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
 -make RNN initialization on loadbang
+-cannot read property pitch sometimes when more intricate rhythm patterns like x__xxx__ at quantizedMelodyToScribbleClip. try first refactoring to better maxapi format
 
 /notes must always be in an array, now they are not
 */
@@ -19,25 +20,18 @@ const mmlib = require('./mmlib');
 const mmSCtoRNN = require('./mmSCtoRNN');
 
 const joinWithAI = async (params) => {
-  //note very DRY. When refactoring, fix it so that if AI is 0, this thing does not execute
   const { AI, scribbleClip } = params;
-  let AIclip;
-  let AIclipNoNegatives;
+  if (AI === 0) return scribbleClip;
+
+  const AIclip = await mmSCtoRNN.magentize(params);
+  const AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
 
   switch (AI) {
-    case 0:
-      return scribbleClip;
-
     case 1:
-      AIclip = await mmSCtoRNN.magentize(params);
-      AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
       return AIclipNoNegatives;
 
     case 2:
-      AIclip = await mmSCtoRNN.magentize(params);
-      AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
-      const finClip = scribbleClip.concat(AIclipNoNegatives);
-      return finClip;
+      return scribbleClip.concat(AIclipNoNegatives);
   }
 };
 
