@@ -1,4 +1,4 @@
-const mvae = require('@magenta/music/node/music_vae');
+// const mvae = require('@magenta/music/node/music_vae');
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
 const { Note } = require('@tonaljs/tonal');
@@ -68,10 +68,10 @@ const scribbleClipToRNN = async (params) => {
     // checkpoint = path.resolve(process.cwd(), '/checkpoints/melody_rnn'),
     // checkpoint = './checkpoints/melody_rnn/',
   } = params;
-  //ATM we are inicializing the RNN at every call of the fn. Prly suboptimal, maybe abstract away later
-  const RNN = new mm.MusicRNN(checkpoint);
 
+  const RNN = new mm.MusicRNN(checkpoint);
   await RNN.initialize();
+
   const quantizedMelody = await RNN.continueSequence(scribbleClipToQuantizedSequence(scribbleClip), steps, temperature);
 
   //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be

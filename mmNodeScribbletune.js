@@ -1,12 +1,10 @@
 /*
 TODO:
--once everything is complete, add "init" button to device and make it loadbang
 -refactor mmlib from the current garbage
 -fix all places with redeclare scribbleclip
 
 magenta:
 -figure out local setup for checkpoint
--make RNN initialization on loadbang
 
 refactoring from scribbletune.max benefits:
 -no need to polyfill back to scribbleclip
@@ -17,7 +15,8 @@ refactoring from scribbletune.max benefits:
 
 semi-fixed:
 -sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
--make the generate button unavailable when magenta is generating clip. Make this after the final style of the button is known
+-make the generate button unavailable when magenta is generating clip. Once the style is final, make the toggle into a comment
+-make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
 
 */
 const maxApi = require('max-api');
@@ -29,11 +28,13 @@ const joinWithAI = async (params) => {
   if (AI === 0) return scribbleClip;
 
   maxApi.outlet('AIstatus 1');
+  maxApi.outlet('disable 0');
 
   const AIclip = await mmSCtoRNN.magentize(params);
   const AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
 
   maxApi.outlet('AIstatus 0');
+  maxApi.outlet('disable 1');
 
   switch (AI) {
     case 1:
@@ -50,8 +51,7 @@ maxApi.addHandler('makeClip', () => {
 
     const clipMade = mmlib.makeMelody(full);
 
-    const scribbleClip = clipMade;
-    full.scribbleClip = scribbleClip;
+    full.scribbleClip = clipMade;
 
     const finalClip = await joinWithAI(full);
 
