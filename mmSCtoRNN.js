@@ -74,6 +74,11 @@ const scribbleClipToRNN = async (params) => {
   await RNN.initialize();
   const quantizedMelody = await RNN.continueSequence(scribbleClipToQuantizedSequence(scribbleClip), steps, temperature);
 
+  //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
+  if (quantizedMelody.notes.length === 0) {
+    return scribbleClipToQuantizedSequence(scribbleClip);
+  }
+
   return quantizedMelody;
 };
 
