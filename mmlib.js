@@ -361,7 +361,7 @@ const makeMelody = (params) => {
       return 7; //any other number, 7 is root note of the finalMode
     };
 
-    const notesDuplicate = notesArray;
+    const notesDuplicate = notesArray; //I dont this is duplicate, I think this is just passing by reference
 
     notesDuplicate.forEach((note, noteIndex) => {
       if (!isNaN(note)) notesDuplicate[noteIndex] = finalMode[indexConvert(note)];

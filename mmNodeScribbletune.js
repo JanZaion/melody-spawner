@@ -11,7 +11,7 @@ refactoring from scribbletune.max benefits:
 -mabe it fixes the issue with the ugly prompt
 -maybe it fixes the issue when very short notes are slightly longer
 -could simplify the splitter menu
--it probably cant deal with chords though. Or maybe concurrent midi events are enough
+-it probably cant deal with chords though. Or maybe concurrent midi events are enough? Yep, thats exactly how it works
 
 semi-fixed:
 -sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
