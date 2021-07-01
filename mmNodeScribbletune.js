@@ -2,6 +2,7 @@
 TODO:
 -refactor mmlib from the current garbage
 -fix all places with redeclare scribbleclip
+-simplify the route from scribble and magenta to API by not converting it to steps back and forth
 
 magenta:
 -figure out local setup for checkpoint

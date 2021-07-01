@@ -62,6 +62,7 @@ const scribbleClipToRNN = async (params) => {
   return quantizedMelody;
 };
 
+// rewrite to quantizedMelodyToMidiSteps
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
 
@@ -160,16 +161,16 @@ module.exports = { magentize };
 //   );
 // })();
 
-(() => {
-  console.log(
-    scribbleClipToMidiSteps([
-      { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-      { note: null, length: 256, level: 100 },
-      { note: ['C2'], length: 256 * 4, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-    ])
-  );
-})();
+// (() => {
+//   console.log(
+//     scribbleClipToMidiSteps([
+//       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//       { note: null, length: 256, level: 100 },
+//       { note: ['C2'], length: 256 * 4, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//     ])
+//   );
+// })();
 
 //run this thing and see that major debuggin is necessary
