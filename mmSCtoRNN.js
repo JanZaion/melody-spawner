@@ -2,6 +2,7 @@
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
 const { Note } = require('@tonaljs/tonal');
+const { scribbleClipToMidiSteps } = require('./mmlib');
 
 // const process = require('process');
 // const path = require('path');
@@ -10,31 +11,6 @@ const { Note } = require('@tonaljs/tonal');
 //2 tested checkpoints:
 // without chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
-
-const scribbleClipToMidiSteps = (scribbleClip) => {
-  let startTime = 0;
-  let endTime = 0;
-  const midiSteps = [];
-  for (const step of scribbleClip) {
-    endTime += step.length;
-
-    if (step.note) {
-      for (const noteInt in step.note) {
-        midiSteps.push({
-          pitch: Note.midi(step.note[noteInt]),
-          startTime: (startTime / 128) * 0.25,
-          endTime: (endTime / 128) * 0.25,
-          velocity: step.level,
-          muted: 0,
-        });
-      }
-    }
-
-    startTime += step.length;
-  }
-
-  return midiSteps;
-};
 
 const scribbleClipToQuantizedSequence = (scribbleClip) => {
   const totalScribbleClipTime = scribbleClip.reduce((accumulator, note) => {
@@ -183,16 +159,17 @@ module.exports = { magentize };
 //     }, 0)
 //   );
 // })();
-// (() => {
-//   console.log(
-//     scribbleClipToMidiSteps([
-//       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//       { note: null, length: 256, level: 100 },
-//       { note: ['C2'], length: 256 * 4, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//     ])
-//   );
-// })();
+
+(() => {
+  console.log(
+    scribbleClipToMidiSteps([
+      { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+      { note: null, length: 256, level: 100 },
+      { note: ['C2'], length: 256 * 4, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+    ])
+  );
+})();
 
 //run this thing and see that major debuggin is necessary

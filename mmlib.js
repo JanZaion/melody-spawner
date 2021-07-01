@@ -323,6 +323,31 @@ const noteNamesFromScribbleclip = (scribbleClip) => {
   return notesArr.join(' ');
 };
 
+const scribbleClipToMidiSteps = (scribbleClip) => {
+  let startTime = 0;
+  let endTime = 0;
+  const midiSteps = [];
+  for (const step of scribbleClip) {
+    endTime += step.length;
+
+    if (step.note) {
+      for (let noteInt = 0; noteInt < step.note.length; noteInt++) {
+        midiSteps.push({
+          pitch: Note.midi(step.note[noteInt]),
+          startTime: (startTime / 128) * 0.25,
+          endTime: (endTime / 128) * 0.25,
+          velocity: step.level,
+          muted: 0,
+        });
+      }
+    }
+
+    startTime += step.length;
+  }
+
+  return midiSteps;
+};
+
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
@@ -532,4 +557,10 @@ const makeMelody = (params) => {
 //   console.log(asd);
 // })();
 
-module.exports = { makeMelody, notesToArray, transposeNegativeFirstNotesInScribbleclip, noteNamesFromScribbleclip };
+module.exports = {
+  makeMelody,
+  notesToArray,
+  transposeNegativeFirstNotesInScribbleclip,
+  noteNamesFromScribbleclip,
+  scribbleClipToMidiSteps,
+};

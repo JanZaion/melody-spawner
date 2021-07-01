@@ -20,8 +20,8 @@ semi-fixed:
 
 */
 const maxApi = require('max-api');
-const mmlib = require('./mmlib');
-const mmSCtoRNN = require('./mmSCtoRNN');
+const mmlib = require('./mmlib'); //once finished, require just the necessary methods, not the whole file
+const { magentize } = require('./mmSCtoRNN');
 
 const joinWithAI = async (params) => {
   const { AI, scribbleClip } = params;
@@ -30,7 +30,7 @@ const joinWithAI = async (params) => {
   maxApi.outlet('AIstatus 1');
   maxApi.outlet('disable 0');
 
-  const AIclip = await mmSCtoRNN.magentize(params);
+  const AIclip = await magentize(params);
   const AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
 
   maxApi.outlet('AIstatus 0');
