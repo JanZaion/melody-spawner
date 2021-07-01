@@ -94,6 +94,7 @@ function redeclareScribbleClip(scribbleClip) {
   return scribbleClip;
 }
 
+//this is some retarted OOP garbage. Refacotr to pure fn
 Array.prototype.insert = function (index, item) {
   //Inserts item to an array and changes the length (index, item)
   this.splice(index, 0, item);
