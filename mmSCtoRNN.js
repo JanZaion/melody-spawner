@@ -11,7 +11,7 @@ const { Note } = require('@tonaljs/tonal');
 // without chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
-const scribbleClipToUnquantizedNotes = (scribbleClip) => {
+const scribbleClipToMidiSteps = (scribbleClip) => {
   let startTime = 0;
   let endTime = 0;
   const notesArr = [];
@@ -23,6 +23,8 @@ const scribbleClipToUnquantizedNotes = (scribbleClip) => {
         pitch: Note.midi(step.note[0]),
         startTime: (startTime / 128) * 0.25,
         endTime: (endTime / 128) * 0.25,
+        velocity: step.velocity,
+        muted: 0,
       });
     }
 
@@ -37,7 +39,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     return accumulator + note.length;
   }, 0);
 
-  const notes = scribbleClipToUnquantizedNotes(scribbleClip);
+  const notes = scribbleClipToMidiSteps(scribbleClip);
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
