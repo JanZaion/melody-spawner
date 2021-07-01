@@ -14,24 +14,26 @@ const { Note } = require('@tonaljs/tonal');
 const scribbleClipToMidiSteps = (scribbleClip) => {
   let startTime = 0;
   let endTime = 0;
-  const notesArr = [];
+  const midiSteps = [];
   for (const step of scribbleClip) {
     endTime += step.length;
 
-    if (step.note !== null) {
-      notesArr.push({
-        pitch: Note.midi(step.note[0]),
-        startTime: (startTime / 128) * 0.25,
-        endTime: (endTime / 128) * 0.25,
-        velocity: step.velocity,
-        muted: 0,
-      });
+    if (step.note) {
+      for (const noteInt in step.note) {
+        midiSteps.push({
+          pitch: Note.midi(step.note[noteInt]),
+          startTime: (startTime / 128) * 0.25,
+          endTime: (endTime / 128) * 0.25,
+          velocity: step.level,
+          muted: 0,
+        });
+      }
     }
 
     startTime += step.length;
   }
 
-  return notesArr;
+  return midiSteps;
 };
 
 const scribbleClipToQuantizedSequence = (scribbleClip) => {
@@ -179,6 +181,17 @@ module.exports = { magentize };
 //       // the outcome of this must be deterministic
 //       return accumulator + step.length;
 //     }, 0)
+//   );
+// })();
+// (() => {
+//   console.log(
+//     scribbleClipToMidiSteps([
+//       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//       { note: null, length: 256, level: 100 },
+//       { note: ['C2'], length: 256 * 4, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//     ])
 //   );
 // })();
 
