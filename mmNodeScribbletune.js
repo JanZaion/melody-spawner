@@ -2,8 +2,11 @@
 TODO:
 -refactor mmlib from the current garbage
 -fix all places with redeclare scribbleclip
--simplify the route from scribble and magenta to API by not converting it to steps back and forth
--fix bug with the new apipass when last midispace isnt accounted for
+-simplify the route from scribble and magenta to API by not converting it to steps back and forth.
+-abstract mmformat from scribbleClipToMidiSteps
+-write noteNamesFromLiveFormat
+-rework splitter at max
+-apply new apiPass to atchords
 
 magenta:
 -figure out local setup for checkpoint
@@ -53,14 +56,15 @@ maxApi.addHandler('makeClip', () => {
     //this one will need a little bit of rework after simplifying by looping through midi steps and converting midi nums to names
     const names = mmlib.noteNamesFromScribbleclip(finalClip);
 
-    const midiSteps = mmlib.scribbleClipToMidiSteps(finalClip).liveFormat;
+    const { liveFormat, totalDuration } = mmlib.scribbleClipToMidiSteps(finalClip);
 
     await Promise.all([
       maxApi.setDict('noteNames', {
         notes: names,
       }),
       maxApi.setDict('stepsClip', {
-        notes: midiSteps,
+        notes: liveFormat,
+        totalDuration,
       }),
     ]);
 

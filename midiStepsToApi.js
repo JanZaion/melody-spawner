@@ -46,7 +46,7 @@ function setNotes(dictName) {
   var clip = clipOrSlot();
   var dict = getDict(dictName);
 
-  clip.set('loop_end', dict.notes[dict.notes.length - 1].start_time + dict.notes[dict.notes.length - 1].duration);
+  clip.set('loop_end', dict.totalDuration);
 
   var live = new LiveAPI('live_app');
   if (live.call('get_major_version') === 10) {

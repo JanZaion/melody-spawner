@@ -13,15 +13,11 @@ const { scribbleClipToMidiSteps } = require('./mmlib');
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
 const scribbleClipToQuantizedSequence = (scribbleClip) => {
-  const totalScribbleClipTime = scribbleClip.reduce((accumulator, note) => {
-    return accumulator + note.length;
-  }, 0);
-
   const notes = scribbleClipToMidiSteps(scribbleClip).mmFormat;
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
-    totalTime: (totalScribbleClipTime / 128) * 0.25,
+    totalTime: scribbleClipToMidiSteps(scribbleClip).totalDuration,
     timeSignatures: [
       {
         time: 0,

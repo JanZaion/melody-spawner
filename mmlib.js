@@ -344,6 +344,7 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
           mute: 0,
         });
         mmFormat.push({
+          //abstract away to mmSCtoRNN through new fn
           pitch: Note.midi(step.note[noteInt]),
           startTime: startTime / 512,
           endTime: endTime / 512,
@@ -354,9 +355,9 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
     startTime += step.length;
   }
 
-  const totalLength = scribbleClip.reduce((a, b) => (a = a + b.length), 0) / 512;
+  const totalDuration = scribbleClip.reduce((duration, step) => (duration = duration + step.length), 0) / 512;
 
-  return { liveFormat, totalLength, mmFormat };
+  return { liveFormat, totalDuration, mmFormat };
 };
 
 const makeMelody = (params) => {
