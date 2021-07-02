@@ -17,7 +17,7 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     return accumulator + note.length;
   }, 0);
 
-  const notes = scribbleClipToMidiSteps(scribbleClip);
+  const notes = scribbleClipToMidiSteps(scribbleClip).mmFormat;
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
