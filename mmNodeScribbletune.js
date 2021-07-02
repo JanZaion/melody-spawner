@@ -56,14 +56,17 @@ maxApi.addHandler('makeClip', () => {
 
     const finalClip = await joinWithAI(full);
 
+    //this one will need a little bit of rework after simplifying by looping through midi steps and converting midi nums to names
     const names = mmlib.noteNamesFromScribbleclip(finalClip);
+
+    const midiSteps = mmlib.scribbleClipToMidiSteps(finalClip).liveFormat;
 
     await Promise.all([
       maxApi.setDict('noteNames', {
         notes: names,
       }),
-      maxApi.setDict('clip1', {
-        scribbleObjects: finalClip,
+      maxApi.setDict('stepsClip', {
+        notes: midiSteps,
       }),
     ]);
 
