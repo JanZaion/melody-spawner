@@ -50,11 +50,13 @@ const scribbleClipToRNN = async (params) => {
   const RNN = new mm.MusicRNN(checkpoint);
   await RNN.initialize();
 
-  const quantizedMelody = await RNN.continueSequence(scribbleClipToQuantizedSequence(scribbleClip), steps, temperature);
+  const quantizedScribbleClip = scribbleClipToQuantizedSequence(scribbleClip);
+
+  const quantizedMelody = await RNN.continueSequence(quantizedScribbleClip, steps, temperature);
 
   //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
   if (quantizedMelody.notes.length === 0) {
-    return scribbleClipToQuantizedSequence(scribbleClip);
+    return quantizedScribbleClip;
   }
 
   return quantizedMelody;
@@ -130,6 +132,21 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
   return clipFinal;
 };
 
+const quantizedMelodyToLiveFormat = (quantizedMelody) => {
+  return quantizedMelody.notes.map((step) => {
+    return {
+      pitch: step.pitch,
+      start_time: step.quantizedStartStep,
+      duration: step.quantizedEndStep - step.quantizedStartStep,
+      velocity: 100,
+      probability: 1,
+      velocity_deviation: 1,
+      release_velocity: 64,
+      mute: 0,
+    };
+  });
+};
+
 const magentize = async (params) => {
   const magentaMelody = await scribbleClipToRNN(params);
   const magentaScribbleClip = quantizedMelodyToScribbleClip(magentaMelody);
@@ -138,30 +155,30 @@ const magentize = async (params) => {
 
 module.exports = { magentize };
 
-// (async () => {
-//   const asd = await magentize({
-//     scribbleClip: [
-//       { note: ['C2'], length: 256, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//       { note: ['C2'], length: 256 * 4, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//     ],
-//     steps: 40,
-//     temperature: 2,
-//   });
-//   console.log(asd);
+(async () => {
+  const asd = await scribbleClipToRNN({
+    scribbleClip: [
+      { note: ['C2'], length: 256, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+      { note: ['C2'], length: 256 * 4, level: 100 },
+      { note: ['B2'], length: 256, level: 100 },
+    ],
+    steps: 40,
+    temperature: 2,
+  });
+  console.log(quantizedMelodyToLiveFormat(asd));
 
-//   console.log(
-//     asd.reduce((accumulator, step) => {
-//       // the outcome of this must be deterministic
-//       return accumulator + step.length;
-//     }, 0)
-//   );
-// })();
+  // console.log(
+  //   asd.reduce((accumulator, step) => {
+  //     // the outcome of this must be deterministic
+  //     return accumulator + step.length;
+  //   }, 0)
+  // );
+})();
 
 // (() => {
 //   console.log(
-//     scribbleClipToMidiSteps([
+//     scribbleClipToQuantizedSequence([
 //       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
 //       { note: ['B2'], length: 256, level: 100 },
 //       { note: null, length: 256, level: 100 },

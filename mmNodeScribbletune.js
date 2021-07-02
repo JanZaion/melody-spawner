@@ -3,7 +3,6 @@ TODO:
 -refactor mmlib from the current garbage
 -fix all places with redeclare scribbleclip
 -simplify the route from scribble and magenta to API by not converting it to steps back and forth.
--abstract mmformat from scribbleClipToMidiSteps
 -write noteNamesFromLiveFormat
 -rework splitter at max
 -apply new apiPass to atchords
