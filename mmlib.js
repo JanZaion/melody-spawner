@@ -326,18 +326,27 @@ const noteNamesFromScribbleclip = (scribbleClip) => {
 const scribbleClipToMidiSteps = (scribbleClip) => {
   let startTime = 0;
   let endTime = 0;
-  const midiSteps = [];
+  const liveFormat = [];
+  const mmFormat = [];
   for (const step of scribbleClip) {
     endTime += step.length;
 
     if (step.note) {
       for (let noteInt = 0; noteInt < step.note.length; noteInt++) {
-        midiSteps.push({
+        liveFormat.push({
+          pitch: Note.midi(step.note[noteInt]),
+          start_time: (startTime / 128) * 0.25,
+          duration: ((endTime - startTime) / 128) * 0.25,
+          velocity: step.level,
+          probability: 1,
+          velocity_deviation: 1,
+          release_velocity: 64,
+          mute: 0,
+        });
+        mmFormat.push({
           pitch: Note.midi(step.note[noteInt]),
           startTime: (startTime / 128) * 0.25,
           endTime: (endTime / 128) * 0.25,
-          velocity: step.level,
-          muted: 0,
         });
       }
     }
@@ -345,7 +354,7 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
     startTime += step.length;
   }
 
-  return midiSteps;
+  return { liveFormat, mmFormat };
 };
 
 const makeMelody = (params) => {
