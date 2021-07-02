@@ -34,35 +34,6 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
   return core.sequences.quantizeNoteSequence(unqunatizedSequence, 4);
 };
 
-const scribbleClipToRNN = async (params) => {
-  const {
-    scribbleClip,
-    steps = 8,
-    temperature = 1.1,
-    checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
-    // checkpoint = 'C:/Users/zajic/Desktop/melody-with-magenta/checkpoints/melody_rnn/',
-    // checkpoint = `${currentPath}`,
-    // checkpoint = currentPath,
-    // checkpoint = path.resolve(process.cwd(), '/checkpoints/melody_rnn'),
-    // checkpoint = './checkpoints/melody_rnn/',
-  } = params;
-
-  const RNN = new mm.MusicRNN(checkpoint);
-  await RNN.initialize();
-
-  const quantizedScribbleClip = scribbleClipToQuantizedSequence(scribbleClip);
-
-  const quantizedMelody = await RNN.continueSequence(quantizedScribbleClip, steps, temperature);
-
-  //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
-  if (quantizedMelody.notes.length === 0) {
-    return quantizedScribbleClip;
-  }
-
-  return quantizedMelody;
-};
-
-// rewrite to quantizedMelodyToMidiSteps
 const quantizedMelodyToScribbleClip = (RNNmelody) => {
   const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
 
@@ -132,49 +103,49 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
   return clipFinal;
 };
 
-const quantizedMelodyToLiveFormat = (quantizedMelody) => {
-  return quantizedMelody.notes.map((step) => {
-    return {
-      pitch: step.pitch,
-      start_time: step.quantizedStartStep,
-      duration: step.quantizedEndStep - step.quantizedStartStep,
-      velocity: 100,
-      probability: 1,
-      velocity_deviation: 1,
-      release_velocity: 64,
-      mute: 0,
-    };
-  });
-};
-
 const magentize = async (params) => {
-  const magentaMelody = await scribbleClipToRNN(params);
-  const magentaScribbleClip = quantizedMelodyToScribbleClip(magentaMelody);
-  return magentaScribbleClip;
+  const {
+    scribbleClip,
+    steps = 8,
+    temperature = 1.1,
+    checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
+    // checkpoint = 'C:/Users/zajic/Desktop/melody-with-magenta/checkpoints/melody_rnn/',
+    // checkpoint = `${currentPath}`,
+    // checkpoint = currentPath,
+    // checkpoint = path.resolve(process.cwd(), '/checkpoints/melody_rnn'),
+    // checkpoint = './checkpoints/melody_rnn/',
+  } = params;
+
+  const RNN = new mm.MusicRNN(checkpoint);
+  await RNN.initialize();
+
+  const quantizedScribbleClip = scribbleClipToQuantizedSequence(scribbleClip);
+
+  const RNNmelody = await RNN.continueSequence(quantizedScribbleClip, steps, temperature);
+
+  //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
+  if (RNNmelody.notes.length === 0) {
+    return quantizedMelodyToScribbleClip(quantizedScribbleClip);
+  }
+
+  return quantizedMelodyToScribbleClip(RNNmelody);
 };
 
 module.exports = { magentize };
 
-(async () => {
-  const asd = await scribbleClipToRNN({
-    scribbleClip: [
-      { note: ['C2'], length: 256, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-      { note: ['C2'], length: 256 * 4, level: 100 },
-      { note: ['B2'], length: 256, level: 100 },
-    ],
-    steps: 40,
-    temperature: 2,
-  });
-  console.log(quantizedMelodyToLiveFormat(asd));
-
-  // console.log(
-  //   asd.reduce((accumulator, step) => {
-  //     // the outcome of this must be deterministic
-  //     return accumulator + step.length;
-  //   }, 0)
-  // );
-})();
+// (async () => {
+//   const asd = await magentize({
+//     scribbleClip: [
+//       { note: ['C2'], length: 256, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//       { note: ['C2'], length: 256 * 4, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//     ],
+//     steps: 40,
+//     temperature: 0.4,
+//   });
+//   console.log(asd);
+// })();
 
 // (() => {
 //   console.log(
@@ -188,4 +159,9 @@ module.exports = { magentize };
 //   );
 // })();
 
-//run this thing and see that major debuggin is necessary
+// console.log(
+//   asd.reduce((accumulator, step) => {
+//     // the outcome of this must be deterministic
+//     return accumulator + step.length;
+//   }, 0)
+// );
