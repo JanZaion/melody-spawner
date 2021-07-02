@@ -2,10 +2,10 @@
 TODO:
 -refactor mmlib from the current garbage
 -fix all places with redeclare scribbleclip
--simplify the route from scribble and magenta to API by not converting it to steps back and forth.
--write noteNamesFromLiveFormat
 -rework splitter at max
 -apply new apiPass to atchords
+-ditch velocontrol
+-rework temp and bars to umenus
 
 magenta:
 -figure out local setup for checkpoint
@@ -52,7 +52,6 @@ maxApi.addHandler('makeClip', () => {
 
     const finalClip = await joinWithAI(full);
 
-    //this one will need a little bit of rework after simplifying by looping through midi steps and converting midi nums to names
     const names = mmlib.noteNamesFromScribbleclip(finalClip);
 
     const { liveFormat, totalDuration } = mmlib.scribbleClipToMidiSteps(finalClip);
