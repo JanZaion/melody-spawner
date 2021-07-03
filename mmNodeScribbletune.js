@@ -58,10 +58,12 @@ maxApi.addHandler('makeClip', () => {
 
     const finalClip = await joinWithAI(full);
 
-    const names = 'hello';
+    // const names = 'hello';
     // const names = mmlib.noteNamesFromScribbleclip(finalClip);
 
     const { liveFormat, totalDuration } = finalClip;
+
+    const names = mmlib.noteNamesFromLiveFormat(liveFormat);
 
     await Promise.all([
       maxApi.setDict('noteNames', {

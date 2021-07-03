@@ -64,7 +64,7 @@ const humanToBool = (str) => {
     case 'triads':
       return false;
 
-    case 0: //inverted logic for indexes
+    case 0: //inverted logic for toggle indexes in Max
       return true;
 
     case 1:
@@ -172,15 +172,12 @@ const transposeNegativesInArray = (arr) => {
   });
 };
 
-const noteNamesFromScribbleclip = (scribbleClip) => {
-  const notesArr = scribbleClip.map((step) => {
-    if (step.note !== null) {
-      let currentStep = step.note[0];
-      return Note.simplify(Note.transpose(currentStep, '-8P'));
-    }
-  });
-
-  return notesArr.join(' ');
+const noteNamesFromLiveFormat = (liveFormat) => {
+  return liveFormatTranspose(liveFormat, -12)
+    .map((step) => {
+      return Note.fromMidi(step.pitch);
+    })
+    .join(' ');
 };
 
 const scribbleClipToMidiSteps = (scribbleClip) => {
@@ -211,6 +208,12 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   const totalDuration = scribbleClip.reduce((duration, step) => (duration = duration + step.length), 0) / 512;
 
   return { liveFormat, totalDuration };
+};
+
+const liveFormatTranspose = (liveFormat, interval) => {
+  return liveFormat.map((step) => {
+    return { ...step, pitch: step.pitch + interval };
+  });
 };
 
 const makeMelody = (params) => {
@@ -393,19 +396,17 @@ const makeMelody = (params) => {
   })();
 
   //choppedScribbleClip to live format and then live format up an octave
-  const liveFormatUpAnOctave = (() => {
+  const midiStepsUpAnOctave = (() => {
     const preTransposed = scribbleClipToMidiSteps(choppedScribbleClip);
 
-    const liveFormat = preTransposed.liveFormat.map((step) => {
-      return { ...step, pitch: step.pitch + 12 };
-    });
+    const liveFormat = liveFormatTranspose(preTransposed.liveFormat, 12);
 
     const totalDuration = preTransposed.totalDuration;
 
     return { liveFormat, totalDuration };
   })();
 
-  return liveFormatUpAnOctave;
+  return midiStepsUpAnOctave;
 };
 
 // const mmSCtoRNN = require('./mmSCtoRNN');
@@ -438,6 +439,6 @@ const makeMelody = (params) => {
 module.exports = {
   makeMelody,
   notesToArray,
-  noteNamesFromScribbleclip,
+  noteNamesFromLiveFormat,
   scribbleClipToMidiSteps,
 };
