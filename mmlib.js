@@ -279,28 +279,7 @@ function notesUpAnOctave(scribbleClip) {
   return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '8P');
 }
 
-function notesDownAnOctave(scribbleClip) {
-  redeclareScribbleClip(scribbleClip);
-  return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '-8P');
-}
-
 //the "non-chords-coppied" part starts below
-
-const transposeNegativeFirstNotesInScribbleclip = (scribbleClip) => {
-  const newClip = [];
-
-  for (const step of scribbleClip) {
-    if (step.note !== null && step.note[0].indexOf('-') !== -1) {
-      newClip.push({ note: [Note.transpose(step.note[0], '8P')], length: step.length, level: step.level });
-    } else {
-      const newStep = {};
-      Object.assign(newStep, step);
-      newClip.push(newStep);
-    }
-  }
-
-  return newClip;
-};
 
 const transposeNegativesInArray = (arr) => {
   return arr.map((note) => {
@@ -565,7 +544,6 @@ const makeMelody = (params) => {
 module.exports = {
   makeMelody,
   notesToArray,
-  transposeNegativeFirstNotesInScribbleclip,
   noteNamesFromScribbleclip,
   scribbleClipToMidiSteps,
 };

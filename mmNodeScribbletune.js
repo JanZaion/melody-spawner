@@ -28,17 +28,16 @@ const joinWithAI = async (params) => {
   maxApi.outlet('disable 0');
 
   const AIclip = await magentize(params);
-  const AIclipNoNegatives = mmlib.transposeNegativeFirstNotesInScribbleclip(AIclip);
 
   maxApi.outlet('AIstatus 0');
   maxApi.outlet('disable 1');
 
   switch (AI) {
     case 1:
-      return AIclipNoNegatives;
+      return AIclip;
 
     case 2:
-      return scribbleClip.concat(AIclipNoNegatives);
+      return scribbleClip.concat(AIclip);
   }
 };
 
