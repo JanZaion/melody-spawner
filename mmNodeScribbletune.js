@@ -1,8 +1,7 @@
 /*
 TODO:
 -refactor mmlib from the current garbage
--fix all places with redeclare scribbleclip
--rework splitter at max
+-rework splitter at max and at js
 -apply new apiPass to atchords
 -ditch velocontrol
 -rework temp and bars to umenus

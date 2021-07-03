@@ -35,7 +35,7 @@ const midiStepsToQuantizedSequence = (midiSteps) => {
   return quantizedSequence;
 };
 
-const quantizedMelodyToMidiSteps = (quantizedMelody) => {
+const quantizedSequenceToMidiSteps = (quantizedMelody) => {
   const notes = core.sequences.unquantizeSequence(quantizedMelody).notes;
 
   const liveFormat = notes.map((step) => {
@@ -58,7 +58,6 @@ const quantizedMelodyToMidiSteps = (quantizedMelody) => {
 
 const magentize = async (params) => {
   const {
-    // scribbleClip,
     midiSteps,
     steps = 8,
     temperature = 1.1,
@@ -79,10 +78,10 @@ const magentize = async (params) => {
 
   //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
   if (RNNmelody.notes.length === 0) {
-    return quantizedMelodyToMidiSteps(quantizedLiveFormat);
+    return quantizedSequenceToMidiSteps(quantizedLiveFormat);
   }
 
-  return quantizedMelodyToMidiSteps(RNNmelody);
+  return quantizedSequenceToMidiSteps(RNNmelody);
 };
 
 module.exports = { magentize };
