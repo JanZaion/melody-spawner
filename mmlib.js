@@ -72,25 +72,8 @@ const humanToBool = (str) => {
   }
 };
 
-function redeclareScribbleClip(scribbleClip) {
-  for (let i = 0; i < scribbleClip.length; i++) {
-    var newNote = [];
-    scribbleClip[i].note === null ? (newNote = null) : newNote.push(...scribbleClip[i].note);
-    let newPart = { note: newNote, length: scribbleClip[i].length, level: scribbleClip[i].level };
-    scribbleClip.splice(i, 1);
-    scribbleClip.insert(i, newPart);
-  }
-  return scribbleClip;
-}
-
-//this is some retarted OOP garbage. Refacotr to pure fn
-Array.prototype.insert = function (index, item) {
-  //Inserts item to an array and changes the length (index, item)
-  this.splice(index, 0, item);
-};
-
 function chopOrSplit(scribbleClip, splitter, splitChop) {
-  redeclareScribbleClip(scribbleClip);
+  const newScribbleClip = [...scribbleClip];
 
   if (splitter === 1) {
     var splitter2 = 5;
@@ -132,12 +115,12 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
 
   var newClip = [];
 
-  for (let i = 0; i < scribbleClip.length; i++) {
-    const partLength = scribbleClip[i].length;
+  for (let i = 0; i < newScribbleClip.length; i++) {
+    const partLength = newScribbleClip[i].length;
 
     const chops = Math.trunc(partLength) / chopLength;
 
-    const newPart = { note: scribbleClip[i].note, length: partLength / chops, level: scribbleClip[i].level };
+    const newPart = { note: newScribbleClip[i].note, length: partLength / chops, level: newScribbleClip[i].level };
 
     for (let j = 0; j < chops; j++) {
       if (splitChop === 0) {
@@ -145,7 +128,7 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
         newClip.push(newPart);
       } else if (splitChop === 1) {
         //chop
-        const newPartNull = { note: null, length: partLength / chops, level: scribbleClip[i].level };
+        const newPartNull = { note: null, length: partLength / chops, level: newScribbleClip[i].level };
         j % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
       }
     }
@@ -155,28 +138,16 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
       var exp = 2;
       for (let k = 0; k < splitter; k++) var partLengthHalved = partLengthHalved / 2;
       for (let m = 0; m < splitter - 1; m++) var exp = exp * 2;
-      const newPartHalved = { note: scribbleClip[i].note, length: partLengthHalved, level: scribbleClip[i].level };
+      const newPartHalved = {
+        note: newScribbleClip[i].note,
+        length: partLengthHalved,
+        level: newScribbleClip[i].level,
+      };
       for (let l = 0; l < exp; l++) newClip.push(newPartHalved);
     }
   }
 
-  //We return new clip, so scribbleclip needs to be redeclared
-  nullCleanup(newClip);
-  notesToArray(newClip);
   return newClip;
-}
-
-function nullCleanup(scribbleClip) {
-  for (var q = 0; q < scribbleClip.length; q++) {
-    if (q != scribbleClip.length - 1 && scribbleClip[q].note == null && scribbleClip[q + 1].note == null) {
-      var newNullLength = scribbleClip[q].length + scribbleClip[q + 1].length;
-      var newPart = { note: null, length: newNullLength, level: scribbleClip[q].level };
-      scribbleClip.splice(q, 2);
-      scribbleClip.insert(q, newPart);
-      var q = q - 1;
-    }
-  }
-  return scribbleClip;
 }
 
 const notesToArray = (scribbleClip) => {
