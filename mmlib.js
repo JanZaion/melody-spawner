@@ -1,6 +1,6 @@
 'use strict';
 const scribble = require('scribbletune');
-const { Note, Interval, Mode } = require('@tonaljs/tonal');
+const { Note, Mode } = require('@tonaljs/tonal');
 
 // const { Random } = require('random-js'); //random lib at https://www.npmjs.com/package/random-js //rewrite the old dices to use random in them
 // const random = new Random(); // const value = random.integer(1, 2);
@@ -179,19 +179,15 @@ function nullCleanup(scribbleClip) {
   return scribbleClip;
 }
 
-function notesToArray(scribbleClip) {
-  for (let i = 0; i < scribbleClip.length; i++) {
-    if (Array.isArray(scribbleClip[i].note) == false && scribbleClip[i].note != null) {
-      const noteInArray = [];
-      noteInArray.push(scribbleClip[i].note);
-      const newPart = { note: noteInArray, length: scribbleClip[i].length, level: scribbleClip[i].level };
-      scribbleClip.splice(i, 1);
-      scribbleClip.insert(i, newPart);
+const notesToArray = (scribbleClip) => {
+  return scribbleClip.map((step) => {
+    if (Array.isArray(step.note) === false && step.note !== null) {
+      return { note: step.note, length: step.length, level: step.level };
+    } else {
+      return { ...step };
     }
-  }
-
-  return scribbleClip;
-}
+  });
+};
 
 //the "non-chords-coppied" part starts below
 
