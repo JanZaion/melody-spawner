@@ -76,7 +76,7 @@ const magentize = async (params) => {
 
   const RNNmelody = await RNN.continueSequence(quantizedLiveFormat, steps, temperature);
 
-  //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
+  //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip
   if (RNNmelody.notes.length === 0) {
     return quantizedSequenceToMidiSteps(quantizedLiveFormat);
   }
