@@ -34,7 +34,7 @@ const joinWithAI = async (params) => {
 
   switch (AI) {
     case 1:
-      return { ...AIclip };
+      return AIclip;
 
     case 2:
       const liveFormat = midiSteps.liveFormat.concat(
@@ -57,9 +57,6 @@ maxApi.addHandler('makeClip', () => {
     full.midiSteps = midiSteps;
 
     const finalClip = await joinWithAI(full);
-
-    // const names = 'hello';
-    // const names = mmlib.noteNamesFromScribbleclip(finalClip);
 
     const { liveFormat, totalDuration } = finalClip;
 
