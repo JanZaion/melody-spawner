@@ -2,7 +2,7 @@
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
 const { Note } = require('@tonaljs/tonal');
-const { scribbleClipToMidiSteps } = require('./mmlib');
+const { scribbleClipToLiveFormat } = require('./mmlib');
 
 // const process = require('process');
 // const path = require('path');
@@ -13,7 +13,7 @@ const { scribbleClipToMidiSteps } = require('./mmlib');
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
 const scribbleClipToQuantizedSequence = (scribbleClip) => {
-  const { totalDuration, liveFormat } = scribbleClipToMidiSteps(scribbleClip);
+  const { totalDuration, liveFormat } = scribbleClipToLiveFormat(scribbleClip);
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
@@ -102,6 +102,38 @@ const quantizedMelodyToScribbleClip = (RNNmelody) => {
 
   return clipFinal;
 };
+
+const quantizedMelodyToLiveFormat = (quantizedMelody) => {
+  const notes = core.sequences.unquantizeSequence(quantizedMelody).notes;
+  const liveFormat = notes.map((step) => {
+    return {
+      pitch: step.pitch,
+      start_time: step.startTime,
+      duration: step.endTime - step.startTime,
+      velocity: 100,
+      probability: 1,
+      velocity_deviation: 1,
+      release_velocity: 64,
+      mute: 0,
+    };
+  });
+
+  const totalDuration = notes[notes.length - 1].endTime;
+
+  return { liveFormat, totalDuration };
+};
+
+// console.log(
+//   quantizedMelodyToLiveFormat(
+//     scribbleClipToQuantizedSequence([
+//       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//       { note: null, length: 256, level: 100 },
+//       { note: ['C2'], length: 256 * 4, level: 100 },
+//       { note: ['B2'], length: 256, level: 100 },
+//     ])
+//   )
+// );
 
 const magentize = async (params) => {
   const {
