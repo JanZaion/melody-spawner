@@ -2,7 +2,6 @@
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
 const { Note } = require('@tonaljs/tonal');
-const { scribbleClipToLiveFormat } = require('./mmlib');
 
 // const process = require('process');
 // const path = require('path');
@@ -12,8 +11,8 @@ const { scribbleClipToLiveFormat } = require('./mmlib');
 // without chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
 // with chord progression: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv'
 
-const scribbleClipToQuantizedSequence = (scribbleClip) => {
-  const { totalDuration, liveFormat } = scribbleClipToLiveFormat(scribbleClip);
+const midiStepsToQuantizedSequence = (midiSteps) => {
+  const { totalDuration, liveFormat } = midiSteps;
 
   const unqunatizedSequence = {
     ticksPerQuarter: 128,
@@ -31,80 +30,14 @@ const scribbleClipToQuantizedSequence = (scribbleClip) => {
     }),
   };
 
-  return core.sequences.quantizeNoteSequence(unqunatizedSequence, 4);
+  const quantizedSequence = core.sequences.quantizeNoteSequence(unqunatizedSequence, 4);
+
+  return quantizedSequence;
 };
 
-const quantizedMelodyToScribbleClip = (RNNmelody) => {
-  const unquantizedMelody = core.sequences.unquantizeSequence(RNNmelody);
-
-  const times = (() => {
-    const arr = [];
-    for (const step of unquantizedMelody.notes) {
-      arr.push(step.startTime);
-      arr.push(step.endTime);
-    }
-
-    return arr;
-  })();
-
-  const mmStepToScribbleStep = (mmStep) => {
-    switch (mmStep.pitch) {
-      case null:
-        return { note: null, length: (mmStep.endTime - mmStep.startTime) * 512, level: 100 };
-
-      default:
-        return {
-          note: [Note.fromMidi(mmStep.pitch)],
-          length: (mmStep.endTime - mmStep.startTime) * 512,
-          level: 100,
-        };
-    }
-  };
-
-  const clipFinal = (() => {
-    const clip = [mmStepToScribbleStep(unquantizedMelody.notes[0])];
-
-    let j = 1;
-    for (let i = 1; i < times.length - 1; i += 2) {
-      if (times[i] === times[i + 1]) {
-        clip.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
-      } else {
-        clip.push(mmStepToScribbleStep({ pitch: null, startTime: times[i], endTime: times[i + 1] }));
-        clip.push(mmStepToScribbleStep(unquantizedMelody.notes[j]));
-      }
-      j++;
-    }
-
-    const theVeryStartTime = unquantizedMelody.notes[0].startTime;
-    if (theVeryStartTime !== 0) {
-      clip.unshift(
-        mmStepToScribbleStep({
-          pitch: null,
-          startTime: 0,
-          endTime: theVeryStartTime,
-        })
-      );
-    }
-
-    const theVeryEndTime = times[times.length - 1];
-    if (unquantizedMelody.totalTime !== theVeryEndTime) {
-      clip.push(
-        mmStepToScribbleStep({
-          pitch: null,
-          startTime: theVeryEndTime,
-          endTime: unquantizedMelody.totalTime,
-        })
-      );
-    }
-
-    return clip;
-  })();
-
-  return clipFinal;
-};
-
-const quantizedMelodyToLiveFormat = (quantizedMelody) => {
+const quantizedMelodyToMidiSteps = (quantizedMelody) => {
   const notes = core.sequences.unquantizeSequence(quantizedMelody).notes;
+
   const liveFormat = notes.map((step) => {
     return {
       pitch: step.pitch,
@@ -123,21 +56,10 @@ const quantizedMelodyToLiveFormat = (quantizedMelody) => {
   return { liveFormat, totalDuration };
 };
 
-// console.log(
-//   quantizedMelodyToLiveFormat(
-//     scribbleClipToQuantizedSequence([
-//       { note: ['C2', 'B2', 'D3'], length: 256, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//       { note: null, length: 256, level: 100 },
-//       { note: ['C2'], length: 256 * 4, level: 100 },
-//       { note: ['B2'], length: 256, level: 100 },
-//     ])
-//   )
-// );
-
 const magentize = async (params) => {
   const {
-    scribbleClip,
+    // scribbleClip,
+    midiSteps,
     steps = 8,
     temperature = 1.1,
     checkpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn',
@@ -151,16 +73,16 @@ const magentize = async (params) => {
   const RNN = new mm.MusicRNN(checkpoint);
   await RNN.initialize();
 
-  const quantizedScribbleClip = scribbleClipToQuantizedSequence(scribbleClip);
+  const quantizedLiveFormat = midiStepsToQuantizedSequence(midiSteps);
 
-  const RNNmelody = await RNN.continueSequence(quantizedScribbleClip, steps, temperature);
+  const RNNmelody = await RNN.continueSequence(quantizedLiveFormat, steps, temperature);
 
   //sometimes RNN returns sequence with no notes. That breaks the whole thing. As a guard clause, there is this if statement that returns the original scribbleclip if thats the case. But its not ready yet, since if thats the case, num of steps is not as it should be
   if (RNNmelody.notes.length === 0) {
-    return quantizedMelodyToScribbleClip(quantizedScribbleClip);
+    return quantizedMelodyToMidiSteps(quantizedLiveFormat);
   }
 
-  return quantizedMelodyToScribbleClip(RNNmelody);
+  return quantizedMelodyToMidiSteps(RNNmelody);
 };
 
 module.exports = { magentize };

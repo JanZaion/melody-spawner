@@ -1,17 +1,6 @@
 'use strict';
 const scribble = require('scribbletune');
-const {
-  Note,
-  // Key,
-  Interval,
-  // Scale,
-  // transpose,
-  // interval,
-  // ScaleType,
-  // RomanNumeral,
-  // Progression,
-  Mode,
-} = require('@tonaljs/tonal');
+const { Note, Interval, Mode } = require('@tonaljs/tonal');
 
 // const { Random } = require('random-js'); //random lib at https://www.npmjs.com/package/random-js //rewrite the old dices to use random in them
 // const random = new Random(); // const value = random.integer(1, 2);
@@ -177,49 +166,6 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
   return newClip;
 }
 
-function transposeNotesInChord(scribbleClip, firstChord, numOfChords, numNote, interval) {
-  if (isNaN(interval) == false) interval = Interval.fromSemitones(interval);
-  if (contingency(scribbleClip, numOfChords, firstChord, false, false)) return nullCleanup(scribbleClip);
-  if (firstChord < 1) return nullCleanup(scribbleClip);
-  redeclareScribbleClip(scribbleClip);
-  if (numNote === 'all') numNote = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; //lame af, I know. If we want to transpose all notes in a chord, then we just make sure there are more chord to transpose than a chord can have
-
-  for (let i = 0; i < firstChord - 1; i++) {
-    if (scribbleClip[i].note == null) firstChord++;
-  }
-
-  if (scribbleClip.length - firstChord < numOfChords) {
-    var lastChord = scribbleClip.length;
-  } else {
-    var lastChord = firstChord - 1 + numOfChords;
-  }
-
-  for (let i = firstChord - 1; i < lastChord; i++) {
-    if (scribbleClip[i].note != null) {
-      for (let n = 0; n < numNote.length; n++) {
-        if (numNote[n] < scribbleClip[i].note.length + 1) {
-          var newNote = Note.simplify(Note.transpose(scribbleClip[i].note[numNote[n] - 1], interval));
-          var currentChord = scribbleClip[i].note;
-
-          for (let j = 0; j < currentChord.length; j++) {
-            if (j + 1 == numNote[n]) currentChord[j] = newNote;
-          }
-
-          var newPart = { note: currentChord, length: scribbleClip[i].length, level: scribbleClip[i].level };
-          scribbleClip.splice(i, 1);
-          scribbleClip.insert(i, newPart);
-        }
-      }
-    } else {
-      lastChord++;
-      if (lastChord > scribbleClip.length) var lastChord = scribbleClip.length;
-    }
-  }
-  nullCleanup(scribbleClip);
-  notesToArray(scribbleClip);
-  return scribbleClip;
-}
-
 function nullCleanup(scribbleClip) {
   for (var q = 0; q < scribbleClip.length; q++) {
     if (q != scribbleClip.length - 1 && scribbleClip[q].note == null && scribbleClip[q + 1].note == null) {
@@ -245,38 +191,6 @@ function notesToArray(scribbleClip) {
   }
 
   return scribbleClip;
-}
-
-function contingency(scribbleClip, numOfNotes, firstNote, RN, transposeRN) {
-  var RNamount = 0;
-  var Nullamount = 0;
-
-  for (let i = 0; i < scribbleClip.length; i++) {
-    if (scribbleClip[i].note == null) {
-      Nullamount++;
-    } else if (scribbleClip[i].note.join('') == RN) {
-      RNamount++;
-    }
-  }
-
-  var nonRNamount = scribbleClip.length - RNamount - Nullamount;
-
-  if (transposeRN && nonRNamount + RNamount < 1) {
-    return true;
-  } else if (transposeRN == false && nonRNamount < 1) {
-    return true;
-  } else if (numOfNotes < 1) {
-    return true;
-  } else if (firstNote > scribbleClip.length) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function notesUpAnOctave(scribbleClip) {
-  redeclareScribbleClip(scribbleClip);
-  return transposeNotesInChord(scribbleClip, 1, Infinity, 'all', '8P');
 }
 
 //the "non-chords-coppied" part starts below
@@ -502,7 +416,7 @@ const makeMelody = (params) => {
   });
 
   //fixedScribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
-  const fixedScribbleClip = notesToArray(notesUpAnOctave(scribbleClip));
+  const fixedScribbleClip = notesToArray(scribbleClip);
 
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
   //Closures: fixedScribbleClip, splitter, splitChop
@@ -511,7 +425,20 @@ const makeMelody = (params) => {
     if (splitter !== 0) return chopOrSplit(fixedScribbleClip, splitter, splitChop);
   })();
 
-  return choppedScribbleClip;
+  //choppedScribbleClip to live format and then live format up an octave
+  const liveFormatUpAnOctave = (() => {
+    const preTransposed = scribbleClipToMidiSteps(choppedScribbleClip);
+
+    const liveFormat = preTransposed.liveFormat.map((step) => {
+      return { ...step, pitch: step.pitch + 12 };
+    });
+
+    const totalDuration = preTransposed.totalDuration;
+
+    return { liveFormat, totalDuration };
+  })();
+
+  return liveFormatUpAnOctave;
 };
 
 // const mmSCtoRNN = require('./mmSCtoRNN');

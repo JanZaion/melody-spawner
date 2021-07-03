@@ -21,8 +21,8 @@ const mmlib = require('./mmlib'); //once finished, require just the necessary me
 const { magentize } = require('./mmSCtoRNN');
 
 const joinWithAI = async (params) => {
-  const { AI, scribbleClip } = params;
-  if (AI === 0) return scribbleClip;
+  const { AI, midiSteps } = params;
+  if (AI === 0) return midiSteps;
 
   maxApi.outlet('AIstatus 1');
   maxApi.outlet('disable 0');
@@ -34,10 +34,17 @@ const joinWithAI = async (params) => {
 
   switch (AI) {
     case 1:
-      return AIclip;
+      return { ...AIclip };
 
     case 2:
-      return scribbleClip.concat(AIclip);
+      const liveFormat = midiSteps.liveFormat.concat(
+        AIclip.liveFormat.map((step) => {
+          return { ...step, start_time: step.start_time + midiSteps.totalDuration };
+        })
+      );
+      const totalDuration = midiSteps.totalDuration + AIclip.totalDuration;
+
+      return { liveFormat, totalDuration };
   }
 };
 
@@ -45,15 +52,16 @@ maxApi.addHandler('makeClip', () => {
   const constructClip = (async () => {
     const full = await maxApi.getDict('full');
 
-    const clipMade = mmlib.makeMelody(full);
+    const midiSteps = mmlib.makeMelody(full);
 
-    full.scribbleClip = clipMade;
+    full.midiSteps = midiSteps;
 
     const finalClip = await joinWithAI(full);
 
-    const names = mmlib.noteNamesFromScribbleclip(finalClip);
+    const names = 'hello';
+    // const names = mmlib.noteNamesFromScribbleclip(finalClip);
 
-    const { liveFormat, totalDuration } = mmlib.scribbleClipToMidiSteps(finalClip);
+    const { liveFormat, totalDuration } = finalClip;
 
     await Promise.all([
       maxApi.setDict('noteNames', {
