@@ -1,7 +1,6 @@
 /*
 TODO:
 -refactor mmlib from the current garbage
--rework splitter at max and at js
 -apply new apiPass to atchords
 -ditch velocontrol
 -rework temp and bars to umenus
@@ -13,6 +12,7 @@ semi-fixed:
 -sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
 -make the generate button unavailable when magenta is generating clip. Once the style is final, make the toggle into a comment
 -make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
+-rework splitter at max and at js. Partialy refactored now
 
 */
 const maxApi = require('max-api');

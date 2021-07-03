@@ -73,23 +73,9 @@ const humanToBool = (str) => {
 };
 
 function chopOrSplit(scribbleClip, splitter, splitChop) {
-  const newScribbleClip = [...scribbleClip];
+  if (splitter === 0) return scribbleClip;
 
-  if (splitter === 1) {
-    var splitter2 = 5;
-  }
-  if (splitter === 2) {
-    var splitter2 = 4;
-  }
-  if (splitter === 3) {
-    var splitter2 = 3;
-  }
-  if (splitter === 4) {
-    var splitter2 = 2;
-  }
-  if (splitter === 5) {
-    var splitter2 = 1;
-  }
+  let splitter2 = 6 - splitter;
 
   switch (splitter2) {
     case 5: //1/8
@@ -113,36 +99,32 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
       break;
   }
 
-  var newClip = [];
+  const newClip = [];
 
-  for (let i = 0; i < newScribbleClip.length; i++) {
-    const partLength = newScribbleClip[i].length;
+  for (const step of scribbleClip) {
+    const stepLength = step.length;
 
-    const chops = Math.trunc(partLength) / chopLength;
+    const chops = Math.trunc(stepLength) / chopLength;
 
-    const newPart = { note: newScribbleClip[i].note, length: partLength / chops, level: newScribbleClip[i].level };
+    const newPart = { ...step, length: stepLength / chops };
 
-    for (let j = 0; j < chops; j++) {
+    for (let step2 = 0; step2 < chops; step2++) {
       if (splitChop === 0) {
         //split
         newClip.push(newPart);
       } else if (splitChop === 1) {
         //chop
-        const newPartNull = { note: null, length: partLength / chops, level: newScribbleClip[i].level };
-        j % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
+        const newPartNull = { note: null, length: stepLength / chops, level: step.level };
+        step2 % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
       }
     }
     if (splitChop === 2) {
       //halve
-      var partLengthHalved = partLength;
-      var exp = 2;
-      for (let k = 0; k < splitter; k++) var partLengthHalved = partLengthHalved / 2;
-      for (let m = 0; m < splitter - 1; m++) var exp = exp * 2;
-      const newPartHalved = {
-        note: newScribbleClip[i].note,
-        length: partLengthHalved,
-        level: newScribbleClip[i].level,
-      };
+      let stepLengthHalved = stepLength;
+      let exp = 2;
+      for (let k = 0; k < splitter; k++) stepLengthHalved = stepLengthHalved / 2;
+      for (let m = 0; m < splitter - 1; m++) exp = exp * 2;
+      const newPartHalved = { ...step, length: stepLengthHalved };
       for (let l = 0; l < exp; l++) newClip.push(newPartHalved);
     }
   }
@@ -159,8 +141,6 @@ const notesToArray = (scribbleClip) => {
     }
   });
 };
-
-//the "non-chords-coppied" part starts below
 
 const transposeNegativesInArray = (arr) => {
   return arr.map((note) => {
@@ -389,11 +369,7 @@ const makeMelody = (params) => {
   const fixedScribbleClip = notesToArray(scribbleClip);
 
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
-  //Closures: fixedScribbleClip, splitter, splitChop
-  const choppedScribbleClip = (() => {
-    if (splitter === 0) return fixedScribbleClip;
-    if (splitter !== 0) return chopOrSplit(fixedScribbleClip, splitter, splitChop);
-  })();
+  const choppedScribbleClip = chopOrSplit(fixedScribbleClip, splitter, splitChop);
 
   //choppedScribbleClip to live format and then live format up an octave
   const midiStepsUpAnOctave = (() => {
