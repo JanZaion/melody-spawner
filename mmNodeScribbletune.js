@@ -16,7 +16,7 @@ semi-fixed:
 
 */
 const maxApi = require('max-api');
-const mmlib = require('./mmlib'); //once finished, require just the necessary methods, not the whole file
+const { noteNamesFromLiveFormat, makeMelody } = require('./mmlib');
 const { magentize } = require('./mmSCtoRNN');
 
 const joinWithAI = async (params) => {
@@ -51,7 +51,7 @@ maxApi.addHandler('makeClip', () => {
   const constructClip = (async () => {
     const full = await maxApi.getDict('full');
 
-    const midiSteps = mmlib.makeMelody(full);
+    const midiSteps = makeMelody(full);
 
     full.midiSteps = midiSteps;
 
@@ -59,7 +59,7 @@ maxApi.addHandler('makeClip', () => {
 
     const { liveFormat, totalDuration } = finalClip;
 
-    const names = mmlib.noteNamesFromLiveFormat(liveFormat);
+    const names = noteNamesFromLiveFormat(liveFormat);
 
     await Promise.all([
       maxApi.setDict('noteNames', {
