@@ -220,6 +220,18 @@ const numsToNotes = ({ mode, rootNote, octave, notes }) => {
   return notesArray;
 };
 
+const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining, pitchDirrection }, dice) => {
+  const maxRolls = (() => {
+    return repeatNotesBool ? finalMode.length : notesRemaining.length;
+  })();
+
+  const rolls = (() => {
+    return numOfRandNotes > maxRolls ? maxRolls : numOfRandNotes;
+  })();
+
+  return dice(maxRolls, 0, rolls);
+};
+
 const params = {
   octave: 1,
   subdiv: '4n',
@@ -270,37 +282,17 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
   const repeatNotesBool = maxToBool(repeatNotes);
 
   //noteIndexes is an array of integers of the final notes in the notesRemaining or finalMode arrays.
-  //Closures: finalMode, numOfRandNotes, pitchDirrection, repeatNotesBool, notesRemaining
   const noteIndexes = (() => {
-    //the number of rolls for the following dice rolls
-    const rolls = (() => {
-      switch (repeatNotesBool) {
-        //repeat: If the number of random notes exceeds the number of finalMode notes, then finalMode.length is rolls
-        case true:
-          return numOfRandNotes > finalMode.length ? finalMode.length : numOfRandNotes;
-
-        //norepeat: If the number of random notes exceeds the number of notesRemaining, then notesReamining.length is rolls
-        case false:
-          return numOfRandNotes > notesRemaining.length ? notesRemaining.length : numOfRandNotes;
-      }
-    })();
-
+    const rollParams = { finalMode, numOfRandNotes, repeatNotesBool, notesRemaining, pitchDirrection };
     switch (pitchDirrection) {
-      //try callbacks here instead, something like repeatNotesBool ? finalMode.length : notesRemaining.length and then the callback
       case 'any':
-        return repeatNotesBool
-          ? diceMultiRollUnsorted(finalMode.length, 0, rolls)
-          : diceMultiRollUnsorted(notesRemaining.length, 0, rolls);
+        return rollForNoteIndexes(rollParams, diceMultiRollUnsorted); //the problem here is that repeatNotes on is totally unacauted for. every return statement needs to be rewritten to ifelse shorthand, where if repean: 'on', new dice has to be created that will have a chance to roll nums that return the same numbers, not like now
 
       case 'ascend':
-        return repeatNotesBool
-          ? diceMultiRollSortedASC(finalMode.length, 0, rolls)
-          : diceMultiRollSortedASC(notesRemaining.length, 0, rolls);
+        return rollForNoteIndexes(rollParams, diceMultiRollSortedASC);
 
       case 'descend':
-        return repeatNotesBool
-          ? diceMultiRollSortedDSC(finalMode.length, 0, rolls)
-          : diceMultiRollSortedDSC(notesRemaining.length, 0, rolls);
+        return rollForNoteIndexes(rollParams, diceMultiRollSortedDSC);
     }
   })();
 
