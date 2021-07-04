@@ -1,7 +1,6 @@
 // const mvae = require('@magenta/music/node/music_vae');
 const mm = require('@magenta/music/node/music_rnn');
 const core = require('@magenta/music/node/core');
-const { Note } = require('@tonaljs/tonal');
 
 // const process = require('process');
 // const path = require('path');
