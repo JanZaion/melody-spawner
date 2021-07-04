@@ -72,7 +72,7 @@ const maxToBool = (str) => {
   }
 };
 
-function chopOrSplit(scribbleClip, splitter, splitChop) {
+function chopSplitHalve({ splitChop, splitter }, scribbleClip) {
   if (splitter === 0) return scribbleClip;
 
   const splitter2 = 6 - splitter;
@@ -308,22 +308,6 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
 };
 
 const makeMelody = (params) => {
-  const {
-    rootNote, //root note of a mode
-    mode, //mode from which to construct
-    octave, //pitch of the melody
-    upperBound, //notes will not be higher than this. Bounds are 1-7
-    lowerBound, //notes will not be lower than this. Bounds are -1 to -7
-    pattern, //rhythm pattern
-    notes, //note pattern array
-    repeatNotes, //have multiple random notes
-    sizzle, //velocity
-    pitchDirrection, //ascending or descending or any melody?
-    subdiv, //subdiv
-    splitter, //splitter
-    splitChop, //splitchop
-  } = params;
-
   //notesNoNums is an array of notes where all numbers were transformed into notes
   const notesNoNums = numsToNotes(params);
 
@@ -336,26 +320,20 @@ const makeMelody = (params) => {
   //scribbleClip is a clip with the final melody
   const scribbleClip = scribble.clip({
     notes: notesNoNegatives,
-    pattern,
-    subdiv,
-    sizzle,
+    pattern: params.pattern,
+    subdiv: params.subdiv,
   });
 
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
-  const choppedScribbleClip = chopOrSplit(scribbleClip, splitter, splitChop);
+  const choppedScribbleClip = chopSplitHalve(params, scribbleClip);
 
-  //choppedScribbleClip to live format and then live format up an octave
-  const midiStepsUpAnOctave = (() => {
-    const preTransposed = scribbleClipToMidiSteps(choppedScribbleClip);
+  const preTransposedMidiSteps = scribbleClipToMidiSteps(choppedScribbleClip);
 
-    const liveFormat = liveFormatTranspose(preTransposed.liveFormat, 12);
+  const liveFormat = liveFormatTranspose(preTransposedMidiSteps.liveFormat, 12);
 
-    const totalDuration = preTransposed.totalDuration;
+  const totalDuration = preTransposedMidiSteps.totalDuration;
 
-    return { liveFormat, totalDuration };
-  })();
-
-  return midiStepsUpAnOctave;
+  return { liveFormat, totalDuration };
 };
 
 module.exports = {
@@ -363,20 +341,18 @@ module.exports = {
   noteNamesFromLiveFormat,
 };
 
-const params = {
-  octave: 1,
-  subdiv: '4n',
-  splitter: 0,
-  mode: 'Phrygian',
-  rootNote: 'C',
-  notes: ['R', 'R', 'R'],
-  lowerBound: 0,
-  pattern: 'x__xxx__x',
-  pitchDirrection: 'descend',
-  repeatNotes: 'off',
-  sizzle: 'cos',
-  splitChop: 0,
-  upperBound: 5,
-};
-
-makeMelody(params);
+// const params = {
+//   octave: 1,
+//   subdiv: '4n',
+//   splitter: 0,
+//   mode: 'Phrygian',
+//   rootNote: 'C',
+//   notes: ['R', 'R', 'R'],
+//   lowerBound: 0,
+//   pattern: 'x__xxx__x',
+//   pitchDirrection: 'descend',
+//   repeatNotes: 'off',
+//   sizzle: 'cos',
+//   splitChop: 0,
+//   upperBound: 5,
+// };
