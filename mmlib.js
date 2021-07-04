@@ -232,6 +232,26 @@ const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesR
   return dice(maxRolls, 0, rolls);
 };
 
+const finalizeMode = (mode, rootNote, octave, upperBound, lowerBound) => {
+  const RN = rootNote + octave;
+  const upperMode = Mode.notes(mode, RN);
+  const lowerMode = Mode.notes(mode, RN);
+
+  for (let i = 0; i < 7 - upperBound; i++) {
+    upperMode.pop();
+  }
+
+  for (let i = 0; i < 7 - lowerBound * -1; i++) {
+    lowerMode.shift();
+  }
+
+  lowerMode.forEach((tone, toneIndex) => {
+    lowerMode[toneIndex] = Note.transpose(tone, '-8P');
+  });
+
+  return lowerMode.concat(upperMode);
+};
+
 const params = {
   octave: 1,
   subdiv: '4n',
@@ -254,25 +274,7 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
   if (numOfRandNotes === 0) return notesNoNums;
 
   //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges by the bounderies set in params
-  const finalMode = (() => {
-    const RN = rootNote + octave;
-    const upperMode = Mode.notes(mode, RN);
-    const lowerMode = Mode.notes(mode, RN);
-
-    for (let i = 0; i < 7 - upperBound; i++) {
-      upperMode.pop();
-    }
-
-    for (let i = 0; i < 7 - lowerBound * -1; i++) {
-      lowerMode.shift();
-    }
-
-    lowerMode.forEach((tone, toneIndex) => {
-      lowerMode[toneIndex] = Note.transpose(tone, '-8P');
-    });
-
-    return lowerMode.concat(upperMode);
-  })();
+  const finalMode = finalizeMode(mode, rootNote, octave, upperBound, lowerBound);
 
   //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
   const notesRemaining = finalMode.filter((note) => {
