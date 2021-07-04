@@ -44,7 +44,7 @@ function diceMultiRollUnsorted(max, min, rolls) {
   return arr;
 }
 
-const humanToBool = (str) => {
+const maxToBool = (str) => {
   switch (str) {
     case 'yes':
       return true;
@@ -75,7 +75,7 @@ const humanToBool = (str) => {
 function chopOrSplit(scribbleClip, splitter, splitChop) {
   if (splitter === 0) return scribbleClip;
 
-  let splitter2 = 6 - splitter;
+  const splitter2 = 6 - splitter;
 
   switch (splitter2) {
     case 5: //1/8
@@ -196,6 +196,30 @@ const liveFormatTranspose = (liveFormat, interval) => {
   });
 };
 
+const numsToNotes = (mode, rootNote, octave, notes) => {
+  const upperMode = Mode.notes(mode, rootNote + octave);
+  const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
+  const finalMode = lowerMode.concat(upperMode);
+
+  //converts number to an index of an array so that it works with upperMode/lowerMode
+  const indexConvert = (number) => {
+    if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
+    if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
+    return 7; //any other number, 7 is root note of the finalMode
+  };
+
+  // If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
+  const notesArray = (() => {
+    return Array.isArray(notes) ? notes : [notes];
+  })();
+
+  notesArray.forEach((note, noteIndex) => {
+    if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note)];
+  });
+
+  return notesArray;
+};
+
 const makeMelody = (params) => {
   const {
     rootNote, //root note of a mode
@@ -213,36 +237,8 @@ const makeMelody = (params) => {
     splitChop, //splitchop
   } = params;
 
-  //notesArray is notes. If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
-  //Closures: notes
-  const notesArray = (() => {
-    const arr = [];
-    arr.push(notes);
-    return Array.isArray(notes) ? notes : arr;
-  })();
-
   //notesNoNums is an array of notes where all numbers were transformed into tones
-  //Closures: mode, rootNote, octave, notesArray
-  const notesNoNums = (() => {
-    const upperMode = Mode.notes(mode, rootNote + octave);
-    const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
-    const finalMode = lowerMode.concat(upperMode);
-
-    //converts number to an index of an array so that it works with upperMode/lowerMode
-    const indexConvert = (number) => {
-      if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
-      if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
-      return 7; //any other number, 7 is root note of the finalMode
-    };
-
-    const notesDuplicate = notesArray; //I dont this is duplicate, I think this is just passing by reference
-
-    notesDuplicate.forEach((note, noteIndex) => {
-      if (!isNaN(note)) notesDuplicate[noteIndex] = finalMode[indexConvert(note)];
-    });
-
-    return notesDuplicate;
-  })();
+  const notesNoNums = numsToNotes(mode, rootNote, octave, notes);
 
   //notesNoRs is an array of notes that will be sent to Scribbletune. All Rs are transformed into tones
   //Closures: mode, rootNote, octave, notesNoNums, upperBound, lowerBound, repeatNotes, pitchDirrection
@@ -282,7 +278,7 @@ const makeMelody = (params) => {
     });
 
     //repeatNotesBool is boolean that reflexts max input
-    const repeatNotesBool = humanToBool(repeatNotes);
+    const repeatNotesBool = maxToBool(repeatNotes);
 
     //noteIntegers is an array of integers of the final notes in the notesRemaining or finalMode arrays. Note: rename it to indexes when refactoring
     //Closures: finalMode, numOfRandNotes, pitchDirrection, repeatNotesBool, notesRemaining
@@ -301,6 +297,7 @@ const makeMelody = (params) => {
       })();
 
       switch (pitchDirrection) {
+        //try callbacks here instead, something like repeatNotesBool ? finalMode.length : notesRemaining.length and then the callback
         case 'any':
           return repeatNotesBool
             ? diceMultiRollUnsorted(finalMode.length, 0, rolls)
