@@ -132,16 +132,6 @@ function chopOrSplit(scribbleClip, splitter, splitChop) {
   return newClip;
 }
 
-const notesToArray = (scribbleClip) => {
-  return scribbleClip.map((step) => {
-    if (Array.isArray(step.note) === false && step.note !== null) {
-      return { note: step.note, length: step.length, level: step.level };
-    } else {
-      return { ...step };
-    }
-  });
-};
-
 const transposeNegativesInArray = (arr) => {
   return arr.map((note) => {
     if (note.indexOf('-') !== -1) {
@@ -341,7 +331,6 @@ const makeMelody = (params) => {
   const notesNoRs = RsToNotes(params, notesNoNums);
 
   //notesNoNegatives is an array where all the C-1s etc where transposed an octave above
-  //Closures: notesNoRs
   const notesNoNegatives = transposeNegativesInArray(notesNoRs);
 
   //scribbleClip is a clip with the final melody
@@ -352,11 +341,8 @@ const makeMelody = (params) => {
     sizzle,
   });
 
-  //fixedScribbleClip is the scribbleclip but with notes transposed an octave higher to polyfill for scribblebug. It also pushes notes to array if its a single note for max fix
-  const fixedScribbleClip = notesToArray(scribbleClip);
-
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
-  const choppedScribbleClip = chopOrSplit(fixedScribbleClip, splitter, splitChop);
+  const choppedScribbleClip = chopOrSplit(scribbleClip, splitter, splitChop);
 
   //choppedScribbleClip to live format and then live format up an octave
   const midiStepsUpAnOctave = (() => {
@@ -377,18 +363,20 @@ module.exports = {
   noteNamesFromLiveFormat,
 };
 
-// const params = {
-//   octave: 1,
-//   subdiv: '4n',
-//   splitter: 0,
-//   mode: 'Phrygian',
-//   rootNote: 'C',
-//   notes: ['R', 'R', 'R', 'R'],
-//   lowerBound: 0,
-//   pattern: 'x__xxx__',
-//   pitchDirrection: 'descend',
-//   repeatNotes: 'off',
-//   sizzle: 'cos',
-//   splitChop: 0,
-//   upperBound: 5,
-// };
+const params = {
+  octave: 1,
+  subdiv: '4n',
+  splitter: 0,
+  mode: 'Phrygian',
+  rootNote: 'C',
+  notes: ['R', 'R', 'R'],
+  lowerBound: 0,
+  pattern: 'x__xxx__x',
+  pitchDirrection: 'descend',
+  repeatNotes: 'off',
+  sizzle: 'cos',
+  splitChop: 0,
+  upperBound: 5,
+};
+
+makeMelody(params);
