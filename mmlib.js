@@ -220,7 +220,7 @@ const numsToNotes = ({ mode, rootNote, octave, notes }) => {
   return notesArray;
 };
 
-const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining, pitchDirrection }, dice) => {
+const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining }, dice) => {
   const maxRolls = (() => {
     return repeatNotesBool ? finalMode.length : notesRemaining.length;
   })();
@@ -252,23 +252,8 @@ const finalizeMode = (mode, rootNote, octave, upperBound, lowerBound) => {
   return lowerMode.concat(upperMode);
 };
 
-const params = {
-  octave: 1,
-  subdiv: '4n',
-  splitter: 0,
-  mode: 'Phrygian',
-  rootNote: 'C',
-  notes: ['R', 'R', 'R', 'R'],
-  lowerBound: 0,
-  pattern: 'x__xxx__',
-  pitchDirrection: 'descend',
-  repeatNotes: 'off',
-  sizzle: 'cos',
-  splitChop: 0,
-  upperBound: 5,
-};
-
 const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums) => {
+  //at the end, make better use of params
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
   if (numOfRandNotes === 0) return notesNoNums;
@@ -300,6 +285,7 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
 
   //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
   //Closures: finalMode, noteIndexes, repeatNotesBool, notesRemaining
+  //Note: this is probably a needless garbage since the noteIndexes fn sux. Look into it
   const absoluteRs = (() => {
     switch (repeatNotesBool) {
       case true:
@@ -316,7 +302,7 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
   //absoluteNotes is an array of all the notes while Rs are transformed
   //Closures: notesNoNums, absoluteRs
   const absoluteNotes = (() => {
-    const notesDuplicate = notesNoNums;
+    const notesDuplicate = notesNoNums; //trash
     let counter = 0;
     notesDuplicate.forEach((note, noteIndex) => {
       if (note === 'R') {
@@ -330,8 +316,6 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
 
   return absoluteNotes;
 };
-
-// console.log(RsToNotes(params, 'yo'));
 
 const makeMelody = (params) => {
   const {
@@ -358,9 +342,7 @@ const makeMelody = (params) => {
 
   //notesNoNegatives is an array where all the C-1s etc where transposed an octave above
   //Closures: notesNoRs
-  const notesNoNegatives = (() => {
-    return transposeNegativesInArray(notesNoRs);
-  })();
+  const notesNoNegatives = transposeNegativesInArray(notesNoRs);
 
   //scribbleClip is a clip with the final melody
   const scribbleClip = scribble.clip({
@@ -390,34 +372,23 @@ const makeMelody = (params) => {
   return midiStepsUpAnOctave;
 };
 
-// const mmSCtoRNN = require('./mmSCtoRNN');
-// const dd = (async () => {
-//   const clipp = makeMelody({
-//     octave: 1,
-//     subdiv: '4n',
-//     splitter: 0,
-//     mode: 'Phrygian',
-//     rootNote: 'C',
-//     notes: ['R', 'R', 'R', 'R'],
-//     lowerBound: 0,
-//     pattern: 'x__xxx__',
-//     pitchDirrection: 'descend',
-//     repeatNotes: 'off',
-//     sizzle: 'cos',
-//     splitChop: 0,
-//     upperBound: 5,
-//   })[0];
-//   // console.log(clipp);
-//   let asd = await mmSCtoRNN.magentize({
-//     scribbleClip: clipp,
-//     temperature: 0,
-//     steps: 4 * 32,
-//   });
-//   // let asd = await mmSCtoRNN.magentize(clipp);
-//   console.log(asd);
-// })();
-
 module.exports = {
   makeMelody,
   noteNamesFromLiveFormat,
 };
+
+// const params = {
+//   octave: 1,
+//   subdiv: '4n',
+//   splitter: 0,
+//   mode: 'Phrygian',
+//   rootNote: 'C',
+//   notes: ['R', 'R', 'R', 'R'],
+//   lowerBound: 0,
+//   pattern: 'x__xxx__',
+//   pitchDirrection: 'descend',
+//   repeatNotes: 'off',
+//   sizzle: 'cos',
+//   splitChop: 0,
+//   upperBound: 5,
+// };

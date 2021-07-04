@@ -4,6 +4,7 @@ TODO:
 -apply new apiPass to atchords
 -ditch velocontrol
 -rework temp and bars to umenus
+-fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something 
 
 magenta:
 -figure out local setup for checkpoint
