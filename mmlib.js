@@ -31,7 +31,7 @@ const maxToBool = (str) => {
   }
 };
 
-function chopSplitHalve({ splitChop, splitter }, scribbleClip) {
+const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
   if (splitter === 0) return scribbleClip;
 
   const splitter2 = 6 - splitter;
@@ -89,7 +89,7 @@ function chopSplitHalve({ splitChop, splitter }, scribbleClip) {
   }
 
   return newClip;
-}
+};
 
 const transposeNegativesInArray = (arr) => {
   return arr.map((note) => {
