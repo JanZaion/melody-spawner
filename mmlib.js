@@ -201,8 +201,27 @@ const finalizeMode = (mode, rootNote, octave, upperBound, lowerBound) => {
   return lowerMode.concat(upperMode);
 };
 
+const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool) => {
+  const rollParams = { finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool };
+  switch (pitchDirrection) {
+    case 'any':
+      return repeatNotesBool
+        ? rollForNoteIndexes(rollParams, dice.multiRollUnsorted)
+        : rollForNoteIndexes(rollParams, dice.multiRollUniqueUnsorted);
+
+    case 'ascend':
+      return repeatNotesBool
+        ? rollForNoteIndexes(rollParams, dice.multiRollSortedAscending)
+        : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedAscending);
+
+    case 'descend':
+      return repeatNotesBool
+        ? rollForNoteIndexes(rollParams, dice.multiRollSortedDescending)
+        : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedDescending);
+  }
+};
+
 const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums) => {
-  //at the end, make better use of params
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
   if (numOfRandNotes === 0) return notesNoNums;
@@ -218,25 +237,7 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
   const repeatNotesBool = maxToBool(repeatNotes);
 
   //noteIndexes is an array of integers of the final notes in the notesRemaining or finalMode arrays.
-  const noteIndexes = (() => {
-    const rollParams = { finalMode, numOfRandNotes, repeatNotesBool, notesRemaining, pitchDirrection };
-    switch (pitchDirrection) {
-      case 'any':
-        return repeatNotesBool
-          ? rollForNoteIndexes(rollParams, dice.multiRollUnsorted)
-          : rollForNoteIndexes(rollParams, dice.multiRollUniqueUnsorted);
-
-      case 'ascend':
-        return repeatNotesBool
-          ? rollForNoteIndexes(rollParams, dice.multiRollSortedAscending)
-          : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedAscending);
-
-      case 'descend':
-        return repeatNotesBool
-          ? rollForNoteIndexes(rollParams, dice.multiRollSortedDescending)
-          : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedDescending);
-    }
-  })();
+  const noteIndexes = RsToNoteIndexes(finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool);
 
   //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
   //Closures: finalMode, noteIndexes, repeatNotesBool, notesRemaining
