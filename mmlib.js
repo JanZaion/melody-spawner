@@ -1,9 +1,7 @@
 'use strict';
 const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
-
-// const { Random } = require('random-js'); //random lib at https://www.npmjs.com/package/random-js //rewrite the old dices to use random in them
-// const random = new Random(); // const value = random.integer(1, 2);
+const dice = require('convenient-methods-of-randomness');
 
 function diceRange(max, min) {
   //Dice roll, returns any number in the min-max range. Careful: The max number is excluded, so a roll for 2-8 would look like this: diceRange(9, 2)
