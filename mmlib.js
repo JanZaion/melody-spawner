@@ -240,22 +240,11 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
   const noteIndexes = RsToNoteIndexes(finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool);
 
   //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
-  //Closures: finalMode, noteIndexes, repeatNotesBool, notesRemaining
-  //Note: this is probably a needless garbage since the noteIndexes fn sux. Look into it
-  const absoluteRs = (() => {
-    switch (repeatNotesBool) {
-      case true:
-        return noteIndexes.map((noteInteger) => {
-          return finalMode[noteInteger];
-        });
-      case false:
-        return noteIndexes.map((noteInteger) => {
-          return notesRemaining[noteInteger];
-        });
-    }
-  })();
+  const absoluteRs = noteIndexes.map((noteInteger) => {
+    return notesRemaining[noteInteger];
+  });
 
-  //absoluteNotes is an array of all the notes while Rs are transformed
+  //absoluteNotes is an array of all the notes, Rs, numbers and absolutes added together
   //Closures: notesNoNums, absoluteRs
   const absoluteNotes = (() => {
     const notesDuplicate = notesNoNums; //trash
@@ -307,18 +296,19 @@ module.exports = {
   noteNamesFromLiveFormat,
 };
 
-// const params = {
-//   octave: 1,
-//   subdiv: '4n',
-//   splitter: 0,
-//   mode: 'Phrygian',
-//   rootNote: 'C',
-//   notes: ['R', 'R', 'R'],
-//   lowerBound: 0,
-//   pattern: 'x__xxx__x',
-//   pitchDirrection: 'descend',
-//   repeatNotes: 'off',
-//   sizzle: 'cos',
-//   splitChop: 0,
-//   upperBound: 5,
-// };
+const pars = {
+  octave: 1,
+  subdiv: '4n',
+  splitter: 0,
+  mode: 'Phrygian',
+  rootNote: 'C',
+  notes: ['R', 'R', 'R', 1, 'C#3', 'D1'],
+  lowerBound: 0,
+  pattern: 'x__xxx__x',
+  pitchDirrection: 'descend',
+  repeatNotes: 'off',
+  sizzle: 'cos',
+  splitChop: 0,
+  upperBound: 5,
+};
+makeMelody(pars);
