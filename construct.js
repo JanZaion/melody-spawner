@@ -5,7 +5,6 @@ TODO:
 -ditch velocontrol
 -rework temp and bars to umenus
 -fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something 
--ditch mm as file prefixes
 
 magenta:
 -figure out local setup for checkpoint
