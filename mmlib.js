@@ -224,7 +224,7 @@ const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrect
 const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums) => {
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
-  if (numOfRandNotes === 0) return notesNoNums;
+  if (numOfRandNotes === 0) return [];
 
   //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges by the bounderies set in params
   const finalMode = finalizeMode(mode, rootNote, octave, upperBound, lowerBound);
@@ -241,7 +241,7 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
 
   //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
   const absoluteRs = noteIndexes.map((noteInteger) => {
-    return notesRemaining[noteInteger];
+    return repeatNotesBool ? finalMode[noteInteger] : notesRemaining[noteInteger];
   });
 
   return absoluteRs;
@@ -299,19 +299,19 @@ module.exports = {
   noteNamesFromLiveFormat,
 };
 
-const pars = {
-  octave: 1,
-  subdiv: '4n',
-  splitter: 0,
-  mode: 'Phrygian',
-  rootNote: 'C',
-  notes: ['R', 'R', 'R', 1, 'C#3', 'D1'],
-  lowerBound: 0,
-  pattern: 'x__xxx__x',
-  pitchDirrection: 'descend',
-  repeatNotes: 'off',
-  sizzle: 'cos',
-  splitChop: 0,
-  upperBound: 5,
-};
-makeMelody(pars);
+// const pars = {
+//   octave: 1,
+//   subdiv: '4n',
+//   splitter: 0,
+//   mode: 'Phrygian',
+//   rootNote: 'C',
+//   notes: ['R', 'R', 'R', 1, 'C#3', 'D1'],
+//   lowerBound: 0,
+//   pattern: 'x__xxx__x',
+//   pitchDirrection: 'descend',
+//   repeatNotes: 'off',
+//   sizzle: 'cos',
+//   splitChop: 0,
+//   upperBound: 5,
+// };
+// makeMelody(pars);
