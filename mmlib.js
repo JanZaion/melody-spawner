@@ -244,33 +244,34 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
     return notesRemaining[noteInteger];
   });
 
-  //absoluteNotes is an array of all the notes, Rs, numbers and absolutes added together
-  //Closures: notesNoNums, absoluteRs
-  const absoluteNotes = (() => {
-    const notesDuplicate = notesNoNums; //trash
-    let counter = 0;
-    notesDuplicate.forEach((note, noteIndex) => {
-      if (note === 'R') {
-        notesDuplicate[noteIndex] = absoluteRs[counter];
-        counter < absoluteRs.length - 1 ? (counter += 1) : (counter = 0);
-      }
-    });
+  return absoluteRs;
+};
 
-    return notesDuplicate;
-  })();
+const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
+  const notesDuplicate = [...notesNoNums]; //trash
+  let counter = 0;
+  notesDuplicate.forEach((note, noteIndex) => {
+    if (note === 'R') {
+      notesDuplicate[noteIndex] = notesNoRs[counter];
+      counter < notesNoRs.length - 1 ? (counter += 1) : (counter = 0);
+    }
+  });
 
-  return absoluteNotes;
+  return notesDuplicate;
 };
 
 const makeMelody = (params) => {
   //notesNoNums is an array of notes where all numbers were transformed into notes
   const notesNoNums = numsToNotes(params);
 
-  //notesNoRs is an array of notes that will be sent to Scribbletune. All Rs are transformed into notes
+  //notesNoRs is an array of notes where Rs are transformed into notes
   const notesNoRs = RsToNotes(params, notesNoNums);
 
+  //notesAll is an array of notes that will be sent to Scribbletune after transposition
+  const notesAll = joinNoNumsWithNoRs(notesNoNums, notesNoRs);
+
   //notesNoNegatives is an array where all the C-1s etc where transposed an octave above
-  const notesNoNegatives = transposeNegativesInArray(notesNoRs);
+  const notesNoNegatives = transposeNegativesInArray(notesAll);
 
   //scribbleClip is a clip with the final melody
   const scribbleClip = scribble.clip({
