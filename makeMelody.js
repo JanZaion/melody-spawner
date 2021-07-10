@@ -2,6 +2,7 @@
 const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
+const { liveFormatTranspose } = require('./liveFormatTranspose');
 
 const maxToBool = (str) => {
   switch (str) {
@@ -101,14 +102,6 @@ const transposeNegativesInArray = (arr) => {
   });
 };
 
-const noteNamesFromLiveFormat = (liveFormat) => {
-  return liveFormatTranspose(liveFormat, -12)
-    .map((step) => {
-      return Note.fromMidi(step.pitch);
-    })
-    .join(' ');
-};
-
 const scribbleClipToMidiSteps = (scribbleClip) => {
   let startTime = 0;
   let endTime = 0;
@@ -137,12 +130,6 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   const totalDuration = scribbleClip.reduce((duration, step) => (duration = duration + step.length), 0) / 512;
 
   return { liveFormat, totalDuration };
-};
-
-const liveFormatTranspose = (liveFormat, interval) => {
-  return liveFormat.map((step) => {
-    return { ...step, pitch: step.pitch + interval };
-  });
 };
 
 const numsToNotes = ({ mode, rootNote, octave, notes }) => {
@@ -296,7 +283,6 @@ const makeMelody = (params) => {
 
 module.exports = {
   makeMelody,
-  noteNamesFromLiveFormat,
 };
 
 // const pars = {

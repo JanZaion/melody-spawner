@@ -5,6 +5,7 @@ TODO:
 -ditch velocontrol
 -rework temp and bars to umenus
 -fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something 
+-ditch mm as file prefixes
 
 magenta:
 -figure out local setup for checkpoint
@@ -17,8 +18,9 @@ semi-fixed:
 
 */
 const maxApi = require('max-api');
-const { noteNamesFromLiveFormat, makeMelody } = require('./mmlib');
-const { magentize } = require('./mmSCtoRNN');
+const { makeMelody } = require('./makeMelody');
+const { magentize } = require('./magentize');
+const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 
 const joinWithAI = async (params) => {
   const { AI, midiSteps } = params;
