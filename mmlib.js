@@ -248,16 +248,18 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
 };
 
 const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
-  const notesDuplicate = [...notesNoNums]; //trash
+  const notes = [];
   let counter = 0;
-  notesDuplicate.forEach((note, noteIndex) => {
+  for (const note of notesNoNums) {
     if (note === 'R') {
-      notesDuplicate[noteIndex] = notesNoRs[counter];
+      notes.push(notesNoRs[counter]);
       counter < notesNoRs.length - 1 ? (counter += 1) : (counter = 0);
+    } else {
+      notes.push(note);
     }
-  });
+  }
 
-  return notesDuplicate;
+  return notes;
 };
 
 const makeMelody = (params) => {
