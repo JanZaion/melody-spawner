@@ -3,45 +3,6 @@ const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 
-function diceRange(max, min) {
-  //Dice roll, returns any number in the min-max range. Careful: The max number is excluded, so a roll for 2-8 would look like this: diceRange(9, 2)
-  return Math.floor(Math.random() * (max - min) + min);
-}
-
-function diceMultiRollSortedASC(max, min, rolls) {
-  //Multiple dice rolls, returns an array of ascending different numbers that is as long as the 'rolls' input. Max is excluded just like with diceRange.
-  let arr = [];
-  while (arr.length < rolls) {
-    let r = Math.floor(Math.random() * (max - min) + min);
-    if (arr.indexOf(r) === -1) arr.push(r);
-  }
-  return arr.sort(function (a, b) {
-    return a - b;
-  });
-}
-
-function diceMultiRollSortedDSC(max, min, rolls) {
-  //Multiple dice rolls, returns an array of descending different numbers that is as long as the 'rolls' input. Max is excluded just like with diceRange.
-  let arr = [];
-  while (arr.length < rolls) {
-    let r = Math.floor(Math.random() * (max - min) + min);
-    if (arr.indexOf(r) === -1) arr.push(r);
-  }
-  return arr.sort(function (a, b) {
-    return b - a;
-  });
-}
-
-function diceMultiRollUnsorted(max, min, rolls) {
-  //Multiple dice rolls, returns an array of unsorted numbers that is as long as the 'rolls' input. Max is excluded just like with diceRange.
-  let arr = [];
-  while (arr.length < rolls) {
-    let r = Math.floor(Math.random() * (max - min) + min);
-    if (arr.indexOf(r) === -1) arr.push(r);
-  }
-  return arr;
-}
-
 const maxToBool = (str) => {
   switch (str) {
     case 'yes':
@@ -261,13 +222,19 @@ const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes
     const rollParams = { finalMode, numOfRandNotes, repeatNotesBool, notesRemaining, pitchDirrection };
     switch (pitchDirrection) {
       case 'any':
-        return rollForNoteIndexes(rollParams, diceMultiRollUnsorted); //the problem here is that repeatNotes on is totally unacauted for. every return statement needs to be rewritten to ifelse shorthand, where if repean: 'on', new dice has to be created that will have a chance to roll nums that return the same numbers, not like now
+        return repeatNotesBool
+          ? rollForNoteIndexes(rollParams, dice.multiRollUnsorted)
+          : rollForNoteIndexes(rollParams, dice.multiRollUniqueUnsorted);
 
       case 'ascend':
-        return rollForNoteIndexes(rollParams, diceMultiRollSortedASC);
+        return repeatNotesBool
+          ? rollForNoteIndexes(rollParams, dice.multiRollSortedAscending)
+          : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedAscending);
 
       case 'descend':
-        return rollForNoteIndexes(rollParams, diceMultiRollSortedDSC);
+        return repeatNotesBool
+          ? rollForNoteIndexes(rollParams, dice.multiRollSortedDescending)
+          : rollForNoteIndexes(rollParams, dice.multiRollUniqueSortedDescending);
     }
   })();
 
