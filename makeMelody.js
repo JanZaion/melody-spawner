@@ -3,6 +3,7 @@ const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
+const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
   switch (str) {
@@ -112,7 +113,7 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
     if (step.note) {
       for (let noteInt = 0; noteInt < step.note.length; noteInt++) {
         liveFormat.push({
-          pitch: Note.midi(step.note[noteInt]),
+          pitch: jsmidgen.Util.midiPitchFromNote(step.note[noteInt]),
           start_time: startTime / 512,
           duration: (endTime - startTime) / 512,
           velocity: step.level,
