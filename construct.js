@@ -2,7 +2,10 @@
 TODO:
 -apply new apiPass to atchords
 -ditch velocontrol
--fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something 
+-fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something
+Bidirectional features:
+-for rhythm - extract rhythm pattern based on subdiv
+-for melody - get based on selected key. For of key notes, just transpose up an octave. for chords, only get root note
 
 magenta:
 -figure out local setup for checkpoint
