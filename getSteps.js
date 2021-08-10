@@ -7,8 +7,17 @@ function clipOrSlot() {
   }
 }
 
-function getClip() {
+function getClip(dictName) {
+  //Live 11 only, make one for Live 10
   var clip = clipOrSlot();
   var stepsDict = clip.call('get_notes_extended', 1, 127, 0, 258);
-  var clipLength = clip.get('loop_end');
+  var notes = stepsDict.toString();
+  var totalDuration = clip.get('loop_end');
+  var d = new Dict(dictName);
+
+  d.clear();
+  d.parse(notes);
+  d.set('totalDuration', totalDuration);
+
+  outlet(0, 'bang');
 }
