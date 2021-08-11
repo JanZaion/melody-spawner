@@ -17,3 +17,8 @@
 - make the generate button unavailable when magenta is generating clip. Once the style is final, make the toggle into a comment
 - make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
 - rework splitter at max and at js. Partialy refactored now
+
+## on pattern language
+
+- [x] does nothing, only 2 characters like [xx]
+- [[xx]] does [xx]
