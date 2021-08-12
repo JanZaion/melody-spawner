@@ -6,6 +6,9 @@
   Bidirectional features:
 - for rhythm - extract rhythm pattern based on subdiv
 - for melody - get based on selected key. For of key notes, just transpose up an octave. for chords, only get root note
+- for both dont forget to add Live 10 support
+- add chromatic R
+- hardcode default JSON preset that will init on loadbang
 
 ## magenta:
 
