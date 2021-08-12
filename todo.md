@@ -9,6 +9,7 @@
 - for both dont forget to add Live 10 support
 - add chromatic R
 - hardcode default JSON preset that will init on loadbang
+- rewrite splitter to accomodate for 8n and to make it better
 
 ## magenta:
 
