@@ -3,6 +3,7 @@ const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
+const { parseSubdiv } = require('./parseSubdiv');
 const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
@@ -33,32 +34,32 @@ const maxToBool = (str) => {
   }
 };
 
-const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
+const chopSplitHalveObs = ({ splitChop, splitter }, scribbleClip) => {
   if (splitter === 0) return scribbleClip;
 
   const splitter2 = 6 - splitter;
 
-  switch (splitter2) {
-    case 5: //1/8
-      var chopLength = 128;
-      break;
+  // switch (splitter2) {
+  //   case 5: //1/8
+  //     var chopLength = 128;
+  //     break;
 
-    case 4: //1/4
-      var chopLength = 256;
-      break;
+  //   case 4: //1/4
+  //     var chopLength = 256;
+  //     break;
 
-    case 3: //1/2
-      var chopLength = 512;
-      break;
+  //   case 3: //1/2
+  //     var chopLength = 512;
+  //     break;
 
-    case 2: //1
-      var chopLength = 2048;
-      break;
+  //   case 2: //1
+  //     var chopLength = 2048;
+  //     break;
 
-    case 1: //2
-      var chopLength = 4096;
-      break;
-  }
+  //   case 1: //2
+  //     var chopLength = 4096;
+  //     break;
+  // }
 
   const newClip = [];
 
@@ -83,6 +84,45 @@ const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
       //halve
       let stepLengthHalved = stepLength;
       let exp = 2;
+      for (let k = 0; k < splitter; k++) stepLengthHalved = stepLengthHalved / 2;
+      for (let m = 0; m < splitter - 1; m++) exp = exp * 2;
+      const newPartHalved = { ...step, length: stepLengthHalved };
+      for (let l = 0; l < exp; l++) newClip.push(newPartHalved);
+    }
+  }
+
+  return newClip;
+};
+
+const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
+  if (splitter === 0) return scribbleClip;
+
+  const chopLength = [0, 1, 2, 4, 8, 16, 32, 64][splitter] * 16;
+  const newClip = [];
+
+  for (const step of scribbleClip) {
+    const stepLength = step.length;
+    const chops = Math.trunc(stepLength) / chopLength;
+    const newPart = { ...step, length: chopLength };
+
+    for (let step2 = 0; step2 < chops; step2++) {
+      //split
+      if (splitChop === 0) {
+        newClip.push(newPart);
+      }
+
+      //chop
+      if (splitChop === 1) {
+        const newPartNull = { ...step, note: null, length: chopLength };
+        step2 % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
+      }
+    }
+
+    //halve
+    if (splitChop === 2) {
+      let stepLengthHalved = stepLength;
+      let exp = 2;
+
       for (let k = 0; k < splitter; k++) stepLengthHalved = stepLengthHalved / 2;
       for (let m = 0; m < splitter - 1; m++) exp = exp * 2;
       const newPartHalved = { ...step, length: stepLengthHalved };
@@ -288,17 +328,18 @@ module.exports = {
 
 // const pars = {
 //   octave: 1,
-//   subdiv: '4n',
-//   splitter: 0,
+//   subdiv: '8n',
+//   splitter: 2,
+//   splitChop: 2,
 //   mode: 'Phrygian',
 //   rootNote: 'C',
-//   notes: ['R', 'R', 'R', 1, 'C#3', 'D1'],
+//   notes: [1],
 //   lowerBound: 0,
-//   pattern: 'x__xxx__x',
+//   pattern: 'xxxx',
 //   pitchDirrection: 'descend',
 //   repeatNotes: 'off',
 //   sizzle: 'cos',
-//   splitChop: 0,
 //   upperBound: 5,
 // };
 // makeMelody(pars);
+// console.log(makeMelody(pars));
