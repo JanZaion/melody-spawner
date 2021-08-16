@@ -9,7 +9,8 @@ function getDict(dictName) {
 //clears a clip passes the dict using Ableton Live 10 methods
 function liveTen(clip, dict) {
   var inner = dict.notes;
-  clip.call('remove_notes', 0, 1, 258, 127);
+  var end_time = clip.get('end_time');
+  clip.call('remove_notes', 0, 1, end_time, 127);
   clip.call('set_notes');
   clip.call('notes', inner.length);
   for (var step = 0; step < inner.length; step++) {
@@ -27,7 +28,8 @@ function liveTen(clip, dict) {
 
 //clears a clip passes the dict using Ableton Live 11 methods
 function liveEleven(clip, dict) {
-  clip.call('remove_notes_extended', 1, 127, 0, 258);
+  var end_time = clip.get('end_time');
+  clip.call('remove_notes_extended', 1, 127, 0, end_time);
   clip.call('add_new_notes', dict);
 }
 
