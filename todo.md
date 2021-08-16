@@ -10,6 +10,7 @@
 - add chromatic R
 - hardcode default JSON preset that will init on loadbang
 - rewrite splitter to accomodate for 8n and to make it better
+- on a slower day, rewrite requires to import syntax
 
 ## magenta:
 
@@ -21,8 +22,3 @@
 - make the generate button unavailable when magenta is generating clip. Once the style is final, make the toggle into a comment
 - make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
 - rework splitter at max and at js. Partialy refactored now
-
-## on pattern language
-
-- [x] does nothing, only 2 characters like [xx]
-- [[xx]] does [xx]
