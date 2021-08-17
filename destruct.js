@@ -1,6 +1,5 @@
 const maxApi = require('max-api');
 const { getPattern } = require('./getPattern');
-const { subdivFromNotes } = require('./subdivFromNotes');
 
 const getClip = async () => {
   const stepsLive = await maxApi.getDict('stepsLive');
@@ -9,10 +8,8 @@ const getClip = async () => {
   const parsed = JSON.parse(stringified);
   const { notes } = parsed;
 
-  const subdivInfo = subdivFromNotes(notes);
-  const { subdiv, block } = subdivInfo;
-
-  const pattern = getPattern(notes, block); //, full.subdiv
+  const rhythm = getPattern(notes);
+  const { pattern, subdiv } = rhythm;
 
   maxApi.post(pattern);
   maxApi.post(subdiv);

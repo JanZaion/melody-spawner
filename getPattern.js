@@ -141,13 +141,19 @@ const createSpacedSteps = (notes) => {
 
 const subdivFromSpacedSteps = (spacedSteps) => {
   const durations = spacedSteps.map((step) => step.duration).filter((step) => step !== 0);
-  const shortestNote = Math.min(...durations);
+  const shortestNote = Math.min(...durations) / 0.25;
 
-  const blocks = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 48, 64];
+  const blocks = [0, 1, 2, 4, 8, 16, 64, 128, 192, 256];
+  const dividers = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 48, 64];
   const subdivs = ['32n', '16n', '8n', '4n', '2n', '1n', '1m', '2m', '3m', '4m'];
-  const subdiv = subdivs[blocks.indexOf(shortestNote)];
+  const divisible = blocks.filter((block) => {
+    if (shortestNote % block === 0) return block;
+  });
+  const index = divisible.length;
+  const divider = dividers[index];
+  const subdiv = subdivs[index];
 
-  return { shortestNote, subdiv };
+  return { divider, subdiv };
 };
 
 const createRhythmPattern = (spacedSteps, block) => {
@@ -168,9 +174,8 @@ const createRhythmPattern = (spacedSteps, block) => {
   return pattern;
 };
 
-//add a guard clause for empty clips
 const getPattern = (notes) => {
-  if (notes.length === 0) return '';
+  if (notes.length === 0) return { pattern: '', subdiv: '' };
 
   const block = 0.25; //0.25, 16n as the smallest unit of division. Change to 0.125 when 32n
 
@@ -194,9 +199,9 @@ const getPattern = (notes) => {
 
   const subdivInfo = subdivFromSpacedSteps(spacedSteps);
 
-  const { shortestNote, subdiv } = subdivInfo;
+  const { divider, subdiv } = subdivInfo;
 
-  const pattern = createRhythmPattern(spacedSteps, shortestNote); //change the block once its possible to extract it from no spaced notes
+  const pattern = createRhythmPattern(spacedSteps, divider); //change the block once its possible to extract it from no spaced notes
 
   return { pattern, subdiv };
 };
@@ -205,59 +210,15 @@ module.exports = { getPattern };
 
 const notes = [
   {
-    note_id: 5,
-    pitch: 84,
-    start_time: 0,
-    duration: 0.5,
-    velocity: 100,
+    note_id: 39,
+    pitch: 80,
+    start_time: 0.0,
+    duration: 2,
+    velocity: 100.0,
     mute: 0,
-    probability: 1,
-    velocity_deviation: 0,
-    release_velocity: 64,
-  },
-  {
-    note_id: 4,
-    pitch: 85,
-    start_time: 1,
-    duration: 0.75,
-    velocity: 100,
-    mute: 0,
-    probability: 1,
-    velocity_deviation: 0,
-    release_velocity: 64,
-  },
-  {
-    note_id: 9,
-    pitch: 87,
-    start_time: 1.75,
-    duration: 1.25,
-    velocity: 100,
-    mute: 0,
-    probability: 1,
-    velocity_deviation: 0,
-    release_velocity: 64,
-  },
-  {
-    note_id: 10,
-    pitch: 85,
-    start_time: 3,
-    duration: 1.5,
-    velocity: 100,
-    mute: 0,
-    probability: 1,
-    velocity_deviation: 0,
-    release_velocity: 64,
-  },
-  {
-    note_id: 11,
-    pitch: 88,
-    start_time: 4.5,
-    duration: 2.5,
-    velocity: 100,
-    mute: 0,
-    probability: 1,
-    velocity_deviation: 0,
-    release_velocity: 64,
+    probability: 1.0,
+    velocity_deviation: 0.0,
+    release_velocity: 64.0,
   },
 ];
-getPattern(notes);
+console.log(getPattern(notes));
