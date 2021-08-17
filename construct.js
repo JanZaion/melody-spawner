@@ -3,8 +3,6 @@ const { makeMelody } = require('./makeMelody');
 const { joinWithAI } = require('./joinWithAI');
 const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 
-const getClip = async () => {};
-
 const makeClip = async () => {
   const full = await maxApi.getDict('full');
 
@@ -32,4 +30,3 @@ const makeClip = async () => {
 };
 
 maxApi.addHandler('makeClip', makeClip);
-maxApi.addHandler('getClip', getClip);

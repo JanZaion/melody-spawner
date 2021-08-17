@@ -18,7 +18,7 @@ function getLive(dictName) {
 
   d.clear();
   d.parse(notes);
-  d.set('totalDuration', totalDuration);
+  d.set('totalDuration', totalDuration); //do we need this?
 
   outlet(0, 'bang');
 }
