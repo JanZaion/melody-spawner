@@ -1,4 +1,27 @@
-const { quantize } = require('./quantize');
+const quantize = (number, block, allowZero) => {
+  const absoluteNumber = number.toFixed(3) * 1000; //always assuming floats
+  const divider = block * 1000; //need to get rid of floats for equality evaluation
+  if (absoluteNumber % divider === 0) return number;
+  if (number < 0) return 0;
+
+  let numberGoUp = absoluteNumber;
+  let numberGoDown = absoluteNumber;
+
+  while (numberGoUp % divider !== 0) {
+    numberGoUp += 1;
+  }
+
+  while (numberGoDown % divider !== 0) {
+    numberGoDown -= 1;
+  }
+
+  const roundedNumber =
+    numberGoUp - absoluteNumber < absoluteNumber - numberGoDown ? numberGoUp / 1000 : numberGoDown / 1000;
+
+  const quantizedNumber = allowZero ? roundedNumber : roundedNumber !== 0 ? roundedNumber : divider / 1000;
+
+  return quantizedNumber;
+};
 
 const duplicateNotes = (notes) => {
   return notes.map((step) => {
@@ -98,36 +121,46 @@ const dechordify = (notes) => {
   return dechordifiedNotes;
 };
 
-const createRhythmPattern = (dechordifiedNotes, block) => {
-  const onEvents = dechordifiedNotes.map((step) => {
-    const { start_time, duration } = step;
+const createSpacedSteps = (notes) => {
+  const spacedSteps = [];
 
-    return { start_time: start_time / block, duration: duration / block };
-  });
-
-  const allEvents = [];
-
-  onEvents.forEach((step, stepIndex) => {
+  notes.forEach((step, stepIndex) => {
     const { start_time, duration } = step;
 
     if (stepIndex === 0) {
-      allEvents.push({ duration: start_time, note: false });
+      spacedSteps.push({ duration: start_time, note: false });
     } else {
-      const prevStepEnd = onEvents[stepIndex - 1].start_time + onEvents[stepIndex - 1].duration;
-      allEvents.push({ duration: start_time - prevStepEnd, note: false });
+      const prevStepEnd = notes[stepIndex - 1].start_time + notes[stepIndex - 1].duration;
+      spacedSteps.push({ duration: start_time - prevStepEnd, note: false });
     }
-    allEvents.push({ duration, note: true });
+    spacedSteps.push({ duration, note: true });
   });
 
-  const pattern = allEvents
+  return spacedSteps;
+};
+
+const subdivFromSpacedSteps = (spacedSteps) => {
+  const durations = spacedSteps.map((step) => step.duration).filter((step) => step !== 0);
+  const shortestNote = Math.min(...durations);
+
+  const blocks = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 48, 64];
+  const subdivs = ['32n', '16n', '8n', '4n', '2n', '1n', '1m', '2m', '3m', '4m'];
+  const subdiv = subdivs[blocks.indexOf(shortestNote)];
+
+  return { shortestNote, subdiv };
+};
+
+const createRhythmPattern = (spacedSteps, block) => {
+  const pattern = spacedSteps
     .map((step) => {
       const { duration, note } = step;
+      const repeats = duration / block;
 
       if (note) {
-        const underscores = '_'.repeat(duration - 1);
+        const underscores = '_'.repeat(repeats - 1);
         return 'x' + underscores;
       } else {
-        return '-'.repeat(duration);
+        return '-'.repeat(repeats);
       }
     })
     .join('');
@@ -136,8 +169,10 @@ const createRhythmPattern = (dechordifiedNotes, block) => {
 };
 
 //add a guard clause for empty clips
-const getPattern = (notes, block) => {
+const getPattern = (notes) => {
   if (notes.length === 0) return '';
+
+  const block = 0.25; //0.25, 16n as the smallest unit of division. Change to 0.125 when 32n
 
   const quantizedNotes = notes.map((step) => {
     return {
@@ -155,9 +190,74 @@ const getPattern = (notes, block) => {
 
   const dechordifiedNotes = dechordify(notesSortedTwo);
 
-  const pattern = createRhythmPattern(dechordifiedNotes, block);
+  const spacedSteps = createSpacedSteps(dechordifiedNotes);
 
-  return pattern;
+  const subdivInfo = subdivFromSpacedSteps(spacedSteps);
+
+  const { shortestNote, subdiv } = subdivInfo;
+
+  const pattern = createRhythmPattern(spacedSteps, shortestNote); //change the block once its possible to extract it from no spaced notes
+
+  return { pattern, subdiv };
 };
 
 module.exports = { getPattern };
+
+const notes = [
+  {
+    note_id: 5,
+    pitch: 84,
+    start_time: 0,
+    duration: 0.5,
+    velocity: 100,
+    mute: 0,
+    probability: 1,
+    velocity_deviation: 0,
+    release_velocity: 64,
+  },
+  {
+    note_id: 4,
+    pitch: 85,
+    start_time: 1,
+    duration: 0.75,
+    velocity: 100,
+    mute: 0,
+    probability: 1,
+    velocity_deviation: 0,
+    release_velocity: 64,
+  },
+  {
+    note_id: 9,
+    pitch: 87,
+    start_time: 1.75,
+    duration: 1.25,
+    velocity: 100,
+    mute: 0,
+    probability: 1,
+    velocity_deviation: 0,
+    release_velocity: 64,
+  },
+  {
+    note_id: 10,
+    pitch: 85,
+    start_time: 3,
+    duration: 1.5,
+    velocity: 100,
+    mute: 0,
+    probability: 1,
+    velocity_deviation: 0,
+    release_velocity: 64,
+  },
+  {
+    note_id: 11,
+    pitch: 88,
+    start_time: 4.5,
+    duration: 2.5,
+    velocity: 100,
+    mute: 0,
+    probability: 1,
+    velocity_deviation: 0,
+    release_velocity: 64,
+  },
+];
+getPattern(notes);
