@@ -1,60 +1,35 @@
 const maxApi = require('max-api');
 const { makeMelody } = require('./makeMelody');
-const { magentize } = require('./magentize');
+const { joinWithAI } = require('./joinWithAI');
 const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 
-const joinWithAI = async (params) => {
-  const { AI, midiSteps } = params;
-  if (AI === 0) return midiSteps;
+const getClip = async () => {};
 
-  maxApi.outlet('AIstatus 1');
-  maxApi.outlet('disable 0');
+const makeClip = async () => {
+  const full = await maxApi.getDict('full');
 
-  const AIclip = await magentize(params);
+  const midiSteps = makeMelody(full);
 
-  maxApi.outlet('AIstatus 0');
-  maxApi.outlet('disable 1');
+  full.midiSteps = midiSteps;
 
-  switch (AI) {
-    case 1:
-      return AIclip;
+  const finalClip = await joinWithAI(full);
 
-    case 2:
-      const liveFormat = midiSteps.liveFormat.concat(
-        AIclip.liveFormat.map((step) => {
-          return { ...step, start_time: step.start_time + midiSteps.totalDuration };
-        })
-      );
-      const totalDuration = midiSteps.totalDuration + AIclip.totalDuration;
+  const { liveFormat, totalDuration } = finalClip;
 
-      return { liveFormat, totalDuration };
-  }
+  const names = noteNamesFromLiveFormat(liveFormat);
+
+  await Promise.all([
+    maxApi.setDict('noteNames', {
+      notes: names,
+    }),
+    maxApi.setDict('stepsClip', {
+      notes: liveFormat,
+      totalDuration,
+    }),
+  ]);
+
+  maxApi.outlet('bang');
 };
 
-maxApi.addHandler('makeClip', () => {
-  const constructClip = (async () => {
-    const full = await maxApi.getDict('full');
-
-    const midiSteps = makeMelody(full);
-
-    full.midiSteps = midiSteps;
-
-    const finalClip = await joinWithAI(full);
-
-    const { liveFormat, totalDuration } = finalClip;
-
-    const names = noteNamesFromLiveFormat(liveFormat);
-
-    await Promise.all([
-      maxApi.setDict('noteNames', {
-        notes: names,
-      }),
-      maxApi.setDict('stepsClip', {
-        notes: liveFormat,
-        totalDuration,
-      }),
-    ]);
-
-    maxApi.outlet('bang');
-  })();
-});
+maxApi.addHandler('makeClip', makeClip);
+maxApi.addHandler('getClip', getClip);
