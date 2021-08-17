@@ -198,13 +198,9 @@ const numsToNotes = ({ mode, rootNote, octave, notes }) => {
 };
 
 const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining }, dice) => {
-  const maxRolls = (() => {
-    return repeatNotesBool ? finalMode.length : notesRemaining.length;
-  })();
+  const maxRolls = repeatNotesBool ? finalMode.length : notesRemaining.length;
 
-  const rolls = (() => {
-    return numOfRandNotes > maxRolls ? maxRolls : numOfRandNotes;
-  })();
+  const rolls = numOfRandNotes > maxRolls ? maxRolls : numOfRandNotes;
 
   return dice(maxRolls, 0, rolls);
 };
