@@ -3,7 +3,6 @@ const scribble = require('scribbletune');
 const { Note, Mode } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
-const { parseSubdiv } = require('./parseSubdiv');
 const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
@@ -32,66 +31,6 @@ const maxToBool = (str) => {
     case 1:
       return false;
   }
-};
-
-const chopSplitHalveObs = ({ splitChop, splitter }, scribbleClip) => {
-  if (splitter === 0) return scribbleClip;
-
-  const splitter2 = 6 - splitter;
-
-  // switch (splitter2) {
-  //   case 5: //1/8
-  //     var chopLength = 128;
-  //     break;
-
-  //   case 4: //1/4
-  //     var chopLength = 256;
-  //     break;
-
-  //   case 3: //1/2
-  //     var chopLength = 512;
-  //     break;
-
-  //   case 2: //1
-  //     var chopLength = 2048;
-  //     break;
-
-  //   case 1: //2
-  //     var chopLength = 4096;
-  //     break;
-  // }
-
-  const newClip = [];
-
-  for (const step of scribbleClip) {
-    const stepLength = step.length;
-
-    const chops = Math.trunc(stepLength) / chopLength;
-
-    const newPart = { ...step, length: stepLength / chops };
-
-    for (let step2 = 0; step2 < chops; step2++) {
-      if (splitChop === 0) {
-        //split
-        newClip.push(newPart);
-      } else if (splitChop === 1) {
-        //chop
-        const newPartNull = { note: null, length: stepLength / chops, level: step.level };
-        step2 % 2 === 0 ? newClip.push(newPart) : newClip.push(newPartNull);
-      }
-    }
-    if (splitChop === 2) {
-      //halve
-      let stepLengthHalved = stepLength;
-      let exp = 2;
-      for (let k = 0; k < splitter; k++) stepLengthHalved = stepLengthHalved / 2;
-      for (let m = 0; m < splitter - 1; m++) exp = exp * 2;
-      const newPartHalved = { ...step, length: stepLengthHalved };
-      for (let l = 0; l < exp; l++) newClip.push(newPartHalved);
-    }
-  }
-
-  return newClip;
 };
 
 const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
@@ -186,9 +125,7 @@ const numsToNotes = ({ mode, rootNote, octave, notes }) => {
   };
 
   // If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
-  const notesArray = (() => {
-    return Array.isArray(notes) ? notes : [notes];
-  })();
+  const notesArray = Array.isArray(notes) ? notes : [notes];
 
   notesArray.forEach((note, noteIndex) => {
     if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note)];
