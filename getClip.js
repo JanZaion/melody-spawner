@@ -1,27 +1,4 @@
-const quantize = (number, block, allowZero) => {
-  const absoluteNumber = number.toFixed(3) * 1000; //always assuming floats
-  const divider = block * 1000; //need to get rid of floats for equality evaluation
-  if (absoluteNumber % divider === 0) return number;
-  if (number < 0) return 0;
-
-  let numberGoUp = absoluteNumber;
-  let numberGoDown = absoluteNumber;
-
-  while (numberGoUp % divider !== 0) {
-    numberGoUp += 1;
-  }
-
-  while (numberGoDown % divider !== 0) {
-    numberGoDown -= 1;
-  }
-
-  const roundedNumber =
-    numberGoUp - absoluteNumber < absoluteNumber - numberGoDown ? numberGoUp / 1000 : numberGoDown / 1000;
-
-  const quantizedNumber = allowZero ? roundedNumber : roundedNumber !== 0 ? roundedNumber : divider / 1000;
-
-  return quantizedNumber;
-};
+const { Note } = require('@tonaljs/tonal');
 
 const duplicateNotes = (notes) => {
   return notes.map((step) => {
@@ -66,6 +43,31 @@ const sortStartTimesAndPitches = (notes) => {
     }
   }
   return pitchesSorted;
+};
+
+const quantize = (number, block, allowZero) => {
+  const absoluteNumber = number.toFixed(3) * 1000; //always assuming floats
+  const divider = block * 1000; //need to get rid of floats for equality evaluation
+  if (absoluteNumber % divider === 0) return number;
+  if (number < 0) return 0;
+
+  let numberGoUp = absoluteNumber;
+  let numberGoDown = absoluteNumber;
+
+  while (numberGoUp % divider !== 0) {
+    numberGoUp += 1;
+  }
+
+  while (numberGoDown % divider !== 0) {
+    numberGoDown -= 1;
+  }
+
+  const roundedNumber =
+    numberGoUp - absoluteNumber < absoluteNumber - numberGoDown ? numberGoUp / 1000 : numberGoDown / 1000;
+
+  const quantizedNumber = allowZero ? roundedNumber : roundedNumber !== 0 ? roundedNumber : divider / 1000;
+
+  return quantizedNumber;
 };
 
 const checkOverlaps = (notes, block) => {
@@ -174,7 +176,7 @@ const createRhythmPattern = (spacedSteps, block) => {
   return pattern;
 };
 
-const getPattern = (notes) => {
+const getClip = (notes) => {
   if (notes.length === 0) return { pattern: '', subdiv: '' };
 
   const block = 0.25; //0.25, 16n as the smallest unit of division. Change to 0.125 when 32n
@@ -195,6 +197,8 @@ const getPattern = (notes) => {
 
   const dechordifiedNotes = dechordify(notesSortedTwo);
 
+  const noteNames = dechordifiedNotes.map((step) => Note.fromMidi(step.pitch)).join(' ');
+
   const spacedSteps = createSpacedSteps(dechordifiedNotes);
 
   const subdivInfo = subdivFromSpacedSteps(spacedSteps);
@@ -203,22 +207,7 @@ const getPattern = (notes) => {
 
   const pattern = createRhythmPattern(spacedSteps, divider); //change the block once its possible to extract it from no spaced notes
 
-  return { pattern, subdiv };
+  return { pattern, subdiv, noteNames };
 };
 
-module.exports = { getPattern };
-
-const notes = [
-  {
-    note_id: 39,
-    pitch: 80,
-    start_time: 0.0,
-    duration: 2,
-    velocity: 100.0,
-    mute: 0,
-    probability: 1.0,
-    velocity_deviation: 0.0,
-    release_velocity: 64.0,
-  },
-];
-console.log(getPattern(notes));
+module.exports = { getClip };

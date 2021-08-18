@@ -2,20 +2,26 @@ const maxApi = require('max-api');
 const { makeMelody } = require('./makeMelody');
 const { joinWithAI } = require('./joinWithAI');
 const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
-const { getPattern } = require('./getPattern');
+const { getNotes } = require('./getNotes');
+const { getClip } = require('./getClip');
 
-const getClip = async () => {
-  const stepsLive = await maxApi.getDict('stepsLive');
+const getPattern = async () => {
+  const notes = await getNotes('stepsLive');
 
-  const stringified = JSON.stringify(stepsLive);
-  const parsed = JSON.parse(stringified);
-  const { notes } = parsed;
-
-  const rhythm = getPattern(notes);
-  const { pattern, subdiv } = rhythm;
+  const clipData = getClip(notes);
+  const { pattern, subdiv } = clipData;
 
   maxApi.outlet(`pattern ${pattern}`);
   maxApi.outlet(`subdiv ${subdiv}`);
+};
+
+const getPitches = async () => {
+  const notes = await getNotes('stepsLive');
+
+  const clipData = getClip(notes);
+  const { noteNames } = clipData;
+
+  maxApi.outlet(`noteNames ${noteNames}`);
 };
 
 const makeClip = async () => {
@@ -45,4 +51,5 @@ const makeClip = async () => {
 };
 
 maxApi.addHandler('makeClip', makeClip);
-maxApi.addHandler('getClip', getClip);
+maxApi.addHandler('getPattern', getPattern);
+maxApi.addHandler('getPitches', getPitches);
