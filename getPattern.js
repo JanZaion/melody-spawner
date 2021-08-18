@@ -86,7 +86,7 @@ const checkOverlaps = (notes, block) => {
         //check if the overlaping note is the earliest following
         if (shortestFollowingStart === 0 || next_start_time < shortestFollowingStart) {
           //ckeck how long the overlap is to decide whether to create separate note else chord
-          if (duration / 2 > stepEnd - next_start_time) {
+          if (next_duration / 2 > stepEnd - next_start_time) {
             shortestFollowingStart = next_start_time;
           } else {
             notesMutable[nextStepIndex].start_time = start_time;
@@ -143,9 +143,9 @@ const subdivFromSpacedSteps = (spacedSteps) => {
   const durations = spacedSteps.map((step) => step.duration).filter((step) => step !== 0);
   const shortestNote = Math.min(...durations) / 0.25;
 
-  const blocks = [0, 1, 2, 4, 8, 16, 64, 128, 192, 256];
-  const dividers = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 48, 64];
-  const subdivs = ['32n', '16n', '8n', '4n', '2n', '1n', '1m', '2m', '3m', '4m'];
+  const blocks = [0, 1, 2, 4, 8, 16, 64, 128, 256];
+  const dividers = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 64];
+  const subdivs = ['32n', '16n', '8n', '4n', '2n', '1n', '1m', '2m', '4m'];
   const divisible = blocks.filter((block) => {
     if (shortestNote % block === 0) return block;
   });
