@@ -112,23 +112,58 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   return { liveFormat, totalDuration };
 };
 
-const numsToNotes = ({ mode, rootNote, octave, notes }) => {
-  const upperMode = Mode.notes(mode, rootNote + octave);
-  const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
-  const finalMode = lowerMode.concat(upperMode);
+const selectMode = ({ mode, rootNote, octave, intervals }) => {
+  const chromaticMode = (rootNote, octave) => {
+    const chromatic =
+      rootNote.indexOf('b') === -1
+        ? ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+        : ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-  //converts number to an index of an array so that it works with upperMode/lowerMode
-  const indexConvert = (number) => {
-    if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
-    if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
-    return 7; //any other number, 7 is root note of the finalMode
+    const repeats = chromatic.indexOf(rootNote);
+    for (let i = 0; i < repeats; i++) chromatic.push(chromatic.shift());
+
+    const upperMode = chromatic.map((note) => note + octave);
+    const lowerMode = chromatic.map((note) => note + (octave - 1)).reverse();
+
+    return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
   };
+
+  const diatonicMode = (mode, rootNote, octave) => {
+    const upperMode = Mode.notes(mode, rootNote + octave);
+    const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
+
+    return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
+  };
+
+  return intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
+};
+
+const numsToNotes = ({ mode, rootNote, octave, notes, intervals }, selectedMode) => {
+  if (notes.every((note) => isNaN(note))) return notes;
+
+  const { finalMode } = selectedMode; //?
+
+  // const finalMode = intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
+
+  //converts number to an index of an ar ray so that it works with upperMode/lowerMode
+  const indexConvert = (number, range) => {
+    if (number > 0 && number < range) return number - 2 + range; //1-7 range
+    if (number > range * -1 && number < 0) return number * -1 - 1; //-1 - -7 range
+    return 12; //any other number, 7 is root note of the finalMode
+  };
+
+  // const indexConvert = (number) => {
+  //   if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
+  //   if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
+  //   return 7; //any other number, 7 is root note of the finalMode
+  // };
 
   // If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
   const notesArray = Array.isArray(notes) ? notes : [notes];
 
   notesArray.forEach((note, noteIndex) => {
-    if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note)];
+    // if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note, finalMode.length - 1)];
+    if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note, finalMode.length - 1)];
   });
 
   return notesArray;
@@ -142,18 +177,17 @@ const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesR
   return dice(maxRolls, 0, rolls);
 };
 
-const finalizeMode = (mode, rootNote, octave, upperBound, lowerBound) => {
-  const RN = rootNote + octave;
-  const upperMode = Mode.notes(mode, RN);
-  const lowerMode = Mode.notes(mode, RN);
+const finalizeMode = (upperBound, lowerBound, selectedMode) => {
+  // const RN = rootNote + octave;
+  // const upperMode = Mode.notes(mode, RN);
+  // const lowerMode = Mode.notes(mode, RN);
+  const { upperMode, lowerMode } = selectedMode;
 
-  for (let i = 0; i < 7 - upperBound; i++) {
-    upperMode.pop();
-  }
+  const upperCount = upperMode.length - upperBound;
+  for (let i = 0; i < upperCount; i++) upperMode.pop();
 
-  for (let i = 0; i < 7 - lowerBound * -1; i++) {
-    lowerMode.shift();
-  }
+  const lowerCount = lowerMode.length - lowerBound * -1;
+  for (let i = 0; i < lowerCount; i++) lowerMode.shift();
 
   lowerMode.forEach((tone, toneIndex) => {
     lowerMode[toneIndex] = Note.transpose(tone, '-8P');
@@ -182,13 +216,13 @@ const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrect
   }
 };
 
-const RsToNotes = ({ mode, rootNote, octave, upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums) => {
+const RsToNotes = ({ upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums, selectedMode) => {
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
   if (numOfRandNotes === 0) return [];
 
   //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges by the bounderies set in params
-  const finalMode = finalizeMode(mode, rootNote, octave, upperBound, lowerBound);
+  const finalMode = finalizeMode(upperBound, lowerBound, selectedMode);
 
   //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
   const notesRemaining = finalMode.filter((note) => {
@@ -224,11 +258,12 @@ const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
 };
 
 const makeMelody = (params) => {
+  const selectedMode = selectMode(params);
   //notesNoNums is an array of notes where all numbers were transformed into notes
-  const notesNoNums = numsToNotes(params);
+  const notesNoNums = numsToNotes(params, selectedMode); //?
 
   //notesNoRs is an array of notes where Rs are transformed into notes
-  const notesNoRs = RsToNotes(params, notesNoNums);
+  const notesNoRs = RsToNotes(params, notesNoNums, selectedMode);
 
   //notesAll is an array of notes that will be sent to Scribbletune after transposition
   const notesAll = joinNoNumsWithNoRs(notesNoNums, notesNoRs);
@@ -242,7 +277,7 @@ const makeMelody = (params) => {
     pattern: params.pattern,
     subdiv: params.subdiv,
   });
-
+  console.log(scribbleClip);
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
   const choppedScribbleClip = chopSplitHalve(params, scribbleClip);
 
@@ -259,20 +294,21 @@ module.exports = {
   makeMelody,
 };
 
-// const pars = {
-//   octave: 1,
-//   subdiv: '8n',
-//   splitter: 2,
-//   splitChop: 2,
-//   mode: 'Phrygian',
-//   rootNote: 'C',
-//   notes: [1],
-//   lowerBound: 0,
-//   pattern: 'xxxx',
-//   pitchDirrection: 'descend',
-//   repeatNotes: 'off',
-//   sizzle: 'cos',
-//   upperBound: 5,
-// };
-// makeMelody(pars);
+const pars = {
+  octave: 1,
+  subdiv: '8n',
+  splitter: 0,
+  splitChop: 2,
+  mode: 'Major',
+  rootNote: 'C',
+  notes: ['R', 'R', 'R', 1],
+  pattern: 'xxxx',
+  pitchDirrection: 'descend',
+  repeatNotes: 'off',
+  sizzle: 'cos',
+  upperBound: 1,
+  lowerBound: 0,
+  intervals: 'diatonic',
+};
+makeMelody(pars);
 // console.log(makeMelody(pars));
