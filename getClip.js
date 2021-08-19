@@ -197,7 +197,7 @@ const getClip = (notes) => {
 
   const dechordifiedNotes = dechordify(notesSortedTwo);
 
-  const noteNames = dechordifiedNotes.map((step) => Note.fromMidi(step.pitch)).join(' ');
+  const noteNames = dechordifiedNotes.map((step) => Note.fromMidi(step.pitch - 12)).join(' '); //-12 because of the middle C octave transpose
 
   const spacedSteps = createSpacedSteps(dechordifiedNotes);
 

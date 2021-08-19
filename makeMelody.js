@@ -273,7 +273,7 @@ const makeMelody = (params) => {
     pattern: params.pattern,
     subdiv: params.subdiv,
   });
-  console.log(scribbleClip);
+
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
   const choppedScribbleClip = chopSplitHalve(params, scribbleClip);
 
@@ -290,21 +290,21 @@ module.exports = {
   makeMelody,
 };
 
-const pars = {
-  octave: 1,
-  subdiv: '8n',
-  splitter: 0,
-  splitChop: 2,
-  mode: 'Major',
-  rootNote: 'C',
-  notes: ['R', 'R', 'R'],
-  pattern: 'xxxx',
-  pitchDirrection: 'descend',
-  repeatNotes: 'off',
-  sizzle: 'cos',
-  upperBound: 1,
-  lowerBound: -3,
-  intervals: 'diatonic',
-};
-makeMelody(pars);
-// console.log(makeMelody(pars));
+// const pars = {
+//   octave: 1,
+//   subdiv: '8n',
+//   splitter: 0,
+//   splitChop: 2,
+//   mode: 'Major',
+//   rootNote: 'C',
+//   notes: ['R', 'R', 'R'],
+//   pattern: 'xxxx',
+//   pitchDirrection: 'descend',
+//   repeatNotes: 'off',
+//   sizzle: 'cos',
+//   upperBound: 1,
+//   lowerBound: -3,
+//   intervals: 'diatonic',
+// };
+// makeMelody(pars);
+// // console.log(makeMelody(pars));
