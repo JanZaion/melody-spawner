@@ -123,14 +123,16 @@ const selectMode = ({ mode, rootNote, octave, intervals }) => {
     for (let i = 0; i < repeats; i++) chromatic.push(chromatic.shift());
 
     const upperMode = chromatic.map((note) => note + octave);
-    const lowerMode = chromatic.map((note) => note + (octave - 1)).reverse();
+    upperMode.push(rootNote + (octave + 1));
+    const lowerMode = chromatic.map((note) => note + (octave - 1));
 
     return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
   };
 
   const diatonicMode = (mode, rootNote, octave) => {
     const upperMode = Mode.notes(mode, rootNote + octave);
-    const lowerMode = Mode.notes(mode, rootNote + (octave - 1)).reverse();
+    upperMode.push(rootNote + (octave + 1));
+    const lowerMode = Mode.notes(mode, rootNote + (octave - 1));
 
     return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
   };
@@ -138,35 +140,26 @@ const selectMode = ({ mode, rootNote, octave, intervals }) => {
   return intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
 };
 
-const numsToNotes = ({ mode, rootNote, octave, notes, intervals }, selectedMode) => {
+const numsToNotes = ({ notes }, selectedMode) => {
   if (notes.every((note) => isNaN(note))) return notes;
 
-  const { finalMode } = selectedMode; //?
+  const { upperMode, lowerMode } = selectedMode;
 
-  // const finalMode = intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
-
-  //converts number to an index of an ar ray so that it works with upperMode/lowerMode
-  const indexConvert = (number, range) => {
-    if (number > 0 && number < range) return number - 2 + range; //1-7 range
-    if (number > range * -1 && number < 0) return number * -1 - 1; //-1 - -7 range
-    return 12; //any other number, 7 is root note of the finalMode
-  };
-
-  // const indexConvert = (number) => {
-  //   if (number > 0 && number < 8) return number - 1 + 7; //1-7 range
-  //   if (number > -8 && number < 0) return number * -1 - 1; //-1 - -7 range
-  //   return 7; //any other number, 7 is root note of the finalMode
-  // };
-
-  // If there is only 1 note inputed in max, its a string, we cant use string, only array, hence notesArray for this case
   const notesArray = Array.isArray(notes) ? notes : [notes];
 
-  notesArray.forEach((note, noteIndex) => {
-    // if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note, finalMode.length - 1)];
-    if (!isNaN(note)) notesArray[noteIndex] = finalMode[indexConvert(note, finalMode.length - 1)];
+  const noNums = notesArray.map((note) => {
+    switch (isNaN(note)) {
+      case true:
+        return note;
+
+      case false:
+        if (note > 0 && note < upperMode.length + 1) return upperMode[note - 1];
+        if (note < 0 && note > (lowerMode.length + 1) * -1) return lowerMode[(note + 1) * -1];
+        return upperMode[0];
+    }
   });
 
-  return notesArray;
+  return noNums;
 };
 
 const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining }, dice) => {
@@ -178,9 +171,6 @@ const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesR
 };
 
 const finalizeMode = (upperBound, lowerBound, selectedMode) => {
-  // const RN = rootNote + octave;
-  // const upperMode = Mode.notes(mode, RN);
-  // const lowerMode = Mode.notes(mode, RN);
   const { upperMode, lowerMode } = selectedMode;
 
   const upperCount = upperMode.length - upperBound;
@@ -216,7 +206,11 @@ const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrect
   }
 };
 
-const RsToNotes = ({ upperBound, lowerBound, repeatNotes, pitchDirrection }, notesNoNums, selectedMode) => {
+const RsToNotes = (
+  { upperBound, lowerBound, repeatNotes, pitchDirrection, rootNote, octave },
+  notesNoNums,
+  selectedMode
+) => {
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
   if (numOfRandNotes === 0) return [];
@@ -228,6 +222,8 @@ const RsToNotes = ({ upperBound, lowerBound, repeatNotes, pitchDirrection }, not
   const notesRemaining = finalMode.filter((note) => {
     return notesNoNums.indexOf(note) === -1;
   });
+
+  if (notesRemaining.length === 0) notesRemaining.push(rootNote + octave);
 
   const repeatNotesBool = maxToBool(repeatNotes);
 
@@ -260,7 +256,7 @@ const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
 const makeMelody = (params) => {
   const selectedMode = selectMode(params);
   //notesNoNums is an array of notes where all numbers were transformed into notes
-  const notesNoNums = numsToNotes(params, selectedMode); //?
+  const notesNoNums = numsToNotes(params, selectedMode);
 
   //notesNoRs is an array of notes where Rs are transformed into notes
   const notesNoRs = RsToNotes(params, notesNoNums, selectedMode);
@@ -301,13 +297,13 @@ const pars = {
   splitChop: 2,
   mode: 'Major',
   rootNote: 'C',
-  notes: ['R', 'R', 'R', 1],
+  notes: ['R', 'R', 'R'],
   pattern: 'xxxx',
   pitchDirrection: 'descend',
   repeatNotes: 'off',
   sizzle: 'cos',
   upperBound: 1,
-  lowerBound: 0,
+  lowerBound: -3,
   intervals: 'diatonic',
 };
 makeMelody(pars);

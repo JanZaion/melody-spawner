@@ -8,7 +8,7 @@ function intervalsToggles(intervals) {
 
   switch (intervals) {
     case 'diatonic':
-      for (var i = 1; i < 8; i = i + 1) upperBound.append(i);
+      for (var i = 1; i < 9; i = i + 1) upperBound.append(i);
       for (var j = 0; j > -8; j = j - 1) lowerBound.append(j);
       break;
 
