@@ -4,7 +4,7 @@ const { joinWithAI } = require('./joinWithAI');
 const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 const { getNotes } = require('./getNotes');
 const { getClip } = require('./getClip');
-const { rhythmAlgos } = require('./generateRhythms');
+const { rhythmAlgos } = require('./rhythmAlgos');
 
 const getPattern = async () => {
   const notes = await getNotes('stepsLive');
@@ -51,11 +51,11 @@ const makeClip = async () => {
   maxApi.outlet('make');
 };
 
-const generateRhythm = async (algoName) => {
+const generateRhythm = async () => {
   const full = await maxApi.getDict('full');
-  const { pattern } = full;
+  const { pattern, rhythmAlgo } = full;
 
-  return rhythmAlgos[algoName](pattern);
+  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo](pattern)}`);
 };
 
 maxApi.addHandler('makeClip', makeClip);

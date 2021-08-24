@@ -12,6 +12,7 @@
 ## magenta:
 
 - figure out local setup for checkpoint
+- and also just separate it from this device
 
 ## semi-fixed:
 
@@ -19,3 +20,10 @@
 - make the generate button unavailable when magenta is generating clip. Once the style is final, make the toggle into a comment
 - make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
 - reworked splitter, menu still kinda confusing, halving very inefficient
+
+## production
+
+- fullowing the tutorial at https://docs.cycling74.com/max8/vignettes/03_n4m_projects_devices seems to have worked
+- produce the amxd directly from the project management window
+- the main patch that is included should not be amxd but maxpat
+- export max for live device is probably the way to go
