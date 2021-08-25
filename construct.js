@@ -1,6 +1,5 @@
 const maxApi = require('max-api');
 const { makeMelody } = require('./makeMelody');
-const { joinWithAI } = require('./joinWithAI');
 const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 const { getNotes } = require('./getNotes');
 const { getClip } = require('./getClip');
@@ -37,11 +36,7 @@ const makeClip = async () => {
 
   const midiSteps = makeMelody(full);
 
-  full.midiSteps = midiSteps;
-
-  const finalClip = await joinWithAI(full);
-
-  const { liveFormat, totalDuration } = finalClip;
+  const { liveFormat, totalDuration } = midiSteps;
 
   const names = noteNamesFromLiveFormat(liveFormat);
 
