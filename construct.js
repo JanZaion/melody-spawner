@@ -10,10 +10,13 @@ const getPattern = async () => {
   const notes = await getNotes('stepsLive');
 
   const clipData = getClip(notes);
-  const { pattern, subdiv } = clipData;
 
-  maxApi.outlet(`pattern ${pattern}`);
-  maxApi.outlet(`subdiv ${subdiv}`);
+  if (clipData) {
+    const { pattern, subdiv } = clipData;
+
+    maxApi.outlet(`pattern ${pattern}`);
+    maxApi.outlet(`subdiv ${subdiv}`);
+  }
 };
 
 const getPitches = async () => {
