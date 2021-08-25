@@ -1,12 +1,4 @@
 const dice = require('convenient-methods-of-randomness');
-/*
-Adding new Algos:
-1. write the algo as an arrow function
-2. add the algo to the rhythmAlgos object
-3. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
-
-Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend
-*/
 
 // Generates a rhythm suitable for 4 chord pattern out of 4 "x" and 4 or 12 "_".
 const wildMild = (wild, howLong) => {

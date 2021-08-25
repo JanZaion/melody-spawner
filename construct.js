@@ -5,6 +5,7 @@ const { noteNamesFromLiveFormat } = require('./noteNamesFromLiveFormat');
 const { getNotes } = require('./getNotes');
 const { getClip } = require('./getClip');
 const { rhythmAlgos } = require('./rhythmAlgos');
+const { pitchAlgos } = require('./pitchAlgos');
 
 const getPattern = async () => {
   const notes = await getNotes('stepsLive');
@@ -23,9 +24,12 @@ const getPitches = async () => {
   const notes = await getNotes('stepsLive');
 
   const clipData = getClip(notes);
-  const { noteNames } = clipData;
 
-  maxApi.outlet(`noteNames ${noteNames}`);
+  if (clipData) {
+    const { noteNames } = clipData;
+
+    maxApi.outlet(`noteNames ${noteNames}`);
+  }
 };
 
 const makeClip = async () => {
@@ -61,7 +65,15 @@ const generateRhythm = async () => {
   maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo](pattern)}`);
 };
 
+const generatePitch = async () => {
+  const full = await maxApi.getDict('full');
+  const { notes, pitchAlgo } = full;
+
+  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo](notes)}`);
+};
+
 maxApi.addHandler('makeClip', makeClip);
 maxApi.addHandler('getPattern', getPattern);
 maxApi.addHandler('getPitches', getPitches);
 maxApi.addHandler('generateRhythm', generateRhythm);
+maxApi.addHandler('generatePitch', generatePitch);
