@@ -177,7 +177,7 @@ const createRhythmPattern = (spacedSteps, block) => {
 };
 
 const getClip = (notes) => {
-  if (notes.length === 0) return;
+  if (!notes) return;
 
   const block = 0.25; //0.25, 16n as the smallest unit of division. Change to 0.125 when 32n
 
