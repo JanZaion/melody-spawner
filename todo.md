@@ -12,6 +12,7 @@
 
 - figure out local setup for checkpoint
 - and also just separate it from this device
+- make it so that it is based on a subset of ready made patterns
 
 ## semi-fixed:
 
