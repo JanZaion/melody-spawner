@@ -10,7 +10,7 @@ const wildMild = (wild, howLong) => {
   const xArray = (() => {
     switch (wild) {
       case 'wild':
-        return dice.multiRollSortedAscending(numChar, 0, 4);
+        return dice.multiRollUniqueSortedAscending(numChar, 0, 4);
 
       case 'mild':
         const x1 = dice.range(numChar / 4, 0);
