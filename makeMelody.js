@@ -291,21 +291,21 @@ module.exports = {
   makeMelody,
 };
 
-const pars = {
-  octave: 1,
-  subdiv: '4n',
-  splitter: 0,
-  splitChop: 0,
-  mode: 'Major',
-  rootNote: 'D#',
-  notes: ['R', 'R', 'R', 'R'],
-  pattern: 'x__x__x_',
-  pitchDirrection: 'ascend',
-  repeatNotes: 'on',
-  sizzle: 'cos',
-  upperBound: 5,
-  lowerBound: 0,
-  intervals: 'diatonic',
-};
-makeMelody(pars);
+// const pars = {
+//   octave: 1,
+//   subdiv: '4n',
+//   splitter: 0,
+//   splitChop: 0,
+//   mode: 'Major',
+//   rootNote: 'D#',
+//   notes: ['R', 'R', 'R', 'R'],
+//   pattern: 'x__x__x_',
+//   pitchDirrection: 'ascend',
+//   repeatNotes: 'on',
+//   sizzle: 'cos',
+//   upperBound: 5,
+//   lowerBound: 0,
+//   intervals: 'diatonic',
+// };
+// makeMelody(pars);
 // console.log(makeMelody(pars));
