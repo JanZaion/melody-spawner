@@ -273,6 +273,7 @@ const makeMelody = (params) => {
     notes: notesNoNegatives,
     pattern: params.pattern,
     subdiv: params.subdiv,
+    sizzle: params.sizzle,
   });
 
   //choppedScribbleClip: is a scribbletune clip that has its notes chopped or split or halved
@@ -307,5 +308,5 @@ module.exports = {
 //   lowerBound: 0,
 //   intervals: 'diatonic',
 // };
-// makeMelody(pars);
+// // makeMelody(pars);
 // console.log(makeMelody(pars));
