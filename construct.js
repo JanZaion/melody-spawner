@@ -55,16 +55,16 @@ const makeClip = async () => {
 
 const generateRhythm = async () => {
   const full = await maxApi.getDict('full');
-  const { pattern, rhythmAlgo } = full;
+  const { rhythmAlgo } = full;
 
-  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo](pattern)}`);
+  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo](full)}`);
 };
 
 const generatePitch = async () => {
   const full = await maxApi.getDict('full');
-  const { notes, pitchAlgo } = full;
+  const { pitchAlgo } = full;
 
-  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo](notes)}`);
+  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo](full)}`);
 };
 
 maxApi.addHandler('makeClip', makeClip);
