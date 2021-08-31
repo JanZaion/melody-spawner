@@ -1,8 +1,8 @@
 # TODO:
 
 - apply new apiPass to atchords
-- ditch velocontrol
-- fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something
+- fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something. Although its prly just a magenta thing
+- fix the bug when the clip is not cleared
   Bidirectional features:
 - testLive 10 support
 - hardcode default JSON preset that will init on loadbang
