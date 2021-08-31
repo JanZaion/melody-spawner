@@ -130,7 +130,7 @@ const selectMode = ({ mode, rootNote, octave, intervals }) => {
   };
 
   const diatonicMode = (mode, rootNote, octave) => {
-    const upperMode = Mode.notes(mode, rootNote + octave);
+    const upperMode = Mode.notes(mode, rootNote + octave).map((note) => Note.simplify(note));
     upperMode.push(rootNote + (octave + 1));
     const lowerMode = Mode.notes(mode, rootNote + (octave - 1));
 
@@ -255,6 +255,7 @@ const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
 
 const makeMelody = (params) => {
   const selectedMode = selectMode(params);
+
   //notesNoNums is an array of notes where all numbers were transformed into notes
   const notesNoNums = numsToNotes(params, selectedMode);
 
@@ -290,21 +291,21 @@ module.exports = {
   makeMelody,
 };
 
-// const pars = {
-//   octave: 1,
-//   subdiv: '8n',
-//   splitter: 0,
-//   splitChop: 2,
-//   mode: 'Major',
-//   rootNote: 'C',
-//   notes: ['R', 'R', 'R'],
-//   pattern: 'xxxx',
-//   pitchDirrection: 'descend',
-//   repeatNotes: 'off',
-//   sizzle: 'cos',
-//   upperBound: 1,
-//   lowerBound: -3,
-//   intervals: 'diatonic',
-// };
-// makeMelody(pars);
-// // console.log(makeMelody(pars));
+const pars = {
+  octave: 1,
+  subdiv: '4n',
+  splitter: 0,
+  splitChop: 0,
+  mode: 'Major',
+  rootNote: 'D#',
+  notes: ['R', 'R', 'R', 'R'],
+  pattern: 'x__x__x_',
+  pitchDirrection: 'ascend',
+  repeatNotes: 'on',
+  sizzle: 'cos',
+  upperBound: 5,
+  lowerBound: 0,
+  intervals: 'diatonic',
+};
+makeMelody(pars);
+// console.log(makeMelody(pars));
