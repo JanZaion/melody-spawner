@@ -116,23 +116,25 @@ const selectMode = ({ mode, rootNote, octave, intervals }) => {
   const chromaticMode = (rootNote, octave) => {
     const chromatic =
       rootNote.indexOf('b') === -1
-        ? ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
-        : ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
     const repeats = chromatic.indexOf(rootNote);
-    for (let i = 0; i < repeats; i++) chromatic.push(chromatic.shift());
+    for (let i = 0; i < repeats; i++) chromatic.push(chromatic.shift() + (octave + 1));
 
-    const upperMode = chromatic.map((note) => note + octave);
+    const upperMode = chromatic.map((note) => {
+      return /\d/.test(note) ? note : note + octave;
+    });
+    const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
     upperMode.push(rootNote + (octave + 1));
-    const lowerMode = chromatic.map((note) => note + (octave - 1));
 
     return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
   };
 
   const diatonicMode = (mode, rootNote, octave) => {
     const upperMode = Mode.notes(mode, rootNote + octave).map((note) => Note.simplify(note));
+    const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
     upperMode.push(rootNote + (octave + 1));
-    const lowerMode = Mode.notes(mode, rootNote + (octave - 1));
 
     return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
   };
@@ -178,10 +180,6 @@ const finalizeMode = (upperBound, lowerBound, selectedMode) => {
 
   const lowerCount = lowerMode.length - lowerBound * -1;
   for (let i = 0; i < lowerCount; i++) lowerMode.shift();
-
-  lowerMode.forEach((tone, toneIndex) => {
-    lowerMode[toneIndex] = Note.transpose(tone, '-8P');
-  });
 
   return lowerMode.concat(upperMode);
 };
@@ -310,3 +308,26 @@ module.exports = {
 // };
 // // makeMelody(pars);
 // console.log(makeMelody(pars));
+
+// const pars = {
+//   subdiv: '4n',
+//   splitter: 0,
+//   octave: 1,
+//   mode: 'Minor',
+//   rootNote: 'D#',
+//   chordPatterns: 'R R R R',
+//   notes: [1, 'R', 'R', 'R'],
+//   patterns: 'xxxx',
+//   pattern: 'x_xx_x__',
+//   pitchAlgo: 'dunno',
+//   repeatNotes: 'off',
+//   rhythmAlgo: 'short_wild',
+//   sizzle: 'none',
+//   splitChop: 2,
+//   upperBound: 1,
+//   pitchDirrection: 'ascend',
+//   lowerBound: -4,
+//   intervals: 'chromatic',
+// };
+
+// makeMelody(pars);
