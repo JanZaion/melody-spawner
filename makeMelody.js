@@ -7,24 +7,6 @@ const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
   switch (str) {
-    case 'yes':
-      return true;
-
-    case 'no':
-      return false;
-
-    case 'on':
-      return true;
-
-    case 'off':
-      return false;
-
-    case 'sevenths':
-      return true;
-
-    case 'triads':
-      return false;
-
     case 0: //inverted logic for toggle indexes in Max
       return true;
 

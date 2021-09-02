@@ -5,7 +5,6 @@
 - fix the bug when the clip is not cleared
   Bidirectional features:
 - testLive 10 support
-- hardcode default JSON preset that will init on loadbang
 - on a slower day, rewrite requires to import syntax
 
 ## magenta:
@@ -18,6 +17,7 @@
 
 - sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
 - make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
+- hardcoded default JSON preset on loadbang works now, but relies on delay. Maybe there is a cleaner solution
 
 ## production
 

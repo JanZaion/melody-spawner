@@ -67,8 +67,33 @@ const generatePitch = async () => {
   maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo](full)}`);
 };
 
+const init = async () => {
+  await maxApi.setDict('full', {
+    subdiv: '4n',
+    splitter: 0,
+    octave: 2,
+    mode: 'Minor',
+    rootNote: 'F',
+    chordPatterns: 'R R R R',
+    notes: ['R', 'R', 'R', 'R'],
+    patterns: 'xxxx',
+    pattern: 'xxxx',
+    pitchAlgo: 'dunno',
+    repeatNotes: 1,
+    rhythmAlgo: 'long_wild',
+    sizzle: 'none',
+    splitChop: 0,
+    upperBound: 4,
+    lowerBound: 0,
+    pitchDirrection: 'any',
+  });
+
+  maxApi.outlet('Init');
+};
+
 maxApi.addHandler('makeClip', makeClip);
 maxApi.addHandler('getPattern', getPattern);
 maxApi.addHandler('getPitches', getPitches);
 maxApi.addHandler('generateRhythm', generateRhythm);
 maxApi.addHandler('generatePitch', generatePitch);
+maxApi.addHandler('Init', init);
