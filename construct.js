@@ -74,7 +74,7 @@ const init = async () => {
     octave: 2,
     mode: 'Minor',
     rootNote: 'F',
-    chordPatterns: 'R R R R',
+    notePatterns: 'R R R R',
     notes: ['R', 'R', 'R', 'R'],
     patterns: 'xxxx',
     pattern: 'xxxx',
