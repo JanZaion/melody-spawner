@@ -45,9 +45,12 @@ const reshuffle = (pattern) => {
 };
 
 const rhythmAlgos = {
-  long_wild: () => {
-    return wildMild('wild', 'long');
-  },
+  long_wild: [
+    () => {
+      return wildMild('wild', 'long');
+    },
+    'long wild I guess',
+  ],
   long_mild: () => {
     return wildMild('mild', 'long');
   },

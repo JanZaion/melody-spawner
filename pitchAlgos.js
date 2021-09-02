@@ -9,8 +9,11 @@ const thiser = () => {
 };
 
 const pitchAlgos = {
-  dunno,
-  thiser,
+  dunno: [dunno, 'dunno what this is supposed to be'],
+  thiser: [
+    thiser,
+    'some very long description about some stugg running through staff omg what am I typing now, I mean who even cares, whatever',
+  ],
 };
 
 module.exports = { pitchAlgos };

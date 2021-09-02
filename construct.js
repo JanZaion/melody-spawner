@@ -57,14 +57,28 @@ const generateRhythm = async () => {
   const full = await maxApi.getDict('full');
   const { rhythmAlgo } = full;
 
-  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo](full)}`);
+  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo][0](full)}`);
+};
+
+const patternDescription = async () => {
+  const full = await maxApi.getDict('full');
+  const { rhythmAlgo } = full;
+
+  maxApi.outlet(`patternDescription ${rhythmAlgos[rhythmAlgo][1]}`);
 };
 
 const generatePitch = async () => {
   const full = await maxApi.getDict('full');
   const { pitchAlgo } = full;
 
-  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo](full)}`);
+  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo][0](full)}`);
+};
+
+const pitchDescription = async () => {
+  const full = await maxApi.getDict('full');
+  const { pitchAlgo } = full;
+
+  maxApi.outlet(`pitchDescription ${pitchAlgos[pitchAlgo][1]}`);
 };
 
 const init = async () => {
@@ -97,3 +111,5 @@ maxApi.addHandler('getPitches', getPitches);
 maxApi.addHandler('generateRhythm', generateRhythm);
 maxApi.addHandler('generatePitch', generatePitch);
 maxApi.addHandler('Init', init);
+maxApi.addHandler('patternDescription', patternDescription);
+maxApi.addHandler('pitchDescription', pitchDescription);
