@@ -35,4 +35,4 @@ Adding new Algos:
 3. add description of the algo as 1 of an array
 4. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
 
-Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend
+Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend. should be fun
