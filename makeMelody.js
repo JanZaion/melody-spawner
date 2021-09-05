@@ -124,12 +124,10 @@ const selectMode = ({ mode, rootNote, octave, intervals }) => {
   return intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
 };
 
-const numsToNotes = ({ notes }, selectedMode) => {
-  if (notes.every((note) => isNaN(note))) return notes;
+const numsToNotes = (notesArray, selectedMode) => {
+  if (notesArray.every((note) => isNaN(note))) return notesArray;
 
   const { upperMode, lowerMode } = selectedMode;
-
-  const notesArray = Array.isArray(notes) ? notes : [notes];
 
   const noNums = notesArray.map((note) => {
     switch (isNaN(note)) {
@@ -234,10 +232,13 @@ const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
 };
 
 const makeMelody = (params) => {
+  //if there is only one note coming from the textfield, it saves to the dict as a string, but we always need an array
+  const notesArray = Array.isArray(params.notes) ? params.notes : [params.notes];
+
   const selectedMode = selectMode(params);
 
   //notesNoNums is an array of notes where all numbers were transformed into notes
-  const notesNoNums = numsToNotes(params, selectedMode);
+  const notesNoNums = numsToNotes(notesArray, selectedMode);
 
   //notesNoRs is an array of notes where Rs are transformed into notes
   const notesNoRs = RsToNotes(params, notesNoNums, selectedMode);
