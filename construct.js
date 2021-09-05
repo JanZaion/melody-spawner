@@ -100,6 +100,7 @@ const init = async () => {
     upperBound: 4,
     lowerBound: 0,
     pitchDirrection: 'any',
+    intervals: 'diatonic',
   });
 
   maxApi.outlet('Init');
