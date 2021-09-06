@@ -7,6 +7,7 @@
 - testLive 10 support
 - on a slower day, rewrite requires to import syntax
 - fix enharmonics - when getting pitches, bs for minor scales and #s for major scales. Thats one way to do it. The other is to look at the rootNote and its # or b. But what about rns without sharps or flats? Shelving this problem now, everything will be flats
+- accomodate for scribble v5 updt
 
 ## magenta:
 
