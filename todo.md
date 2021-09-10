@@ -25,8 +25,9 @@
 
 - fullowing the tutorial at https://docs.cycling74.com/max8/vignettes/03_n4m_projects_devices seems to have worked
 - produce the amxd directly from the project management window
-- the main patch that is included should not be amxd but maxpat
+- the main patch that is included should not be amxd but maxpat. When creating the maxpat, copying from amxd messes up stuff, find a better way
 - export max for live device is probably the way to go
+- only include necessery stuff, else the device is bloated and slow. Remove all dev deps from packages etc
 
 ## pitch and rhythm algos
 

@@ -40,8 +40,20 @@ const wildMild = (wild, howLong) => {
   return rhythm.join('');
 };
 
-const reshuffle = (pattern) => {
-  return pattern + 'x--_--x';
+const reshuffle = ({ pattern }) => {
+  const initialSpace = pattern.split('x')[0];
+  const tones = pattern.split('x');
+  if (initialSpace.length === 0) tones.shift();
+
+  const counter = initialSpace.length === 0 ? 0 : 1;
+  for (let i = counter; i < tones.length; i++) tones[i] = 'x' + tones[i];
+
+  for (let i = tones.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tones[i], tones[j]] = [tones[j], tones[i]];
+  }
+
+  return tones.join('');
 };
 
 const rhythmAlgos = {
@@ -60,7 +72,10 @@ const rhythmAlgos = {
   short_mild: () => {
     return wildMild('mild', 'short');
   },
-  reshuffle,
+  reshuffle: {
+    algo: reshuffle,
+    description: 'Randomly reshuffles xs in the pattern, while xs keep their length or the spaces that follow them. ',
+  },
 };
 
 module.exports = { rhythmAlgos };
