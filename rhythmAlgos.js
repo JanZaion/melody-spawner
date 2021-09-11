@@ -40,6 +40,7 @@ const wildMild = (wild, howLong) => {
   return rhythm.join('');
 };
 
+//write reshuffle, where spaces are decoupled from notes
 const reshuffle = ({ pattern }) => {
   const initialSpace = pattern.split('x')[0];
   const tones = pattern.split('x');
@@ -54,6 +55,50 @@ const reshuffle = ({ pattern }) => {
   }
 
   return tones.join('');
+};
+
+const flip = ({ pattern }) => {
+  const splitArr = [];
+  const splitByX = pattern.split(/(?=x)/g);
+
+  splitByX
+    .map((str) => str.split(/(?=-)/g))
+    .forEach((arr) => {
+      splitArr.push(...arr);
+    });
+
+  splitArr.forEach((str, index) => {
+    if (index > 0 && splitArr[index - 1][0] === '-' && str[0] === '-') {
+      splitArr[index] = splitArr[index - 1] + str;
+      splitArr[index - 1] = null;
+    }
+  });
+
+  const flipped = splitArr
+    .filter((step) => step)
+    .map((str) => {
+      const arr = str.split('');
+      const firstChar = arr.shift();
+      const arrDashed = arr.map((char) => {
+        const char2 = char === '-' ? '_' : char;
+        return char2;
+      });
+
+      switch (firstChar) {
+        case 'x':
+          arrDashed.unshift('-');
+          return arrDashed.join('');
+        case '-':
+          arrDashed.unshift('x');
+          return arrDashed.join('');
+        default:
+          arrDashed.unshift(firstChar);
+          return arrDashed.join('');
+      }
+    })
+    .join('');
+
+  return flipped;
 };
 
 const rhythmAlgos = {
@@ -74,7 +119,11 @@ const rhythmAlgos = {
   },
   reshuffle: {
     algo: reshuffle,
-    description: 'Randomly reshuffles xs in the pattern, while xs keep their length or the spaces that follow them. ',
+    description: 'Randomly reshuffles xs in the pattern, while xs keep their length or the spaces that follow them.',
+  },
+  flip: {
+    algo: flip,
+    description: 'Where there were spaces, there are now notes and visa versa.',
   },
 };
 
