@@ -95,17 +95,17 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
 };
 
 const selectScale = ({ scale, rootNote, octave }) => {
-  const upperMode = Scale.get(`${rootNote}${octave} ${scale}`).notes.map((note) => Note.simplify(note));
-  const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
-  upperMode.push(rootNote + (octave + 1));
+  const upperScale = Scale.get(`${rootNote}${octave} ${scale}`).notes.map((note) => Note.simplify(note));
+  const lowerScale = [...upperScale].map((note) => Note.transpose(note, '-8P'));
+  upperScale.push(rootNote + (octave + 1));
 
-  return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
+  return { upperScale, lowerScale, finalScale: lowerScale.concat(upperScale) };
 };
 
-const numsToNotes = (notesArray, selectedMode) => {
+const numsToNotes = (notesArray, selectedScale) => {
   if (notesArray.every((note) => isNaN(note))) return notesArray;
 
-  const { upperMode, lowerMode } = selectedMode;
+  const { upperScale, lowerScale } = selectedScale;
 
   const noNums = notesArray.map((note) => {
     switch (isNaN(note)) {
@@ -113,37 +113,37 @@ const numsToNotes = (notesArray, selectedMode) => {
         return note;
 
       case false:
-        if (note > 0 && note < upperMode.length + 1) return upperMode[note];
-        if (note < 0 && note > (lowerMode.length + 1) * -1) return lowerMode.reverse()[(note + 1) * -1];
-        return upperMode[0];
+        if (note > 0 && note < upperScale.length + 1) return upperScale[note];
+        if (note < 0 && note > (lowerScale.length + 1) * -1) return lowerScale.reverse()[(note + 1) * -1];
+        return upperScale[0];
     }
   });
 
   return noNums;
 };
 
-const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesRemaining }, dice) => {
-  const maxRolls = repeatNotesBool ? finalMode.length : notesRemaining.length;
+const rollForNoteIndexes = ({ finalScale, numOfRandNotes, repeatNotesBool, notesRemaining }, dice) => {
+  const maxRolls = repeatNotesBool ? finalScale.length : notesRemaining.length;
 
   const rolls = numOfRandNotes > maxRolls ? maxRolls : numOfRandNotes;
 
   return dice(maxRolls, 0, rolls);
 };
 
-const finalizeMode = (upperBound, lowerBound, selectedMode) => {
-  const { upperMode, lowerMode } = selectedMode;
+const finalizeScale = (upperBound, lowerBound, selectedScale) => {
+  const { upperScale, lowerScale } = selectedScale;
 
-  const upperCount = upperMode.length - upperBound - 1;
-  for (let i = 0; i < upperCount; i++) upperMode.pop();
+  const upperCount = upperScale.length - upperBound - 1;
+  for (let i = 0; i < upperCount; i++) upperScale.pop();
 
-  const lowerCount = lowerMode.length - lowerBound * -1;
-  for (let i = 0; i < lowerCount; i++) lowerMode.shift();
+  const lowerCount = lowerScale.length - lowerBound * -1;
+  for (let i = 0; i < lowerCount; i++) lowerScale.shift();
 
-  return lowerMode.concat(upperMode);
+  return lowerScale.concat(upperScale);
 };
 
-const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool) => {
-  const rollParams = { finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool };
+const RsToNoteIndexes = (finalScale, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool) => {
+  const rollParams = { finalScale, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool };
   switch (pitchDirrection) {
     case 'any':
       return repeatNotesBool
@@ -165,17 +165,17 @@ const RsToNoteIndexes = (finalMode, numOfRandNotes, notesRemaining, pitchDirrect
 const RsToNotes = (
   { upperBound, lowerBound, repeatNotes, pitchDirrection, rootNote, octave },
   notesNoNums,
-  selectedMode
+  selectedScale
 ) => {
   const numOfRandNotes = (notesNoNums.join().match(/R/g) || []).length;
 
   if (numOfRandNotes === 0) return [];
 
-  //finalMode is a set of 2 scales. One scale is a root note - an octave, the other is a root note + an octave. The final scale is also smoothed at the edges by the bounderies set in params
-  const finalMode = finalizeMode(upperBound, lowerBound, selectedMode);
+  //finalScale is a set of 2 scales. One scale is a root note - an octave, the other is a root note + an octave. The final scale is also smoothed at the edges by the bounderies set in params
+  const finalScale = finalizeScale(upperBound, lowerBound, selectedScale);
 
   //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
-  const notesRemaining = finalMode.filter((note) => {
+  const notesRemaining = finalScale.filter((note) => {
     return notesNoNums.indexOf(note) === -1;
   });
 
@@ -183,12 +183,12 @@ const RsToNotes = (
 
   const repeatNotesBool = maxToBool(repeatNotes);
 
-  //noteIndexes is an array of integers of the final notes in the notesRemaining or finalMode arrays.
-  const noteIndexes = RsToNoteIndexes(finalMode, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool);
+  //noteIndexes is an array of integers of the final notes in the notesRemaining or finalScale arrays.
+  const noteIndexes = RsToNoteIndexes(finalScale, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool);
 
   //absoluteRs is an array of notes that represent all the Rs transformed into absolute notes
   const absoluteRs = noteIndexes.map((noteInteger) => {
-    return repeatNotesBool ? finalMode[noteInteger] : notesRemaining[noteInteger];
+    return repeatNotesBool ? finalScale[noteInteger] : notesRemaining[noteInteger];
   });
 
   return absoluteRs;
@@ -213,13 +213,13 @@ const makeMelody = (params) => {
   //if there is only one note coming from the textfield, it saves to the dict as a string, but we always need an array
   const notesArray = Array.isArray(params.notes) ? params.notes : [params.notes];
 
-  const selectedMode = selectScale(params);
+  const selectedScale = selectScale(params);
 
   //notesNoNums is an array of notes where all numbers were transformed into notes
-  const notesNoNums = numsToNotes(notesArray, selectedMode);
+  const notesNoNums = numsToNotes(notesArray, selectedScale);
 
   //notesNoRs is an array of notes where Rs are transformed into notes
-  const notesNoRs = RsToNotes(params, notesNoNums, selectedMode);
+  const notesNoRs = RsToNotes(params, notesNoNums, selectedScale);
 
   //notesAll is an array of notes that will be sent to Scribbletune after transposition
   const notesAll = joinNoNumsWithNoRs(notesNoNums, notesNoRs);
