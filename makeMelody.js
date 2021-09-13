@@ -1,6 +1,6 @@
 'use strict';
 const scribble = require('scribbletune');
-const { Note, Mode } = require('@tonaljs/tonal');
+const { Note, Mode, Scale } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
 const jsmidgen = require('jsmidgen');
@@ -135,8 +135,8 @@ const numsToNotes = (notesArray, selectedMode) => {
         return note;
 
       case false:
-        if (note > 0 && note < upperMode.length + 1) return upperMode[note - 1];
-        if (note < 0 && note > (lowerMode.length + 1) * -1) return lowerMode[(note + 1) * -1];
+        if (note > 0 && note < upperMode.length + 1) return upperMode[note];
+        if (note < 0 && note > (lowerMode.length + 1) * -1) return lowerMode.reverse()[(note + 1) * -1];
         return upperMode[0];
     }
   });
