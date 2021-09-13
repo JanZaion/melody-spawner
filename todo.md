@@ -8,9 +8,7 @@
 - accomodate for scribble v5 updt
 - make makemelody accept tonic notation intervals
 - make makemelody accept numbers higher than the farthest interval in 1 octave
-
 - make the upperbound/lowerbound so that its clear that we are talking about intervals. Intervals should be starting at 0
-- accept more scales
 
 ## magenta:
 
