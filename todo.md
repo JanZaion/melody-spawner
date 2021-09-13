@@ -6,8 +6,10 @@
 - testLive 10 support
 - on a slower day, rewrite requires to import syntax
 - accomodate for scribble v5 updt
-- make the upperbound/lowerbound so that its clear that we are talking about intervals. Intervals should be starting at 0
 - make makemelody accept tonic notation intervals
+
+- make the upperbound/lowerbound so that its clear that we are talking about intervals. Intervals should be starting at 0
+- accept more scales
 
 ## magenta:
 
