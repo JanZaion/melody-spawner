@@ -2,12 +2,12 @@
 
 - apply new apiPass to atchords
 - fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something. Although its prly just a magenta thing
-- fix the bug when the clip is not cleared
-  Bidirectional features:
+- fix the bug when the clip is not cleared, or investigate whether needed at all
 - testLive 10 support
 - on a slower day, rewrite requires to import syntax
-- fix enharmonics - when getting pitches, bs for minor scales and #s for major scales. Thats one way to do it. The other is to look at the rootNote and its # or b. But what about rns without sharps or flats? Shelving this problem now, everything will be flats
 - accomodate for scribble v5 updt
+- make the upperbound/lowerbound so that its clear that we are talking about intervals. Intervals should be starting at 0
+- make makemelody accept tonic notation intervals
 
 ## magenta:
 
@@ -20,6 +20,7 @@
 - sometimes it doesent produce clip. Why? Sometimes it also just prints an empty clip (temp 2.0). If no clip, then maybe revert to the scribbleclip as default. Answer: Scribbleformax does not understand minus pitches. Solution: polyfil by transposing minus notes an octave higher. Or even better, ditch Scribbleformax in favor of magenta solution
 - make RNN initialization on loadbang - does not and prly should not, but red error message is now gone
 - hardcoded default JSON preset on loadbang works now, but relies on delay. Maybe there is a cleaner solution
+- fix enharmonics - when getting pitches, bs for minor scales and #s for major scales. Thats one way to do it. The other is to look at the rootNote and its # or b. But what about rns without sharps or flats? Shelving this problem now, everything will be flats
 
 ## production
 
