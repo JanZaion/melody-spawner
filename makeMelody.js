@@ -94,34 +94,12 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   return { liveFormat, totalDuration };
 };
 
-const selectMode = ({ mode, rootNote, octave, intervals }) => {
-  const chromaticMode = (rootNote, octave) => {
-    const chromatic =
-      rootNote.indexOf('b') === -1
-        ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        : ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const selectScale = ({ mode, rootNote, octave }) => {
+  const upperMode = Scale.get(`${rootNote}${octave} ${mode}`).notes.map((note) => Note.simplify(note));
+  const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
+  upperMode.push(rootNote + (octave + 1));
 
-    const repeats = chromatic.indexOf(rootNote);
-    for (let i = 0; i < repeats; i++) chromatic.push(chromatic.shift() + (octave + 1));
-
-    const upperMode = chromatic.map((note) => {
-      return /\d/.test(note) ? note : note + octave;
-    });
-    const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
-    upperMode.push(rootNote + (octave + 1));
-
-    return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
-  };
-
-  const diatonicMode = (mode, rootNote, octave) => {
-    const upperMode = Mode.notes(mode, rootNote + octave).map((note) => Note.simplify(note));
-    const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
-    upperMode.push(rootNote + (octave + 1));
-
-    return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
-  };
-
-  return intervals === 'diatonic' ? diatonicMode(mode, rootNote, octave) : chromaticMode(rootNote, octave);
+  return { upperMode, lowerMode, finalMode: lowerMode.concat(upperMode) };
 };
 
 const numsToNotes = (notesArray, selectedMode) => {
@@ -235,7 +213,7 @@ const makeMelody = (params) => {
   //if there is only one note coming from the textfield, it saves to the dict as a string, but we always need an array
   const notesArray = Array.isArray(params.notes) ? params.notes : [params.notes];
 
-  const selectedMode = selectMode(params);
+  const selectedMode = selectScale(params);
 
   //notesNoNums is an array of notes where all numbers were transformed into notes
   const notesNoNums = numsToNotes(notesArray, selectedMode);
@@ -314,3 +292,156 @@ module.exports = {
 // };
 
 // makeMelody(pars);
+const scales = [
+  //+minor
+  'major pentatonic',
+  'ionian pentatonic',
+  'mixolydian pentatonic',
+  'ritusen',
+  'egyptian',
+  'neopolitan major pentatonic',
+  'vietnamese 1',
+  'pelog',
+  'kumoijoshi',
+  'hirajoshi',
+  'iwato',
+  'in-sen',
+  'lydian pentatonic',
+  'malkos raga',
+  'locrian pentatonic',
+  'minor pentatonic',
+  'minor six pentatonic',
+  'flat three pentatonic',
+  'flat six pentatonic',
+  'scriabin',
+  'whole tone pentatonic',
+  'lydian #5P pentatonic',
+  'lydian dominant pentatonic',
+  'minor #7M pentatonic',
+  'super locrian pentatonic',
+  'minor hexatonic',
+  'augmented',
+  'major blues',
+  'piongio',
+  'prometheus neopolitan',
+  'prometheus',
+  'mystery #1',
+  'six tone symmetric',
+  'whole tone',
+  "messiaen's mode #5",
+  'minor blues',
+  'locrian major',
+  'double harmonic lydian',
+  'harmonic minor',
+  'altered',
+  'locrian #2',
+  'mixolydian b6',
+  'lydian dominant',
+  'lydian',
+  'lydian augmented',
+  'dorian b2',
+  'melodic minor',
+  'locrian',
+  'ultralocrian',
+  'locrian 6',
+  'augmented heptatonic',
+  'romanian minor',
+  'dorian #4',
+  'lydian diminished',
+  'phrygian',
+  'leading whole tone',
+  'lydian minor',
+  'phrygian dominant',
+  'balinese',
+  'neopolitan major',
+  'aeolian',
+  'harmonic major',
+  'double harmonic major',
+  'dorian',
+  'hungarian minor',
+  'hungarian major',
+  'oriental',
+  'flamenco',
+  'todi raga',
+  'mixolydian',
+  'persian',
+  'major',
+  'enigmatic',
+  'major augmented',
+  'lydian #9',
+  "messiaen's mode #4",
+  'purvi raga',
+  'spanish heptatonic',
+  'bebop',
+  'bebop minor',
+  'bebop major',
+  'bebop locrian',
+  'minor bebop',
+  'diminished',
+  'ichikosucho',
+  'minor six diminished',
+  'half-whole diminished',
+  'kafi raga',
+  "messiaen's mode #6",
+  'composite blues',
+  "messiaen's mode #3",
+  "messiaen's mode #7",
+  'chromatic',
+];
+// scales.forEach((it) => {
+//   console.log(Scale.get('c1 ' + it).notes.length);
+// });
+
+// console.log(Scale.get('c1 minor'));
+
+const chromatic = [];
+const nonatonic = [];
+const octatonic = [];
+const diatonic = [];
+const hexatonic = [];
+const pentatonic = [];
+const trash = [];
+
+scales.forEach((it) => {
+  const l = Scale.get('c1 ' + it).notes.length;
+  switch (l) {
+    case 5:
+      pentatonic.push(it);
+      break;
+    case 6:
+      hexatonic.push(it);
+      break;
+    case 7:
+      diatonic.push(it);
+      break;
+    case 8:
+      octatonic.push(it);
+      break;
+    case 9:
+      nonatonic.push(it);
+      break;
+    case 12:
+      chromatic.push(it);
+      break;
+
+    default:
+      trash.push(it);
+      break;
+  }
+});
+
+// console.log(Scale.get('d1 ' + chromatic));
+// console.log(chromatic);
+// console.log(nonatonic);
+// console.log(octatonic);
+// console.log(diatonic);
+// console.log(hexatonic);
+// console.log(pentatonic);
+// console.log(trash);
+
+// Chromatic, or dodecatonic (12 notes per octave)
+// Nonatonic (9 notes per octave): a chromatic variation of the heptatonic blues scale
+// Octatonic (8 notes per octave): used in jazz and modern classical music
+// Diatonic (7 notes per octave): the most common modern Western scale
+// Hexatonic (6 notes per octave): common in Western folk music
+// Pentatonic (5 notes per octave): the anhemitonic form (lacking semitones) is common in folk music, especially in Asian music; also known as the "black note" scale
