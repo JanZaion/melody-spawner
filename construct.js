@@ -86,7 +86,7 @@ const init = async () => {
     subdiv: '4n',
     splitter: 0,
     octave: 2,
-    mode: 'Minor',
+    scale: 'minor',
     rootNote: 'F',
     notePatterns: 'R R R R',
     notes: ['R', 'R', 'R', 'R'],

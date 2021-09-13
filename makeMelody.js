@@ -1,6 +1,6 @@
 'use strict';
 const scribble = require('scribbletune');
-const { Note, Mode, Scale } = require('@tonaljs/tonal');
+const { Note, Scale } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
 const jsmidgen = require('jsmidgen');
@@ -94,8 +94,8 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   return { liveFormat, totalDuration };
 };
 
-const selectScale = ({ mode, rootNote, octave }) => {
-  const upperMode = Scale.get(`${rootNote}${octave} ${mode}`).notes.map((note) => Note.simplify(note));
+const selectScale = ({ scale, rootNote, octave }) => {
+  const upperMode = Scale.get(`${rootNote}${octave} ${scale}`).notes.map((note) => Note.simplify(note));
   const lowerMode = [...upperMode].map((note) => Note.transpose(note, '-8P'));
   upperMode.push(rootNote + (octave + 1));
 
@@ -171,7 +171,7 @@ const RsToNotes = (
 
   if (numOfRandNotes === 0) return [];
 
-  //finalMode is a set of 2 modes. One mode is a root note - an octave, the other is a root note + an octave. The final mode is also smoothed at the edges by the bounderies set in params
+  //finalMode is a set of 2 scales. One scale is a root note - an octave, the other is a root note + an octave. The final scale is also smoothed at the edges by the bounderies set in params
   const finalMode = finalizeMode(upperBound, lowerBound, selectedMode);
 
   //notesRemaining is an array of notes that are NOT present in the notes array & respect lower and upper bound
@@ -256,7 +256,7 @@ module.exports = {
 //   subdiv: '4n',
 //   splitter: 0,
 //   splitChop: 0,
-//   mode: 'Major',
+//   scale: 'Major',
 //   rootNote: 'D#',
 //   notes: ['R', 'R', 'R', 'R'],
 //   pattern: 'x__x__x_',
@@ -274,7 +274,7 @@ module.exports = {
 //   subdiv: '4n',
 //   splitter: 0,
 //   octave: 1,
-//   mode: 'Minor',
+//   scale: 'Minor',
 //   rootNote: 'D#',
 //   chordPatterns: 'R R R R',
 //   notes: [1, 'R', 'R', 'R'],
