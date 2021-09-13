@@ -155,7 +155,7 @@ const rollForNoteIndexes = ({ finalMode, numOfRandNotes, repeatNotesBool, notesR
 const finalizeMode = (upperBound, lowerBound, selectedMode) => {
   const { upperMode, lowerMode } = selectedMode;
 
-  const upperCount = upperMode.length - upperBound;
+  const upperCount = upperMode.length - upperBound - 1;
   for (let i = 0; i < upperCount; i++) upperMode.pop();
 
   const lowerCount = lowerMode.length - lowerBound * -1;
