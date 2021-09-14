@@ -7,8 +7,10 @@
 - on a slower day, rewrite requires to import syntax
 - accomodate for scribble v5 updt
 - make makemelody accept tonic notation intervals
-- make makemelody accept numbers higher than the farthest interval in 1 octave
-- make the upperbound/lowerbound so that its clear that we are talking about intervals. Intervals should be starting at 0
+- make makemelody accept numbers higher than the farthest interval in 1 octave. Make it by writin a 'superscale' fn
+- make the upperbound/lowerbound so that its clear that we are talking about intervals.
+- add description to presets
+- updt scribbletune, check if everything works and implement '.' in the rhythm pattern text window and getrhythm alg
 
 ## magenta:
 
@@ -40,3 +42,21 @@ Adding new Algos:
 3. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
 
 Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend. should be fun
+
+### Melody Algos
+
+- turn notes into numbers
+- retrograde
+- inversion
+- retrograde inversion
+- reshuffle - randomize order of notes
+- revert - reverse order of notes
+- transpose up by 1 - must be able to accept numbers beyond 12 or whatever
+- transpose down by 1
+- sequence 3 and 4 - duplicate the current motif and transpose it by +1, then +2, do it descending as well
+
+### Rhyth Algos
+
+- revert - reverse order of everything
+- rhythmic development - double the selected sequence and 1) suggest continuation by filling the last 2 beats with the same beats as before, but subdivided [] by 2 and twice as much of them 2) sense of finality by ending on 1st or 2nd beat while filling the rest of the sequence 3) suggest temporary repose by adding rests on 75% of the seq or by ending on 3 or 4 4) Augmentation - double the current phrase and add after it the same phrase, but make it twice as long 5) Diminution - add 2 current phrases after the current phrase, but make them half as long
+- Displacement - divide the phrase by 4, fill the first 1/4 by a space, ommit the last 1/4
