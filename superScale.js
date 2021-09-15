@@ -13,7 +13,9 @@ const makeSuperScale = ({ scale, rootNote, octave }) => {
     });
   }
 
-  const splitPoint = finalScale.indexOf(rootNote + octave);
+  const rootTone = rootNote + octave;
+  const rootToneIndex = finalScale.indexOf(rootTone);
+  const splitPoint = rootToneIndex !== -1 ? rootToneIndex : finalScale.indexOf(Note.enharmonic(rootTone));
   const lowerScale = finalScale.slice(0, splitPoint);
   const upperScale = finalScale.slice(splitPoint);
 

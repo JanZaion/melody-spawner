@@ -107,6 +107,7 @@ const numsToNotes = (notesArray, selectedScale) => {
   if (notesArray.every((note) => isNaN(note))) return notesArray;
 
   const { upperScale, lowerScale } = selectedScale;
+  const lowerScaleReversed = [...lowerScale].reverse();
 
   const noNums = notesArray.map((note) => {
     switch (isNaN(note)) {
@@ -115,7 +116,7 @@ const numsToNotes = (notesArray, selectedScale) => {
 
       case false:
         if (note > 0 && note < upperScale.length + 1) return upperScale[note];
-        if (note < 0 && note > (lowerScale.length + 1) * -1) return lowerScale.reverse()[(note + 1) * -1];
+        if (note < 0 && note > (lowerScale.length + 1) * -1) return lowerScaleReversed[(note + 1) * -1];
         return upperScale[0];
     }
   });
