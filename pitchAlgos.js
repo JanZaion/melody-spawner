@@ -24,19 +24,16 @@ const notesToNums = ({ notes, scale, rootNote, octave }) => {
   return nums.join(' ');
 };
 
-const thiser = () => {
-  return 'C1 B6';
-};
-
 const reshuffle = ({ notes }) => {
   const notesArray = notesToArray(notes);
 
-  for (let i = tones.length - 1; i > 0; i--) {
+  //abstract this to dice. Do the same with rhythm reshuffle
+  for (let i = notesArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [tones[i], tones[j]] = [tones[j], tones[i]];
+    [notesArray[i], notesArray[j]] = [notesArray[j], notesArray[i]];
   }
 
-  return tones.join('');
+  return notesArray.join(' ');
 };
 
 const pitchAlgos = {
@@ -45,10 +42,9 @@ const pitchAlgos = {
     description:
       'Transforms note names into numbers that signify intervalic distance from the root note. If the note is not present in the selected scale, it does not get transformed.',
   },
-  thiser: {
-    algo: thiser,
-    description:
-      'some very long description about some stugg running through staff omg what am I typing now, I mean who even cares, whatever',
+  reshuffle: {
+    algo: reshuffle,
+    description: 'Randomly reshuffles notes in the note pattern',
   },
 };
 
@@ -71,4 +67,4 @@ const pars = {
   intervals: 'diatonic',
 };
 
-reshuffle(pars);
+console.log(reshuffle(pars));
