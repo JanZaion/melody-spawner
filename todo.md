@@ -1,7 +1,7 @@
 # TODO:
 
 - apply new apiPass to atchords
-- fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something. Although its prly just a magenta thing
+- fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something.
 - fix the bug when the clip is not cleared, or investigate whether needed at all
 - testLive 10 support
 - on a slower day, rewrite requires to import syntax
@@ -10,7 +10,7 @@
 - make makemelody accept numbers higher than the farthest interval in 1 octave. Make it by writin a 'superscale' fn
 - make the upperbound/lowerbound so that its clear that we are talking about intervals.
 - add description to presets
-- updt scribbletune, check if everything works and implement '.' in the rhythm pattern text window and getrhythm alg
+- implement '.' in the rhythm pattern text window and getrhythm alg. Do it when it gets released in the new version
 
 ## magenta:
 
