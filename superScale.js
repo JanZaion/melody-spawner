@@ -4,10 +4,11 @@ const makeSuperScale = ({ scale, rootNote, octave }) => {
   const zeroScale = Scale.get(`${rootNote}0 ${scale}`).notes.map((note) => Note.simplify(note));
   const finalScale = [];
 
-  //these integers are the lower and upper scale octaves.
-  for (let i = -1; i < 7; i++) {
+  //these integers are the numbers of octaves+1
+  for (let i = 0; i < 8; i++) {
     zeroScale.forEach((note) => {
-      const higherNote = note.replace(/[0]/g, i);
+      const notesOctave = parseInt(note[note.length - 1]);
+      const higherNote = note.replace(/[0-1]/g, i + notesOctave - 1);
       finalScale.push(higherNote);
     });
   }

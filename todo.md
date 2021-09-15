@@ -1,16 +1,15 @@
 # TODO:
 
-- apply new apiPass to atchords
 - fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something.
 - fix the bug when the clip is not cleared, or investigate whether needed at all
 - testLive 10 support
-- on a slower day, rewrite requires to import syntax
 - accomodate for scribble v5 updt
 - make makemelody accept tonic notation intervals
-- make makemelody accept numbers higher than the farthest interval in 1 octave. Make it by writin a 'superscale' fn
 - make the upperbound/lowerbound so that its clear that we are talking about intervals.
 - add description to presets
 - implement '.' in the rhythm pattern text window and getrhythm alg. Do it when it gets released in the new version
+- make 3 algo types and a single description field
+- make parameters relevant to the selected algo highlighted
 
 ## magenta:
 
@@ -53,10 +52,16 @@ Algos added to the rhythmAlgos can take one argument and thats the pattern recei
 - revert - reverse order of notes
 - transpose up by 1 - must be able to accept numbers beyond 12 or whatever
 - transpose down by 1
-- sequence 3 and 4 - duplicate the current motif and transpose it by +1, then +2, do it descending as well
 
 ### Rhyth Algos
 
 - revert - reverse order of everything
 - rhythmic development - double the selected sequence and 1) suggest continuation by filling the last 2 beats with the same beats as before, but subdivided [] by 2 and twice as much of them 2) sense of finality by ending on 1st or 2nd beat while filling the rest of the sequence 3) suggest temporary repose by adding rests on 75% of the seq or by ending on 3 or 4 4) Augmentation - double the current phrase and add after it the same phrase, but make it twice as long 5) Diminution - add 2 current phrases after the current phrase, but make them half as long
 - Displacement - divide the phrase by 4, fill the first 1/4 by a space, ommit the last 1/4
+
+### Both Algos
+
+- sequence 3 and 4 - duplicate the current motif and transpose it by +1, then +2, do it descending as well
+- motivic expansion - add +1 to random 25% or 50% of notes
+- motivic compression - add -1 to random 25% or 50% of notes
+- all those finality etc suggestions, make em here with the melodic stuff as well
