@@ -3,6 +3,7 @@ const scribble = require('scribbletune');
 const { Note, Scale } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
+const { makeSuperScale } = require('./superScale');
 const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
@@ -94,7 +95,7 @@ const scribbleClipToMidiSteps = (scribbleClip) => {
   return { liveFormat, totalDuration };
 };
 
-const selectScale = ({ scale, rootNote, octave }) => {
+const makeBaseScale = ({ scale, rootNote, octave }) => {
   const upperScale = Scale.get(`${rootNote}${octave} ${scale}`).notes.map((note) => Note.simplify(note));
   const lowerScale = [...upperScale].map((note) => Note.transpose(note, '-8P'));
   upperScale.push(rootNote + (octave + 1));
@@ -213,13 +214,15 @@ const makeMelody = (params) => {
   //if there is only one note coming from the textfield, it saves to the dict as a string, but we always need an array
   const notesArray = Array.isArray(params.notes) ? params.notes : [params.notes];
 
-  const selectedScale = selectScale(params);
+  const baseScale = makeBaseScale(params);
+
+  const superScale = makeSuperScale(params);
 
   //notesNoNums is an array of notes where all numbers were transformed into notes
-  const notesNoNums = numsToNotes(notesArray, selectedScale);
+  const notesNoNums = numsToNotes(notesArray, superScale);
 
   //notesNoRs is an array of notes where Rs are transformed into notes
-  const notesNoRs = RsToNotes(params, notesNoNums, selectedScale);
+  const notesNoRs = RsToNotes(params, notesNoNums, baseScale);
 
   //notesAll is an array of notes that will be sent to Scribbletune after transposition
   const notesAll = joinNoNumsWithNoRs(notesNoNums, notesNoRs);
