@@ -4,6 +4,7 @@ const { Note, Scale } = require('@tonaljs/tonal');
 const dice = require('convenient-methods-of-randomness');
 const { liveFormatTranspose } = require('./liveFormatTranspose');
 const { makeSuperScale } = require('./superScale');
+const { notesToArray } = require('./notesToArray');
 const jsmidgen = require('jsmidgen');
 
 const maxToBool = (str) => {
@@ -213,7 +214,7 @@ const joinNoNumsWithNoRs = (notesNoNums, notesNoRs) => {
 
 const makeMelody = (params) => {
   //if there is only one note coming from the textfield, it saves to the dict as a string, but we always need an array
-  const notesArray = Array.isArray(params.notes) ? params.notes : [params.notes];
+  const notesArray = notesToArray(params.notes);
 
   const baseScale = makeBaseScale(params);
 

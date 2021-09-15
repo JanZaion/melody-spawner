@@ -10,6 +10,7 @@
 - implement '.' in the rhythm pattern text window and getrhythm alg. Do it when it gets released in the new version
 - make 3 algo types and a single description field
 - make parameters relevant to the selected algo highlighted
+- colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 
 ## magenta:
 

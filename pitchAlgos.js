@@ -1,9 +1,10 @@
 const dice = require('convenient-methods-of-randomness');
 const { makeSuperScale } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
+const { notesToArray } = require('./notesToArray');
 
 const notesToNums = ({ notes, scale, rootNote, octave }) => {
-  const notesArray = Array.isArray(notes) ? notes : [notes];
+  const notesArray = notesToArray(notes);
   if (notesArray.every((note) => !isNaN(note))) return notesArray.join(' ');
   const superScale = makeSuperScale({ scale, rootNote, octave });
 
@@ -25,6 +26,17 @@ const notesToNums = ({ notes, scale, rootNote, octave }) => {
 
 const thiser = () => {
   return 'C1 B6';
+};
+
+const reshuffle = ({ notes }) => {
+  const notesArray = notesToArray(notes);
+
+  for (let i = tones.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tones[i], tones[j]] = [tones[j], tones[i]];
+  }
+
+  return tones.join('');
 };
 
 const pitchAlgos = {
@@ -58,3 +70,5 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
+
+reshuffle(pars);
