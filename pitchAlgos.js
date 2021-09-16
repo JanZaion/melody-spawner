@@ -3,6 +3,10 @@ const { makeSuperScale } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 
+const enharmoniseScale = (scale) => {
+  return scale.map((note) => Note.enharmonic(note));
+};
+
 const notesToNums = ({ notes, scale, rootNote, octave }) => {
   const notesArray = notesToArray(notes);
   if (notesArray.every((note) => !isNaN(note))) return notesArray.join(' ');
@@ -10,8 +14,8 @@ const notesToNums = ({ notes, scale, rootNote, octave }) => {
 
   const { upperScale, lowerScale } = superScale;
   const lowerScaleReversed = [...lowerScale].reverse();
-  const upperScaleEnharmonic = upperScale.map((note) => Note.enharmonic(note));
-  const lowerScaleEnharmonic = lowerScaleReversed.map((note) => Note.enharmonic(note));
+  const upperScaleEnharmonic = enharmoniseScale(upperScale);
+  const lowerScaleEnharmonic = enharmoniseScale(lowerScaleReversed);
 
   const nums = notesArray.map((note) => {
     if (upperScale.indexOf(note) !== -1) return upperScale.indexOf(note);
@@ -36,6 +40,46 @@ const reshuffle = ({ notes }) => {
   return notesArray.join(' ');
 };
 
+const transposeByOne = (params, up) => {
+  const nums = notesToArray(params.notes).map((note) => {
+    const int = parseInt(note);
+    return isNaN(int) ? note : int;
+  });
+
+  const superScale = makeSuperScale(params).finalScale;
+  const superEnharmonicScale = enharmoniseScale(superScale);
+  const superMassiveScale = superScale.concat(superEnharmonicScale);
+  const superChromaticScale = makeSuperScale({ ...params, scale: 'chromatic' }).finalScale;
+  const superChromaticEnharmonicScale = enharmoniseScale(superChromaticScale);
+  const superMassiveChromaticScale = superChromaticScale.concat(superChromaticEnharmonicScale);
+
+  const tonicInterval = up ? 'm2' : 'A-1';
+  const numInterval = up ? 1 : -1;
+
+  const match = (superMassiveScale, note) => {
+    let transposedNote = Note.simplify(Note.transpose(note, tonicInterval));
+    while (superMassiveScale.indexOf(transposedNote) === -1) {
+      transposedNote = Note.simplify(Note.transpose(transposedNote, tonicInterval));
+      if (transposedNote === 'C-1') break;
+      if (transposedNote === 'C7') break;
+    }
+    return transposedNote;
+  };
+
+  const transposedNotes = nums.map((note) => {
+    if (!isNaN(note)) return note + numInterval;
+    if (superMassiveChromaticScale.indexOf(note) !== -1) return match(superMassiveScale, note);
+    return note;
+  });
+
+  return transposedNotes.join(' ');
+};
+
+const reverse = ({ notes }) => {
+  const notesArray = notesToArray(notes);
+  return [...notesArray].reverse().join(' ');
+};
+
 const pitchAlgos = {
   notesToNums: {
     algo: notesToNums,
@@ -46,6 +90,16 @@ const pitchAlgos = {
     algo: reshuffle,
     description: 'Randomly reshuffles notes in the note pattern',
   },
+  reverse: {
+    algo: reverse,
+    description: 'Reverses the order of the notes',
+  },
+  up: {
+    algo: (params) => {
+      return transposeByOne(params, true);
+    },
+    description: 'Transposes all notes up by the following intervalic distance in the selected scale.',
+  },
 };
 
 module.exports = { pitchAlgos };
@@ -55,9 +109,9 @@ const pars = {
   subdiv: '4n',
   splitter: 0,
   splitChop: 0,
-  scale: 'minor',
-  rootNote: 'F',
-  notes: ['Eb2', 'Db2', 'C2'],
+  scale: 'major pentatonic',
+  rootNote: 'F#',
+  notes: ['G2', 'F2'],
   pattern: 'x__x__x_',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -67,4 +121,5 @@ const pars = {
   intervals: 'diatonic',
 };
 
-console.log(reshuffle(pars));
+// console.log(transposeByOne(pars, true));
+transposeByOne(pars, false); //?

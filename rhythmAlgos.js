@@ -101,6 +101,10 @@ const flip = ({ pattern }) => {
   return flipped;
 };
 
+const reverse = ({ pattern }) => {
+  //reverse it so that lengths stay the same. Think of differentiating spaces from patterns, maybe write a special splitting fn for that, apply to flip as well
+};
+
 const rhythmAlgos = {
   long_wild: {
     algo: () => {
@@ -124,6 +128,10 @@ const rhythmAlgos = {
   flip: {
     algo: flip,
     description: 'Where there were spaces, there are now notes and visa versa.',
+  },
+  reverse: {
+    algo: reverse,
+    description: 'Reverses the order of the rhythmic pattern',
   },
 };
 
