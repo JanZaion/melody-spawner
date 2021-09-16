@@ -11,6 +11,7 @@
 - make 3 algo types and a single description field
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
+- before production, check that all umenus were loaded correctly into full
 
 ## magenta:
 

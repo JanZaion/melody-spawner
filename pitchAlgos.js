@@ -80,6 +80,10 @@ const reverse = ({ notes }) => {
   return [...notesArray].reverse().join(' ');
 };
 
+const getScale = ({ scale, rootNote, octave }) => {
+  return Scale.get(`${rootNote}${octave} ${scale}`).notes;
+};
+
 const pitchAlgos = {
   notesToNums: {
     algo: notesToNums,
@@ -88,17 +92,27 @@ const pitchAlgos = {
   },
   reshuffle: {
     algo: reshuffle,
-    description: 'Randomly reshuffles notes in the note pattern',
+    description: 'Randomly reshuffles notes in the note pattern.',
   },
   reverse: {
     algo: reverse,
-    description: 'Reverses the order of the notes',
+    description: 'Reverses the order of the notes.',
   },
   up: {
     algo: (params) => {
       return transposeByOne(params, true);
     },
-    description: 'Transposes all notes up by the following intervalic distance in the selected scale.',
+    description: 'Transposes all notes up by one intervalic distance in the selected scale.',
+  },
+  down: {
+    algo: (params) => {
+      return transposeByOne(params, false);
+    },
+    description: 'Transposes all notes down by one intervalic distance in the selected scale.',
+  },
+  getScale: {
+    algo: getScale,
+    description: 'Lists all the notes of the selected scale. As simple as that.',
   },
 };
 
@@ -120,6 +134,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-
-// console.log(transposeByOne(pars, true));
-transposeByOne(pars, false); //?
+getScale(pars);
