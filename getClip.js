@@ -138,7 +138,9 @@ const createSpacedSteps = (notes) => {
     spacedSteps.push({ duration, note: true });
   });
 
-  return spacedSteps;
+  const spacedStepsNoZeroDurations = spacedSteps.filter((step) => step.duration > 0);
+
+  return spacedStepsNoZeroDurations;
 };
 
 const subdivFromSpacedSteps = (spacedSteps) => {
@@ -168,7 +170,8 @@ const createRhythmPattern = (spacedSteps, block) => {
         const underscores = '_'.repeat(repeats - 1);
         return 'x' + underscores;
       } else {
-        return '-'.repeat(repeats);
+        const underscores = '_'.repeat(Math.max(0, repeats - 1));
+        return '-' + underscores;
       }
     })
     .join('');
@@ -211,3 +214,50 @@ const getClip = (notes) => {
 };
 
 module.exports = { getClip };
+
+// const notes = [
+//   {
+//     note_id: 972,
+//     pitch: 43,
+//     start_time: 0,
+//     duration: 0.25,
+//     velocity: 100,
+//     mute: 0,
+//     probability: 1,
+//     velocity_deviation: 1,
+//     release_velocity: 64,
+//   },
+//   {
+//     note_id: 976,
+//     pitch: 43,
+//     start_time: 0.75,
+//     duration: 0.25,
+//     velocity: 100,
+//     mute: 0,
+//     probability: 1,
+//     velocity_deviation: 0,
+//     release_velocity: 64,
+//   },
+//   {
+//     note_id: 977,
+//     pitch: 43,
+//     start_time: 1,
+//     duration: 0.25,
+//     velocity: 100,
+//     mute: 0,
+//     probability: 1,
+//     velocity_deviation: 0,
+//     release_velocity: 64,
+//   },
+//   {
+//     note_id: 975,
+//     pitch: 43,
+//     start_time: 1.75,
+//     duration: 0.25,
+//     velocity: 100,
+//     mute: 0,
+//     probability: 1,
+//     velocity_deviation: 1,
+//     release_velocity: 64,
+//   },
+// ];
