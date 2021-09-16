@@ -75,9 +75,7 @@ const transposeByOne = (params, up) => {
 
 const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
 
-const getScale = ({ scale, rootNote, octave }) => {
-  return Scale.get(`${rootNote}${octave} ${scale}`).notes;
-};
+const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
 
 const pitchAlgos = {
   notesToNums: {
@@ -94,15 +92,11 @@ const pitchAlgos = {
     description: 'Reverses the order of the notes.',
   },
   up: {
-    algo: (params) => {
-      return transposeByOne(params, true);
-    },
+    algo: (params) => transposeByOne(params, true),
     description: 'Transposes all notes up by one intervalic distance in the selected scale.',
   },
   down: {
-    algo: (params) => {
-      return transposeByOne(params, false);
-    },
+    algo: (params) => transposeByOne(params, false),
     description: 'Transposes all notes down by one intervalic distance in the selected scale.',
   },
   getScale: {

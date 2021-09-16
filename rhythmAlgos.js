@@ -52,33 +52,27 @@ const splitPattern = (pattern, withSpaces) => {
 
   if (withSpaces) return noEmptySteps(stepsWithSpaces);
 
-  const splitAt = (index) => (str) => [str.slice(0, index), str.slice(index)];
-
   const stepsAndSpaces = [];
   stepsWithSpaces.forEach((step) => {
     const spaceIndex = step.indexOf('-');
     if (spaceIndex !== -1) {
-      const split = splitAt(spaceIndex)(step);
-      stepsAndSpaces.push(...split);
+      const splitHappens = [step.slice(0, spaceIndex), step.slice(spaceIndex)];
+      stepsAndSpaces.push(...splitHappens);
     } else {
       stepsAndSpaces.push(step);
     }
   });
 
-  return noEmptySteps(stepsAndSpaces);
+  const stepsAndSpacesSeparated = [];
+  noEmptySteps(stepsAndSpaces)
+    .map((step) => step.split(/(?=-)/g))
+    .forEach((step) => stepsAndSpacesSeparated.push(...step));
+
+  return stepsAndSpacesSeparated;
 };
 
-console.log(splitPattern('---x--x___xxx-__x_-_-', true));
-
-//write reshuffle, where spaces are decoupled from notes
-const reshuffle = ({ pattern }) => {
-  const initialSpace = pattern.split('x')[0];
-  const tones = pattern.split('x');
-  if (initialSpace.length === 0) tones.shift();
-
-  const counter = initialSpace.length === 0 ? 0 : 1;
-  for (let i = counter; i < tones.length; i++) tones[i] = 'x' + tones[i];
-  // const tones = splitPattern(pattern);
+const reshuffle = ({ pattern }, withSpaces) => {
+  const tones = splitPattern(pattern, withSpaces);
 
   for (let i = tones.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -132,7 +126,7 @@ const flip = ({ pattern }) => {
   return flipped;
 };
 
-const reverse = ({ pattern }) => {
+const reversePattern = ({ pattern }) => {
   //reverse it so that lengths stay the same. Think of differentiating spaces from patterns, maybe write a special splitting fn for that, apply to flip as well
 };
 
@@ -152,16 +146,20 @@ const rhythmAlgos = {
   short_mild: () => {
     return wildMild('mild', 'short');
   },
-  reshuffle: {
-    algo: reshuffle,
+  reshuffleSpaced: {
+    algo: (params) => reshuffle(params, true),
     description: 'Randomly reshuffles xs in the pattern, while xs keep their length or the spaces that follow them.',
+  },
+  reshuffleUnspaced: {
+    algo: (params) => reshuffle(params, false),
+    description: 'Randomly reshuffles xs and -s in the pattern.',
   },
   flip: {
     algo: flip,
     description: 'Where there were spaces, there are now notes and visa versa.',
   },
   reverse: {
-    algo: reverse,
+    algo: reversePattern,
     description: 'Reverses the order of the rhythmic pattern',
   },
 };
