@@ -1,6 +1,3 @@
-const notesToArray = (notes) => {
-  const notesArray = Array.isArray(notes) ? notes : [notes];
-  return notesArray;
-};
+const notesToArray = (notes) => (Array.isArray(notes) ? notes : [notes]);
 
 module.exports = { notesToArray };

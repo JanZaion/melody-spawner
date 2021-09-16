@@ -3,9 +3,7 @@ const { makeSuperScale } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 
-const enharmoniseScale = (scale) => {
-  return scale.map((note) => Note.enharmonic(note));
-};
+const enharmoniseScale = (scale) => scale.map((note) => Note.enharmonic(note));
 
 const notesToNums = ({ notes, scale, rootNote, octave }) => {
   const notesArray = notesToArray(notes);
@@ -75,10 +73,7 @@ const transposeByOne = (params, up) => {
   return transposedNotes.join(' ');
 };
 
-const reverse = ({ notes }) => {
-  const notesArray = notesToArray(notes);
-  return [...notesArray].reverse().join(' ');
-};
+const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
 
 const getScale = ({ scale, rootNote, octave }) => {
   return Scale.get(`${rootNote}${octave} ${scale}`).notes;
@@ -95,7 +90,7 @@ const pitchAlgos = {
     description: 'Randomly reshuffles notes in the note pattern.',
   },
   reverse: {
-    algo: reverse,
+    algo: reverseNotes,
     description: 'Reverses the order of the notes.',
   },
   up: {

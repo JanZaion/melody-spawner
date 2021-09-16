@@ -46,15 +46,9 @@ Algos added to the rhythmAlgos can take one argument and thats the pattern recei
 
 ### Melody Algos
 
-- turn notes into numbers - done but needs a bit more testing
-- reshuffle - randomize order of notes
-- revert - reverse order of notes
-- transpose up by 1 - must be able to accept numbers beyond 12 or whatever
-- transpose down by 1
 - retrograde
 - inversion
 - retrograde inversion
-- get scale
 
 ### Rhyth Algos
 

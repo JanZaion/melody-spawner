@@ -40,6 +40,36 @@ const wildMild = (wild, howLong) => {
   return rhythm.join('');
 };
 
+const splitPattern = (pattern, withSpaces) => {
+  const initialSpace = pattern.split('x')[0];
+  const stepsWithSpaces = pattern.split('x');
+  if (initialSpace.length === 0) stepsWithSpaces.shift();
+
+  const counter = initialSpace.length === 0 ? 0 : 1;
+  for (let i = counter; i < stepsWithSpaces.length; i++) stepsWithSpaces[i] = 'x' + stepsWithSpaces[i];
+
+  const noEmptySteps = (steps) => steps.filter((step) => step.length > 0);
+
+  if (withSpaces) return noEmptySteps(stepsWithSpaces);
+
+  const splitAt = (index) => (str) => [str.slice(0, index), str.slice(index)];
+
+  const stepsAndSpaces = [];
+  stepsWithSpaces.forEach((step) => {
+    const spaceIndex = step.indexOf('-');
+    if (spaceIndex !== -1) {
+      const split = splitAt(spaceIndex)(step);
+      stepsAndSpaces.push(...split);
+    } else {
+      stepsAndSpaces.push(step);
+    }
+  });
+
+  return noEmptySteps(stepsAndSpaces);
+};
+
+console.log(splitPattern('---x--x___xxx-__x_-_-', true));
+
 //write reshuffle, where spaces are decoupled from notes
 const reshuffle = ({ pattern }) => {
   const initialSpace = pattern.split('x')[0];
@@ -48,6 +78,7 @@ const reshuffle = ({ pattern }) => {
 
   const counter = initialSpace.length === 0 ? 0 : 1;
   for (let i = counter; i < tones.length; i++) tones[i] = 'x' + tones[i];
+  // const tones = splitPattern(pattern);
 
   for (let i = tones.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
