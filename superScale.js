@@ -20,6 +20,7 @@ const makeSuperScale = ({ scale, rootNote, octave }) => {
   const lowerScale = finalScale.slice(0, splitPoint);
   const upperScale = finalScale.slice(splitPoint);
   const lowerScaleReversed = [...lowerScale].reverse();
+  lowerScaleReversed.unshift(rootTone);
 
   return { upperScale, lowerScale, finalScale, lowerScaleReversed };
 };
