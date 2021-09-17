@@ -4,7 +4,8 @@ const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 
 const numToNote = (num, lowerScaleReversed, upperScale) => {
-  return num < 0 ? lowerScaleReversed.indexOf(num) : upperScale.indexOf(num);
+  if (isNaN(num)) return num;
+  return num < 0 ? lowerScaleReversed[num * -1] : upperScale[num];
 };
 
 const noteToNum = (note, lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale) => {
@@ -23,7 +24,7 @@ const parseNotesAndNums = ({ notes }) => {
   });
 };
 
-const notesToNums = (params) => {
+const notesToNumbers = (params) => {
   const notesAndNums = parseNotesAndNums(params);
   if (notesAndNums.every((note) => !isNaN(note))) return notesAndNums.join(' ');
 
@@ -35,6 +36,17 @@ const notesToNums = (params) => {
   );
 
   return nums.join(' ');
+};
+
+const numbersToNotes = (params) => {
+  const notesAndNums = parseNotesAndNums(params);
+  if (notesAndNums.every((note) => isNaN(note))) return notesAndNums.join(' ');
+
+  const { lowerScaleReversed, upperScale } = makeSuperScale(params);
+
+  const notes = notesAndNums.map((num) => numToNote(num, lowerScaleReversed, upperScale));
+
+  return notes.join(' ');
 };
 
 const reshuffle = ({ notes }) => {
@@ -90,7 +102,7 @@ const inversion = ({ notes }) => {
 
 const pitchAlgos = {
   notesToNums: {
-    algo: notesToNums,
+    algo: notesToNumbers,
     description:
       'Transforms note names into numbers that signify intervalic distance from the root note. If the note is not present in the selected scale, it does not get transformed.',
   },
@@ -123,10 +135,10 @@ const pars = {
   subdiv: '4n',
   splitter: 0,
   splitChop: 0,
-  scale: 'minor',
-  rootNote: 'F',
-  notes: ['Ab1', 'A1'],
-  pattern: 'x__x__x_',
+  scale: 'major',
+  rootNote: 'C',
+  notes: [-1],
+  pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
   sizzle: 'cos',
@@ -134,4 +146,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-console.log(notesToNums(pars));
+console.log(numbersToNotes(pars));
