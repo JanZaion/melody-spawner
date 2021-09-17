@@ -13,7 +13,7 @@ const noteToNum = (note, lowerScaleReversed, upperScale, enharmonicLowerScaleRev
   if (isItHere(upperScale, note)) return upperScale.indexOf(note);
   if (isItHere(lowerScaleReversed, note)) return lowerScaleReversed.indexOf(note) * -1;
   if (isItHere(enharmonicUpperScale, note)) return enharmonicUpperScale.indexOf(note);
-  if (isItHere(enharmonicLowerScaleReversed, note)) return enharmonicLowerScaleReversed.indexOf(note + 1) * -1;
+  if (isItHere(enharmonicLowerScaleReversed, note)) return enharmonicLowerScaleReversed.indexOf(note) * -1;
   return note;
 };
 
@@ -141,7 +141,7 @@ const pars = {
   splitChop: 0,
   scale: 'minor',
   rootNote: 'F',
-  notes: ['Eb0'],
+  notes: ['C#0'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
