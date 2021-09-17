@@ -35,7 +35,9 @@ const notesToNumbers = (params) => {
     noteToNum(note, lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale)
   );
 
-  return nums.join(' ');
+  const numsString = nums.join(' ');
+
+  return { nums, numsString };
 };
 
 const numbersToNotes = (params) => {
@@ -46,7 +48,9 @@ const numbersToNotes = (params) => {
 
   const notes = notesAndNums.map((num) => numToNote(num, lowerScaleReversed, upperScale));
 
-  return notes.join(' ');
+  const notesString = notes.join(' ');
+
+  return { notes, notesString };
 };
 
 const reshuffle = ({ notes }) => {
@@ -62,10 +66,7 @@ const reshuffle = ({ notes }) => {
 };
 
 const transposeByOne = (params, up) => {
-  const nums = notesToArray(params.notes).map((note) => {
-    const int = parseInt(note);
-    return isNaN(int) ? note : int;
-  });
+  const notesAndNums = parseNotesAndNums(params);
 
   const { superMassiveScale, superMassiveChromaticScale } = makeMassiveScales(params);
 
@@ -82,13 +83,15 @@ const transposeByOne = (params, up) => {
     return transposedNote;
   };
 
-  const transposedNotes = nums.map((note) => {
+  const transposedNotes = notesAndNums.map((note) => {
     if (!isNaN(note)) return note + numInterval;
     if (superMassiveChromaticScale.indexOf(note) !== -1) return match(superMassiveScale, note);
     return note;
   });
 
-  return transposedNotes.join(' ');
+  const transposedNotesString = transposedNotes.join(' ');
+
+  return { transposedNotes, transposedNotesString };
 };
 
 const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
@@ -102,12 +105,12 @@ const inversion = ({ notes }) => {
 
 const pitchAlgos = {
   notesToNums: {
-    algo: notesToNumbers,
+    algo: (params) => notesToNumbers(params).numsString,
     description:
       'Transforms note names into numbers that signify intervalic distance from the root note. If the note is not present in the selected scale, it does not get transformed.',
   },
   numsToNotes: {
-    algo: numbersToNotes,
+    algo: (params) => numbersToNotes(params).notesString,
     description: 'Transforms intervalic numbers into note names.',
   },
   reshuffle: {
@@ -119,11 +122,11 @@ const pitchAlgos = {
     description: 'Reverses the order of the notes.',
   },
   up: {
-    algo: (params) => transposeByOne(params, true),
+    algo: (params) => transposeByOne(params, true).transposedNotesString,
     description: 'Transposes all notes up by one intervalic distance in the selected scale.',
   },
   down: {
-    algo: (params) => transposeByOne(params, false),
+    algo: (params) => transposeByOne(params, false).transposedNotesString,
     description: 'Transposes all notes down by one intervalic distance in the selected scale.',
   },
   getScale: {
@@ -141,7 +144,7 @@ const pars = {
   splitChop: 0,
   scale: 'minor',
   rootNote: 'F',
-  notes: ['C#0'],
+  notes: ['F'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -150,4 +153,3 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-console.log(notesToNumbers(pars));
