@@ -165,14 +165,9 @@ const createRhythmPattern = (spacedSteps, block) => {
     .map((step) => {
       const { duration, note } = step;
       const repeats = duration / block;
+      const underscores = '_'.repeat(repeats - 1);
 
-      if (note) {
-        const underscores = '_'.repeat(repeats - 1);
-        return 'x' + underscores;
-      } else {
-        const underscores = '_'.repeat(Math.max(0, repeats - 1));
-        return '-' + underscores;
-      }
+      return note ? 'x' + underscores : '-' + underscores;
     })
     .join('');
 

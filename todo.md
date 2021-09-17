@@ -52,7 +52,6 @@ Algos added to the rhythmAlgos can take one argument and thats the pattern recei
 
 ### Rhyth Algos
 
-- revert - reverse order of everything
 - rhythmic development - double the selected sequence and 1) suggest continuation by filling the last 2 beats with the same beats as before, but subdivided [] by 2 and twice as much of them 2) sense of finality by ending on 1st or 2nd beat while filling the rest of the sequence 3) suggest temporary repose by adding rests on 75% of the seq or by ending on 3 or 4 4) Augmentation - double the current phrase and add after it the same phrase, but make it twice as long 5) Diminution - add 2 current phrases after the current phrase, but make them half as long
 
 ### Both Algos
