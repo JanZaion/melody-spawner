@@ -1,6 +1,6 @@
 const { Note, Scale } = require('@tonaljs/tonal');
-const { enharmoniseScale } = require('./enharmoniseScale');
 
+//simple enough for turning numbers into notes
 const makeSuperScale = ({ scale, rootNote, octave }) => {
   const zeroScale = Scale.get(`${rootNote}0 ${scale}`).notes.map((note) => Note.simplify(note));
   const finalScale = [];
@@ -19,24 +19,38 @@ const makeSuperScale = ({ scale, rootNote, octave }) => {
   const splitPoint = rootToneIndex !== -1 ? rootToneIndex : finalScale.indexOf(Note.enharmonic(rootTone));
   const lowerScale = finalScale.slice(0, splitPoint);
   const upperScale = finalScale.slice(splitPoint);
+  const lowerScaleReversed = [...lowerScale].reverse();
 
-  return { upperScale, lowerScale, finalScale };
+  return { upperScale, lowerScale, finalScale, lowerScaleReversed };
 };
 
+//robust enough for turning notes into numbers
 const makeMassiveScales = (params) => {
-  const superScale = makeSuperScale(params).finalScale;
-  const superEnharmonicScale = enharmoniseScale(superScale);
-  const superMassiveScale = superScale.concat(superEnharmonicScale);
+  const { upperScale, lowerScale, finalScale, lowerScaleReversed } = makeSuperScale(params);
+  const enharmoniseScale = (scale) => scale.map((note) => Note.enharmonic(note));
+
+  const enharmonicScale = enharmoniseScale(finalScale);
+  const enharmonicUpperScale = enharmoniseScale(upperScale);
+  const enharmonicLowerScale = enharmoniseScale(lowerScale);
+  const enharmonicLowerScaleReversed = enharmoniseScale(lowerScaleReversed);
+  const superMassiveScale = finalScale.concat(enharmonicScale);
   const superChromaticScale = makeSuperScale({ ...params, scale: 'chromatic' }).finalScale;
   const superChromaticEnharmonicScale = enharmoniseScale(superChromaticScale);
   const superMassiveChromaticScale = superChromaticScale.concat(superChromaticEnharmonicScale);
 
   return {
-    superEnharmonicScale,
+    upperScale,
+    lowerScale,
+    finalScale,
+    lowerScaleReversed,
+    enharmonicScale,
     superMassiveScale,
     superChromaticScale,
     superChromaticEnharmonicScale,
     superMassiveChromaticScale,
+    enharmonicUpperScale,
+    enharmonicLowerScale,
+    enharmonicLowerScaleReversed,
   };
 };
 

@@ -2,25 +2,37 @@ const dice = require('convenient-methods-of-randomness');
 const { makeSuperScale, makeMassiveScales } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
-const { enharmoniseScale } = require('./enharmoniseScale');
 
-const notesToNums = ({ notes, scale, rootNote, octave }) => {
-  const notesArray = notesToArray(notes);
-  if (notesArray.every((note) => !isNaN(note))) return notesArray.join(' ');
-  const superScale = makeSuperScale({ scale, rootNote, octave });
+const numToNote = (num, lowerScaleReversed, upperScale) => {
+  return num < 0 ? lowerScaleReversed.indexOf(num) : upperScale.indexOf(num);
+};
 
-  const { upperScale, lowerScale } = superScale;
-  const lowerScaleReversed = [...lowerScale].reverse();
-  const upperScaleEnharmonic = enharmoniseScale(upperScale);
-  const lowerScaleEnharmonic = enharmoniseScale(lowerScaleReversed);
+const noteToNum = (note, lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale) => {
+  const isItHere = (scale, note) => scale.indexOf(note) !== -1;
+  if (isItHere(upperScale, note)) return upperScale.indexOf(note);
+  if (isItHere(lowerScaleReversed, note)) return lowerScaleReversed.indexOf(note) * -1 - 1;
+  if (isItHere(enharmonicUpperScale, note)) return enharmonicUpperScale.indexOf(note);
+  if (isItHere(enharmonicLowerScaleReversed, note)) return enharmonicLowerScaleReversed.indexOf(note + 1) * -1 - 1;
+  return note;
+};
 
-  const nums = notesArray.map((note) => {
-    if (upperScale.indexOf(note) !== -1) return upperScale.indexOf(note);
-    if (lowerScale.indexOf(note) !== -1) return lowerScaleReversed.indexOf(note) * -1 - 1;
-    if (upperScaleEnharmonic.indexOf(note) !== -1) return upperScaleEnharmonic.indexOf(note);
-    if (lowerScaleEnharmonic.indexOf(note) !== -1) return lowerScaleEnharmonic.indexOf(note + 1) * -1 - 1;
-    return note;
+const parseNotesAndNums = ({ notes }) => {
+  return notesToArray(notes).map((note) => {
+    const int = parseInt(note);
+    return isNaN(int) ? note : int;
   });
+};
+
+const notesToNums = (params) => {
+  const notesAndNums = parseNotesAndNums(params);
+  if (notesAndNums.every((note) => !isNaN(note))) return notesAndNums.join(' ');
+
+  const { lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale } =
+    makeMassiveScales(params);
+
+  const nums = notesAndNums.map((note) =>
+    noteToNum(note, lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale)
+  );
 
   return nums.join(' ');
 };
@@ -111,9 +123,9 @@ const pars = {
   subdiv: '4n',
   splitter: 0,
   splitChop: 0,
-  scale: 'major pentatonic',
-  rootNote: 'F#',
-  notes: ['G2', 'F2'],
+  scale: 'minor',
+  rootNote: 'F',
+  notes: ['Ab1', 'A1'],
   pattern: 'x__x__x_',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -122,4 +134,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-getScale(pars);
+console.log(notesToNums(pars));

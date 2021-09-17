@@ -107,8 +107,7 @@ const makeBaseScale = ({ scale, rootNote, octave }) => {
 const numsToNotes = (notesArray, selectedScale) => {
   if (notesArray.every((note) => isNaN(note))) return notesArray;
 
-  const { upperScale, lowerScale } = selectedScale;
-  const lowerScaleReversed = [...lowerScale].reverse();
+  const { upperScale, lowerScale, lowerScaleReversed } = selectedScale;
 
   const noNums = notesArray.map((note) => {
     switch (isNaN(note)) {
