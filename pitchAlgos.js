@@ -11,9 +11,9 @@ const numToNote = (num, lowerScaleReversed, upperScale) => {
 const noteToNum = (note, lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale) => {
   const isItHere = (scale, note) => scale.indexOf(note) !== -1;
   if (isItHere(upperScale, note)) return upperScale.indexOf(note);
-  if (isItHere(lowerScaleReversed, note)) return lowerScaleReversed.indexOf(note) * -1 - 1;
+  if (isItHere(lowerScaleReversed, note)) return lowerScaleReversed.indexOf(note) * -1;
   if (isItHere(enharmonicUpperScale, note)) return enharmonicUpperScale.indexOf(note);
-  if (isItHere(enharmonicLowerScaleReversed, note)) return enharmonicLowerScaleReversed.indexOf(note + 1) * -1 - 1;
+  if (isItHere(enharmonicLowerScaleReversed, note)) return enharmonicLowerScaleReversed.indexOf(note + 1) * -1;
   return note;
 };
 
@@ -106,6 +106,10 @@ const pitchAlgos = {
     description:
       'Transforms note names into numbers that signify intervalic distance from the root note. If the note is not present in the selected scale, it does not get transformed.',
   },
+  numsToNotes: {
+    algo: numbersToNotes,
+    description: 'Transforms intervalic numbers into note names.',
+  },
   reshuffle: {
     algo: reshuffle,
     description: 'Randomly reshuffles notes in the note pattern.',
@@ -131,13 +135,13 @@ const pitchAlgos = {
 module.exports = { pitchAlgos };
 
 const pars = {
-  octave: 2,
+  octave: 0,
   subdiv: '4n',
   splitter: 0,
   splitChop: 0,
-  scale: 'major',
-  rootNote: 'C',
-  notes: [-1],
+  scale: 'minor',
+  rootNote: 'F',
+  notes: ['Eb0'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -146,4 +150,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-console.log(numbersToNotes(pars));
+console.log(notesToNumbers(pars));
