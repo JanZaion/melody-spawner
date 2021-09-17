@@ -1,9 +1,8 @@
 const dice = require('convenient-methods-of-randomness');
-const { makeSuperScale } = require('./superScale');
+const { makeSuperScale, makeMassiveScales } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
-
-const enharmoniseScale = (scale) => scale.map((note) => Note.enharmonic(note));
+const { enharmoniseScale } = require('./enharmoniseScale');
 
 const notesToNums = ({ notes, scale, rootNote, octave }) => {
   const notesArray = notesToArray(notes);
@@ -44,12 +43,7 @@ const transposeByOne = (params, up) => {
     return isNaN(int) ? note : int;
   });
 
-  const superScale = makeSuperScale(params).finalScale;
-  const superEnharmonicScale = enharmoniseScale(superScale);
-  const superMassiveScale = superScale.concat(superEnharmonicScale);
-  const superChromaticScale = makeSuperScale({ ...params, scale: 'chromatic' }).finalScale;
-  const superChromaticEnharmonicScale = enharmoniseScale(superChromaticScale);
-  const superMassiveChromaticScale = superChromaticScale.concat(superChromaticEnharmonicScale);
+  const { superMassiveScale, superMassiveChromaticScale } = makeMassiveScales(params);
 
   const tonicInterval = up ? 'm2' : 'A-1';
   const numInterval = up ? 1 : -1;
@@ -76,6 +70,11 @@ const transposeByOne = (params, up) => {
 const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
 
 const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
+
+const inversion = ({ notes }) => {
+  const notesArray = notesToArray(notes);
+  // const
+};
 
 const pitchAlgos = {
   notesToNums: {

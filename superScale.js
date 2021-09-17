@@ -1,4 +1,5 @@
 const { Note, Scale } = require('@tonaljs/tonal');
+const { enharmoniseScale } = require('./enharmoniseScale');
 
 const makeSuperScale = ({ scale, rootNote, octave }) => {
   const zeroScale = Scale.get(`${rootNote}0 ${scale}`).notes.map((note) => Note.simplify(note));
@@ -22,4 +23,21 @@ const makeSuperScale = ({ scale, rootNote, octave }) => {
   return { upperScale, lowerScale, finalScale };
 };
 
-module.exports = { makeSuperScale };
+const makeMassiveScales = (params) => {
+  const superScale = makeSuperScale(params).finalScale;
+  const superEnharmonicScale = enharmoniseScale(superScale);
+  const superMassiveScale = superScale.concat(superEnharmonicScale);
+  const superChromaticScale = makeSuperScale({ ...params, scale: 'chromatic' }).finalScale;
+  const superChromaticEnharmonicScale = enharmoniseScale(superChromaticScale);
+  const superMassiveChromaticScale = superChromaticScale.concat(superChromaticEnharmonicScale);
+
+  return {
+    superEnharmonicScale,
+    superMassiveScale,
+    superChromaticScale,
+    superChromaticEnharmonicScale,
+    superMassiveChromaticScale,
+  };
+};
+
+module.exports = { makeSuperScale, makeMassiveScales };
