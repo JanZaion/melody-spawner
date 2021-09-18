@@ -98,9 +98,20 @@ const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ')
 
 const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
 
-const inversion = ({ notes }) => {
-  const notesArray = notesToArray(notes);
-  // const
+const inversion = ({ notes, rootNote, octave, scale }) => {
+  const notesAndNums = parseNotesAndNums(notes);
+
+  const { superMassiveChromaticScale } = makeMassiveScales(params);
+  const numbered = notesToNumbers();
+  /*
+1. bring in superMassiveChromaticScale, prly irrelevant with which params
+2. notesToNumbers the notes on the superMassiveChromaticScale
+3. find the highest interval
+4. if odd, just use mid number as axis, if even, round somehow
+5. use root note intervalic distance as axis for RN inversion
+6. concider inversion only in key. In that case, numbers on superMassiveChromaticScale are irrelevant, maybe just transpose out of scale notes
+  */
+  const invert = (notes, axis) => {};
 };
 
 const pitchAlgos = {
