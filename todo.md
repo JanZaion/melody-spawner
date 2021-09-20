@@ -28,11 +28,11 @@
 
 ## production
 
+- create a folder with "production content". Include all necessary files here and the main patch as .maxpat file. Include the original package.json here, but install with npm install --production
 - fullowing the tutorial at https://docs.cycling74.com/max8/vignettes/03_n4m_projects_devices seems to have worked
 - produce the amxd directly from the project management window
 - the main patch that is included should not be amxd but maxpat. When creating the maxpat, copying from amxd messes up stuff, find a better way
-- export max for live device is probably the way to go
-- only include necessery stuff, else the device is bloated and slow. Remove all dev deps from packages etc
+- export max for live device is the way to go
 
 ## pitch and rhythm algos
 

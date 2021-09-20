@@ -256,25 +256,6 @@ module.exports = {
 };
 
 // const pars = {
-//   octave: 1,
-//   subdiv: '4n',
-//   splitter: 0,
-//   splitChop: 0,
-//   scale: 'Major',
-//   rootNote: 'D#',
-//   notes: ['R', 'R', 'R', 'R'],
-//   pattern: 'x__x__x_',
-//   pitchDirrection: 'ascend',
-//   repeatNotes: 'on',
-//   sizzle: 'cos',
-//   upperBound: 5,
-//   lowerBound: 0,
-//   intervals: 'diatonic',
-// };
-// // makeMelody(pars);
-// console.log(makeMelody(pars));
-
-// const pars = {
 //   subdiv: '4n',
 //   splitter: 0,
 //   octave: 1,
