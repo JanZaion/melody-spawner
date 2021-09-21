@@ -100,22 +100,51 @@ const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave
 
 const inversion = (params) => {
   const { notes } = numbersToNotes(params);
-  const midiNotes = notes.map((note) => Note.midi(note));
-  const min = Math.min(...midiNotes);
-  const max = Math.max(...midiNotes);
+  const midiNotes = notes.map((note) => {
+    const midified = Note.midi(note);
+    return midified ? midified : note;
+  });
+  const midiNotesOnly = midiNotes.filter((note) => !isNaN(note));
+
+  const min = Math.min(...midiNotesOnly);
+  const max = Math.max(...midiNotesOnly);
   const axis = (min + max) / 2;
 
   const invertedNotes = midiNotes
     .map((note) => {
+      if (isNaN(note)) return note;
       if (note === axis) return note;
       if (note > axis) return axis - (note - axis);
       if (note < axis) return axis + (axis - note);
     })
-    .map((note) => Note.fromMidi(note));
+    .map((note) => {
+      const demidified = Note.fromMidi(note);
+      return demidified ? demidified : note;
+    });
 
-  const InvertedNotesString = invertedNotes.join(' ');
+  const invertedNotesString = invertedNotes.join(' ');
 
-  return { invertedNotes, InvertedNotesString };
+  return { invertedNotes, invertedNotesString };
+};
+
+const inversionCorrective = (params) => {
+  const { invertedNotes } = inversion(params);
+  const { superMassiveScale, superMassiveChromaticScale } = makeMassiveScales(params);
+
+  const correctedInvertedNotes = invertedNotes.map((note) => {
+    if (superMassiveChromaticScale.indexOf(note) === -1) return note;
+    let transposedNote = Note.simplify(note);
+    while (superMassiveScale.indexOf(transposedNote) === -1) {
+      transposedNote = Note.simplify(Note.transpose(transposedNote, 'm2'));
+      if (transposedNote === 'C-1') break;
+      if (transposedNote === 'C7') break;
+    }
+    return transposedNote;
+  });
+
+  const correctedInvertedNotesString = correctedInvertedNotes.join(' ');
+
+  return { correctedInvertedNotes, correctedInvertedNotesString };
 };
 
 const pitchAlgos = {
@@ -149,8 +178,13 @@ const pitchAlgos = {
     description: 'Lists all the notes of the selected scale. As simple as that.',
   },
   inversion: {
-    algo: (params) => inversion(params).InvertedNotesString,
+    algo: (params) => inversion(params).invertedNotesString,
     description: 'Turns the notes upside down.',
+  },
+  inversionCorrective: {
+    algo: (params) => inversionCorrective(params).correctedInvertedNotesString,
+    description:
+      'Turns the notes upside down. If any note is out of scale, it transposes the note in the upwards dirrection until it is in scale',
   },
 };
 
@@ -161,9 +195,9 @@ const pars = {
   subdiv: '4n',
   splitter: 0,
   splitChop: 0,
-  scale: 'minor',
+  scale: 'major',
   rootNote: 'F',
-  notes: [9, '5', '6', '1'],
+  notes: ['Gb1', 'A1', 'B1'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -172,4 +206,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-inversion(pars);
+inversionCorrective(pars); //?
