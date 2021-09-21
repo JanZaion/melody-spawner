@@ -92,7 +92,7 @@ const init = async () => {
     notes: ['R', 'R', 'R', 'R'],
     patterns: 'xxxx',
     pattern: 'xxxx',
-    pitchAlgo: 'dunno',
+    pitchAlgo: 'notesToNums',
     repeatNotes: 1,
     rhythmAlgo: 'long_wild',
     sizzle: 'none',

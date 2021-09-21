@@ -46,8 +46,8 @@ Algos added to the rhythmAlgos can take one argument and thats the pattern recei
 
 ### Melody Algos
 
-- retrograde
 - inversion
+- retrograde
 - retrograde inversion
 
 ### Rhyth Algos

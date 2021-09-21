@@ -26,7 +26,7 @@ const parseNotesAndNums = ({ notes }) => {
 
 const notesToNumbers = (params) => {
   const notesAndNums = parseNotesAndNums(params);
-  if (notesAndNums.every((note) => !isNaN(note))) return notesAndNums.join(' ');
+  if (notesAndNums.every((note) => !isNaN(note))) return { nums: params.notes, numsString: notesAndNums.join(' ') };
 
   const { lowerScaleReversed, upperScale, enharmonicLowerScaleReversed, enharmonicUpperScale } =
     makeMassiveScales(params);
@@ -42,7 +42,7 @@ const notesToNumbers = (params) => {
 
 const numbersToNotes = (params) => {
   const notesAndNums = parseNotesAndNums(params);
-  if (notesAndNums.every((note) => isNaN(note))) return notesAndNums.join(' ');
+  if (notesAndNums.every((note) => isNaN(note))) return { notes: params.notes, notesString: notesAndNums.join(' ') };
 
   const { lowerScaleReversed, upperScale } = makeSuperScale(params);
 
@@ -98,20 +98,24 @@ const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ')
 
 const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
 
-const inversion = ({ notes, rootNote, octave, scale }) => {
-  const notesAndNums = parseNotesAndNums(notes);
+const inversion = (params) => {
+  const { notes } = numbersToNotes(params);
+  const midiNotes = notes.map((note) => Note.midi(note));
+  const min = Math.min(...midiNotes);
+  const max = Math.max(...midiNotes);
+  const axis = (min + max) / 2;
 
-  const { superMassiveChromaticScale } = makeMassiveScales(params);
-  const numbered = notesToNumbers();
-  /*
-1. bring in superMassiveChromaticScale, prly irrelevant with which params
-2. notesToNumbers the notes on the superMassiveChromaticScale
-3. find the highest interval
-4. if odd, just use mid number as axis, if even, round somehow
-5. use root note intervalic distance as axis for RN inversion
-6. concider inversion only in key. In that case, numbers on superMassiveChromaticScale are irrelevant, maybe just transpose out of scale notes
-  */
-  const invert = (notes, axis) => {};
+  const invertedNotes = midiNotes
+    .map((note) => {
+      if (note === axis) return note;
+      if (note > axis) return axis - (note - axis);
+      if (note < axis) return axis + (axis - note);
+    })
+    .map((note) => Note.fromMidi(note));
+
+  const InvertedNotesString = invertedNotes.join(' ');
+
+  return { invertedNotes, InvertedNotesString };
 };
 
 const pitchAlgos = {
@@ -144,6 +148,10 @@ const pitchAlgos = {
     algo: getScale,
     description: 'Lists all the notes of the selected scale. As simple as that.',
   },
+  inversion: {
+    algo: (params) => inversion(params).InvertedNotesString,
+    description: 'Turns the notes upside down.',
+  },
 };
 
 module.exports = { pitchAlgos };
@@ -155,7 +163,7 @@ const pars = {
   splitChop: 0,
   scale: 'minor',
   rootNote: 'F',
-  notes: ['F'],
+  notes: [9, '5', '6', '1'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -164,3 +172,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
+inversion(pars);
