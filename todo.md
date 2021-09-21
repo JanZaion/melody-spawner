@@ -29,10 +29,10 @@
 ## production
 
 - create a folder with "production content". Include all necessary files here and the main patch as .maxpat file. Include the original package.json here, but install with npm install --production
-- fullowing the tutorial at https://docs.cycling74.com/max8/vignettes/03_n4m_projects_devices seems to have worked
-- produce the amxd directly from the project management window
-- the main patch that is included should not be amxd but maxpat. When creating the maxpat, copying from amxd messes up stuff, find a better way
-- export max for live device is the way to go
+- remove all the fluff from .maxpat files, ie node debug window
+- following the tutorial at https://docs.cycling74.com/max8/vignettes/03_n4m_projects_devices works well with these other steps
+- produce the amxd directly from the project management window by "export max for live device"
+- always keep the .maxproj file at some separate folder, ie The default folder chosen by Max
 
 ## pitch and rhythm algos
 
@@ -43,12 +43,6 @@ Adding new Algos:
 3. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
 
 Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend. should be fun
-
-### Melody Algos
-
-- inversion
-- retrograde
-- retrograde inversion
 
 ### Rhyth Algos
 
