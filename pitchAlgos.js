@@ -147,6 +147,12 @@ const inversionCorrective = (params) => {
   return { correctedInvertedNotes, correctedInvertedNotesString };
 };
 
+const retrogradeInversion = (params) => {
+  const { invertedNotes } = inversion(params);
+  const reversedNotes = reverseNotes({ notes: invertedNotes });
+  return reversedNotes;
+};
+
 const pitchAlgos = {
   notesToNums: {
     algo: (params) => notesToNumbers(params).numsString,
@@ -161,7 +167,7 @@ const pitchAlgos = {
     algo: reshuffle,
     description: 'Randomly reshuffles notes in the note pattern.',
   },
-  reverse: {
+  retrograde: {
     algo: reverseNotes,
     description: 'Reverses the order of the notes.',
   },
@@ -186,6 +192,10 @@ const pitchAlgos = {
     description:
       'Turns the notes upside down. If any note is out of scale, it transposes the note in the upwards dirrection until it is in scale',
   },
+  retrogradeInversion: {
+    algo: retrogradeInversion,
+    description: 'Reverses the order of the notes and turns them upside down',
+  },
 };
 
 module.exports = { pitchAlgos };
@@ -206,4 +216,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-inversionCorrective(pars); //?
+retrogradeInversion(pars); //?
