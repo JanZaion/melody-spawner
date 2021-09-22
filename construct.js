@@ -5,6 +5,7 @@ const { getNotes } = require('./getNotes');
 const { getClip } = require('./getClip');
 const { rhythmAlgos } = require('./rhythmAlgos');
 const { pitchAlgos } = require('./pitchAlgos');
+const { bothAlgos } = require('./bothAlgos');
 
 const getPattern = async () => {
   const notes = await getNotes('stepsLive');
@@ -81,6 +82,21 @@ const pitchDescription = async () => {
   maxApi.outlet(`pitchDescription ${pitchAlgos[pitchAlgo].description}`);
 };
 
+const generateBoth = async () => {
+  const full = await maxApi.getDict('full');
+  const { bothAlgo } = full;
+
+  maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
+  maxApi.outlet(`noteNames ${bothAlgos[bothAlgo].algo(full).notes}`);
+};
+
+const bothDescription = async () => {
+  const full = await maxApi.getDict('full');
+  const { bothAlgo } = full;
+
+  maxApi.outlet(`bothDescription ${bothAlgos[bothAlgo].description}`);
+};
+
 const init = async () => {
   await maxApi.setDict('full', {
     subdiv: '4n',
@@ -95,6 +111,7 @@ const init = async () => {
     pitchAlgo: 'notesToNums',
     repeatNotes: 1,
     rhythmAlgo: 'long_wild',
+    bothAlgo: 'displacement',
     sizzle: 'none',
     splitChop: 0,
     upperBound: 7,
@@ -114,3 +131,5 @@ maxApi.addHandler('generatePitch', generatePitch);
 maxApi.addHandler('Init', init);
 maxApi.addHandler('patternDescription', patternDescription);
 maxApi.addHandler('pitchDescription', pitchDescription);
+maxApi.addHandler('generateBoth', generateBoth);
+maxApi.addHandler('bothDescription', bothDescription);
