@@ -7,16 +7,6 @@ const { makeSuperScale } = require('./superScale');
 const { notesToArray } = require('./notesToArray');
 const jsmidgen = require('jsmidgen');
 
-const maxToBool = (str) => {
-  switch (str) {
-    case 0: //inverted logic for toggle indexes in Max
-      return true;
-
-    case 1:
-      return false;
-  }
-};
-
 const chopSplitHalve = ({ splitChop, splitter }, scribbleClip) => {
   if (splitter === 0) return scribbleClip;
 
@@ -183,7 +173,7 @@ const RsToNotes = (
 
   if (notesRemaining.length === 0) notesRemaining.push(rootNote + octave);
 
-  const repeatNotesBool = maxToBool(repeatNotes);
+  const repeatNotesBool = repeatNotes === 1 ? true : false;
 
   //noteIndexes is an array of integers of the final notes in the notesRemaining or finalScale arrays.
   const noteIndexes = RsToNoteIndexes(finalScale, numOfRandNotes, notesRemaining, pitchDirrection, repeatNotesBool);
