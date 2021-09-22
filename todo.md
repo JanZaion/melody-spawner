@@ -8,10 +8,10 @@
 - make the upperbound/lowerbound so that its clear that we are talking about intervals.
 - add description to presets
 - implement '.' in the rhythm pattern text window and getrhythm alg. Do it when it gets released in the new version
-- make 3 algo types and a single description field
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 - before production, check that all umenus were loaded correctly into full
+- fix get + gate
 
 ## magenta:
 
@@ -42,7 +42,7 @@ Adding new Algos:
 2. add the algo and the description to the algos object as an object with appropriate keys
 3. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
 
-Algos added to the rhythmAlgos can take one argument and thats the pattern received from the frontend. should be fun
+If its algo from bothAlgos, then return has to be an object with appropriate keys. Else its a string
 
 ### Rhyth Algos
 

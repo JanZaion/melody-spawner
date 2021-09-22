@@ -86,8 +86,8 @@ const generateBoth = async () => {
   const full = await maxApi.getDict('full');
   const { bothAlgo } = full;
 
-  maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
   maxApi.outlet(`noteNames ${bothAlgos[bothAlgo].algo(full).notes}`);
+  maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
 };
 
 const bothDescription = async () => {

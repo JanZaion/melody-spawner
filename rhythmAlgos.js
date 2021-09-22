@@ -1,4 +1,5 @@
 const dice = require('convenient-methods-of-randomness');
+const { splitPattern } = require('./splitPattern');
 
 // Generates a rhythm suitable for 4 chord pattern out of 4 "x" and 4 or 12 "_".
 const wildMild = (wild, howLong) => {
@@ -38,37 +39,6 @@ const wildMild = (wild, howLong) => {
     }
   }
   return rhythm.join('');
-};
-
-const splitPattern = (pattern, withSpaces) => {
-  const initialSpace = pattern.split('x')[0];
-  const stepsWithSpaces = pattern.split('x');
-  if (initialSpace.length === 0) stepsWithSpaces.shift();
-
-  const counter = initialSpace.length === 0 ? 0 : 1;
-  for (let i = counter; i < stepsWithSpaces.length; i++) stepsWithSpaces[i] = 'x' + stepsWithSpaces[i];
-
-  const noEmptySteps = (steps) => steps.filter((step) => step.length > 0);
-
-  if (withSpaces) return noEmptySteps(stepsWithSpaces);
-
-  const stepsAndSpaces = [];
-  stepsWithSpaces.forEach((step) => {
-    const spaceIndex = step.indexOf('-');
-    if (spaceIndex !== -1) {
-      const splitHappens = [step.slice(0, spaceIndex), step.slice(spaceIndex)];
-      stepsAndSpaces.push(...splitHappens);
-    } else {
-      stepsAndSpaces.push(step);
-    }
-  });
-
-  const stepsAndSpacesSeparated = [];
-  noEmptySteps(stepsAndSpaces)
-    .map((step) => step.split(/(?=-)/g))
-    .forEach((step) => stepsAndSpacesSeparated.push(...step));
-
-  return stepsAndSpacesSeparated;
 };
 
 const reshuffle = ({ pattern }, withSpaces) => {
