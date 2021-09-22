@@ -65,7 +65,7 @@ const patternDescription = async () => {
   const full = await maxApi.getDict('full');
   const { rhythmAlgo } = full;
 
-  maxApi.outlet(`patternDescription ${rhythmAlgos[rhythmAlgo].description}`);
+  maxApi.outlet(`description ${rhythmAlgos[rhythmAlgo].description}`);
 };
 
 const generatePitch = async () => {
@@ -79,7 +79,7 @@ const pitchDescription = async () => {
   const full = await maxApi.getDict('full');
   const { pitchAlgo } = full;
 
-  maxApi.outlet(`pitchDescription ${pitchAlgos[pitchAlgo].description}`);
+  maxApi.outlet(`description ${pitchAlgos[pitchAlgo].description}`);
 };
 
 const generateBoth = async () => {
@@ -94,7 +94,7 @@ const bothDescription = async () => {
   const full = await maxApi.getDict('full');
   const { bothAlgo } = full;
 
-  maxApi.outlet(`bothDescription ${bothAlgos[bothAlgo].description}`);
+  maxApi.outlet(`description ${bothAlgos[bothAlgo].description}`);
 };
 
 const init = async () => {
