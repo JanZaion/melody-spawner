@@ -11,7 +11,8 @@
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 - before production, check that all umenus were loaded correctly into full
-- fix get + gate
+- fix get + gate - when getting the pattern, it must not send out a bang
+- add 'observe' button that will watch note evenets and write them to textedits
 
 ## magenta:
 
