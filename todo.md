@@ -56,3 +56,5 @@ If its algo from bothAlgos, then return has to be an object with appropriate key
 - motivic expansion - add +1 to random 25% or 50% of notes
 - motivic compression - add -1 to random 25% or 50% of notes
 - all those finality etc suggestions, make em here with the melodic stuff as well
+
+i cant wait to do this
