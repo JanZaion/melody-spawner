@@ -22,7 +22,7 @@ const displacement = (params) => {
   return { notes: notesArray.join(' '), pattern: stepsAndSpacesSeparated.join('') }; //?
 };
 
-//add original motif + displaced
+//add original motif + displaced. I guess what I meant by it is to add 2 versionbs of displacement
 
 const bothAlgos = {
   displacement: {
