@@ -11,7 +11,7 @@
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 - before production, check that all umenus were loaded correctly into full
-- fix get + gate - when getting the pattern, it must not send out a bang
+- fix get + gate - when getting the pattern, it must not send out a bang. Maybe redo the thing so that the bang just goes from the full dict instead from individual params
 - add 'observe' button that will watch note evenets and write them to textedits
 
 ## magenta:
@@ -56,5 +56,3 @@ If its algo from bothAlgos, then return has to be an object with appropriate key
 - motivic expansion - add +1 to random 25% or 50% of notes
 - motivic compression - add -1 to random 25% or 50% of notes
 - all those finality etc suggestions, make em here with the melodic stuff as well
-
-i cant wait to do this
