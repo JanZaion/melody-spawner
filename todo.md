@@ -12,6 +12,7 @@
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 - before production, check that all umenus were loaded correctly into full
 - fix get + gate - when getting the pattern, it must not send out a bang. Maybe redo the thing so that the bang just goes from the full dict instead from individual params
+- get total duration of clip and transform it to spaces, if missing
 
 ## magenta:
 
