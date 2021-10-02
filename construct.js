@@ -59,6 +59,7 @@ const generateRhythm = async () => {
   const { rhythmAlgo } = full;
 
   maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo].algo(full)}`);
+  maxApi.outlet(`gatedBang`);
 };
 
 const patternDescription = async () => {
@@ -73,6 +74,7 @@ const generatePitch = async () => {
   const { pitchAlgo } = full;
 
   maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo].algo(full)}`);
+  maxApi.outlet(`gatedBang`);
 };
 
 const pitchDescription = async () => {
@@ -88,6 +90,7 @@ const generateBoth = async () => {
 
   maxApi.outlet(`noteNames ${bothAlgos[bothAlgo].algo(full).notes}`);
   maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
+  maxApi.outlet(`gatedBang`);
 };
 
 const bothDescription = async () => {
