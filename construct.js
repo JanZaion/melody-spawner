@@ -27,9 +27,9 @@ const getPitches = async () => {
 
   if (clipData) {
     const { noteNames } = clipData;
-    const asd = noteNames.split(' ').join('|');
+    const notesStr = noteNames.split(' ').join('|');
 
-    maxApi.outlet(`unbang ${asd}`);
+    maxApi.outlet(`unbang ${notesStr}`);
     maxApi.outlet(`notesUnbang ${noteNames}`);
   }
 };
@@ -74,8 +74,11 @@ const patternDescription = async () => {
 const generatePitch = async () => {
   const full = await maxApi.getDict('full');
   const { pitchAlgo } = full;
+  const result = pitchAlgos[pitchAlgo].algo(full);
+  const notesStr = result.split(' ').join('|');
 
-  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo].algo(full)}`);
+  maxApi.outlet(`unbang ${notesStr}`);
+  maxApi.outlet(`notesUnbang ${result}`);
   maxApi.outlet(`gatedBang`);
 };
 
