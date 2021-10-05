@@ -1,5 +1,7 @@
-inlets = 1;
-outlets = 1;
+function setDictParam(dictname, paramKey, paramValue) {
+  var dict = new Dict(dictname);
+  dict.set(paramKey, paramValue);
+}
 
 function post_info(dictname, keys) {
   post("Info regarding the dictionary named '", dictname, "': ");

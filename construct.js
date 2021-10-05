@@ -27,8 +27,10 @@ const getPitches = async () => {
 
   if (clipData) {
     const { noteNames } = clipData;
+    const asd = noteNames.split(' ').join('|');
 
-    maxApi.outlet(`noteNames ${noteNames}`);
+    maxApi.outlet(`unbang ${asd}`);
+    maxApi.outlet(`notesUnbang ${noteNames}`);
   }
 };
 
