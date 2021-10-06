@@ -7,33 +7,6 @@ const { rhythmAlgos } = require('./rhythmAlgos');
 const { pitchAlgos } = require('./pitchAlgos');
 const { bothAlgos } = require('./bothAlgos');
 
-const getPattern = async () => {
-  const notes = await getNotes('stepsLive');
-
-  const clipData = getClip(notes);
-
-  if (clipData) {
-    const { pattern, subdiv } = clipData;
-
-    maxApi.outlet(`pattern ${pattern}`);
-    maxApi.outlet(`subdiv ${subdiv}`);
-  }
-};
-
-const getPitches = async () => {
-  const notes = await getNotes('stepsLive');
-
-  const clipData = getClip(notes);
-
-  if (clipData) {
-    const { noteNames } = clipData;
-    const notesStr = noteNames.split(' ').join('|');
-
-    maxApi.outlet(`unbang ${notesStr}`);
-    maxApi.outlet(`notesUnbang ${noteNames}`);
-  }
-};
-
 const makeClip = async () => {
   const full = await maxApi.getDict('full');
 
@@ -56,11 +29,43 @@ const makeClip = async () => {
   maxApi.outlet('make');
 };
 
+const getPattern = async () => {
+  const notes = await getNotes('stepsLive');
+
+  const clipData = getClip(notes);
+
+  if (clipData) {
+    const { pattern, subdiv } = clipData;
+    const patternStr = pattern.split(' ').join('|');
+
+    maxApi.outlet(`unbang pattern ${patternStr}`);
+    maxApi.outlet(`pattern ${pattern}`);
+    maxApi.outlet(`subdiv ${subdiv}`);
+  }
+};
+
+const getPitches = async () => {
+  const notes = await getNotes('stepsLive');
+
+  const clipData = getClip(notes);
+
+  if (clipData) {
+    const { noteNames } = clipData;
+    const notesStr = noteNames.split(' ').join('|');
+
+    maxApi.outlet(`unbang notes ${notesStr}`);
+    maxApi.outlet(`noteNames ${noteNames}`);
+  }
+};
+
 const generateRhythm = async () => {
   const full = await maxApi.getDict('full');
   const { rhythmAlgo } = full;
+  const pattern = rhythmAlgos[rhythmAlgo].algo(full);
+  const patternStr = pattern.split(' ').join('|');
 
-  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo].algo(full)}`);
+  maxApi.outlet(`unbang pattern ${patternStr}`);
+  maxApi.outlet(`pattern ${pattern}`);
   maxApi.outlet(`gatedBang`);
 };
 
@@ -74,11 +79,11 @@ const patternDescription = async () => {
 const generatePitch = async () => {
   const full = await maxApi.getDict('full');
   const { pitchAlgo } = full;
-  const result = pitchAlgos[pitchAlgo].algo(full);
-  const notesStr = result.split(' ').join('|');
+  const notes = pitchAlgos[pitchAlgo].algo(full);
+  const notesStr = notes.split(' ').join('|');
 
-  maxApi.outlet(`unbang ${notesStr}`);
-  maxApi.outlet(`notesUnbang ${result}`);
+  maxApi.outlet(`unbang notes ${notesStr}`);
+  maxApi.outlet(`noteNames ${notes}`);
   maxApi.outlet(`gatedBang`);
 };
 
@@ -92,9 +97,15 @@ const pitchDescription = async () => {
 const generateBoth = async () => {
   const full = await maxApi.getDict('full');
   const { bothAlgo } = full;
+  const notes = bothAlgos[bothAlgo].algo(full).notes;
+  const notesStr = notes.split(' ').join('|');
+  const pattern = bothAlgos[bothAlgo].algo(full).pattern;
+  const patternStr = pattern.split(' ').join('|');
 
-  maxApi.outlet(`noteNames ${bothAlgos[bothAlgo].algo(full).notes}`);
-  maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
+  maxApi.outlet(`unbang notes ${notesStr}`);
+  maxApi.outlet(`noteNames ${notes}`);
+  maxApi.outlet(`unbang pattern ${patternStr}`);
+  maxApi.outlet(`pattern ${pattern}`);
   maxApi.outlet(`gatedBang`);
 };
 
