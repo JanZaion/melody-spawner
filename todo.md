@@ -4,6 +4,7 @@
 - fix the bug when the clip is not cleared, or investigate whether needed at all
 - testLive 10 support
 - accomodate for scribble v5 updt
+- switch textedit for jweb ui. Write reges so that each character is scanned for validity. Make autorender and autosync so that its not mutually exclusive
 - make makemelody accept tonic notation intervals
 - make the upperbound/lowerbound so that its clear that we are talking about intervals.
 - add description to presets
