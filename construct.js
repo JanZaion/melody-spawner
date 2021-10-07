@@ -8,9 +8,9 @@ const { pitchAlgos } = require('./pitchAlgos');
 const { bothAlgos } = require('./bothAlgos');
 
 const getPattern = async () => {
-  const notes = await getNotes('stepsLive');
+  const parsed = await getNotes('stepsLive');
 
-  const clipData = getClip(notes);
+  const clipData = getClip(parsed);
 
   if (clipData) {
     const { pattern, subdiv } = clipData;
@@ -21,9 +21,9 @@ const getPattern = async () => {
 };
 
 const getPitches = async () => {
-  const notes = await getNotes('stepsLive');
+  const parsed = await getNotes('stepsLive');
 
-  const clipData = getClip(notes);
+  const clipData = getClip(parsed);
 
   if (clipData) {
     const { noteNames } = clipData;

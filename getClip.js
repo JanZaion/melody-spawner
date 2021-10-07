@@ -123,7 +123,7 @@ const dechordify = (notes) => {
   return dechordifiedNotes;
 };
 
-const createSpacedSteps = (notes) => {
+const createSpacedSteps = (notes, totalDuration) => {
   const spacedSteps = [];
 
   notes.forEach((step, stepIndex) => {
@@ -140,20 +140,34 @@ const createSpacedSteps = (notes) => {
 
   const spacedStepsNoZeroDurations = spacedSteps.filter((step) => step.duration > 0);
 
+  if (notes[notes.length - 1]) {
+    const unEmptyDuration = notes[notes.length - 1].duration + notes[notes.length - 1].start_time;
+
+    const finalSpaceLength = totalDuration - unEmptyDuration;
+
+    if (finalSpaceLength > 0) spacedStepsNoZeroDurations.push({ duration: finalSpaceLength, note: false });
+  }
+
   return spacedStepsNoZeroDurations;
 };
 
-const subdivFromSpacedSteps = (spacedSteps) => {
+//this whole fn hingis on the assumption that 0.25 is the smallest unit of division, the smallestBlock. Once it changes, arrays need to be rewriten
+const subdivFromSpacedSteps = (spacedSteps, smallestBlock) => {
   const durations = spacedSteps.map((step) => step.duration).filter((step) => step !== 0);
-  const shortestNote = Math.min(...durations) / 0.25;
-
   const blocks = [0, 1, 2, 4, 8, 16, 64, 128, 256];
+
+  const durationsDivided = durations.map((duration) => {
+    const blocksPerDiration = duration / smallestBlock;
+    return blocks.filter((block) => {
+      if (blocksPerDiration % block === 0) return block;
+    });
+  });
+
+  const leastDivisibleDuration = durationsDivided.sort((a, b) => a.length - b.length)[0];
+
+  const index = leastDivisibleDuration.length;
   const dividers = [0, 0.25, 0.5, 1, 2, 4, 16, 32, 64];
   const subdivs = ['32n', '16n', '8n', '4n', '2n', '1n', '1m', '2m', '4m'];
-  const divisible = blocks.filter((block) => {
-    if (shortestNote % block === 0) return block;
-  });
-  const index = divisible.length;
   const divider = dividers[index];
   const subdiv = subdivs[index];
 
@@ -174,8 +188,8 @@ const createRhythmPattern = (spacedSteps, block) => {
   return pattern;
 };
 
-const getClip = (notes) => {
-  if (!notes) return;
+const getClip = ({ notes, totalDuration }) => {
+  if (!notes.length) return;
 
   const block = 0.25; //0.25, 16n as the smallest unit of division. Change to 0.125 when 32n
 
@@ -197,9 +211,9 @@ const getClip = (notes) => {
 
   const noteNames = dechordifiedNotes.map((step) => Note.fromMidi(step.pitch - 12)).join(' '); //-12 because of the middle C octave transpose
 
-  const spacedSteps = createSpacedSteps(dechordifiedNotes);
+  const spacedSteps = createSpacedSteps(dechordifiedNotes, totalDuration);
 
-  const subdivInfo = subdivFromSpacedSteps(spacedSteps);
+  const subdivInfo = subdivFromSpacedSteps(spacedSteps, block);
 
   const { divider, subdiv } = subdivInfo;
 
@@ -210,49 +224,32 @@ const getClip = (notes) => {
 
 module.exports = { getClip };
 
-// const notes = [
-//   {
-//     note_id: 972,
-//     pitch: 43,
-//     start_time: 0,
-//     duration: 0.25,
-//     velocity: 100,
-//     mute: 0,
-//     probability: 1,
-//     velocity_deviation: 1,
-//     release_velocity: 64,
-//   },
-//   {
-//     note_id: 976,
-//     pitch: 43,
-//     start_time: 0.75,
-//     duration: 0.25,
-//     velocity: 100,
-//     mute: 0,
-//     probability: 1,
-//     velocity_deviation: 0,
-//     release_velocity: 64,
-//   },
-//   {
-//     note_id: 977,
-//     pitch: 43,
-//     start_time: 1,
-//     duration: 0.25,
-//     velocity: 100,
-//     mute: 0,
-//     probability: 1,
-//     velocity_deviation: 0,
-//     release_velocity: 64,
-//   },
-//   {
-//     note_id: 975,
-//     pitch: 43,
-//     start_time: 1.75,
-//     duration: 0.25,
-//     velocity: 100,
-//     mute: 0,
-//     probability: 1,
-//     velocity_deviation: 1,
-//     release_velocity: 64,
-//   },
-// ];
+// const parsed = {
+//   notes: [
+//     {
+//       note_id: 68,
+//       pitch: 66,
+//       start_time: 0.0,
+//       duration: 1.0,
+//       velocity: 100.0,
+//       mute: 0,
+//       probability: 1.0,
+//       velocity_deviation: 1.0,
+//       release_velocity: 64.0,
+//     },
+//     {
+//       note_id: 69,
+//       pitch: 66,
+//       start_time: 6.5,
+//       duration: 1.0,
+//       velocity: 100.0,
+//       mute: 0,
+//       probability: 1.0,
+//       velocity_deviation: 1.0,
+//       release_velocity: 64.0,
+//     },
+//   ],
+//   totalDuration: 10,
+// };
+
+// console.log(getClip(parsed));

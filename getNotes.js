@@ -4,8 +4,7 @@ const getNotes = async (dict) => {
   const stepsLive = await maxApi.getDict(dict);
   const stringified = JSON.stringify(stepsLive);
   const parsed = JSON.parse(stringified);
-  const { notes } = parsed;
-  return notes;
+  return parsed;
 };
 
 module.exports = { getNotes };

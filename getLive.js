@@ -49,12 +49,8 @@ function getLive(dictName) {
   dict.clear();
   dict.parse(notes);
 
+  var totalDuration = clip.get('loop_end');
+  dict.set('totalDuration', totalDuration);
+
   outlet(0, 'bang');
 }
-
-/*
-to get clip duration and then send it to the dict:
-  var totalDuration = clip.get('loop_end');
-  dict.set('totalDuration', totalDuration); 
-
-*/
