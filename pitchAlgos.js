@@ -198,7 +198,7 @@ const pitchAlgos = {
   },
 };
 
-module.exports = { pitchAlgos };
+module.exports = { pitchAlgos, transposeByOne };
 
 const pars = {
   octave: 0,
@@ -216,4 +216,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-retrogradeInversion(pars); //?
+transposeByOne(pars); //?

@@ -3,6 +3,7 @@ const { makeSuperScale, makeMassiveScales } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 const { splitPattern } = require('./splitPattern');
+const { transposeByOne } = require('./pitchAlgos');
 
 const displacement = (params) => {
   const { notes, pattern } = params;
@@ -33,6 +34,27 @@ const displacementAndOriginal = (params) => {
   return { notes: jointNotes, pattern: jointPattern };
 };
 
+const sequence = (params, up, sequenceLength) => {
+  const { notes, pattern } = params;
+  const notesArray = notesToArray(notes);
+
+  let sequenceNotes = '';
+  let sequencePattern = '';
+
+  for (let i = 0; i < sequenceLength; i++) {
+    let transposedNotes = [...notesArray];
+    for (let j = 0; j < i; j++) {
+      const nextSeqStep = transposeByOne({ ...params, notes: transposedNotes }, up).transposedNotes;
+      transposedNotes = nextSeqStep;
+    }
+
+    sequenceNotes = sequenceNotes.concat(transposedNotes.join(' ')).concat(' ');
+    sequencePattern = sequencePattern.concat(pattern);
+  }
+
+  return { notes: sequenceNotes, pattern: sequencePattern };
+};
+
 const bothAlgos = {
   displacement: {
     algo: displacement,
@@ -54,7 +76,7 @@ const pars = {
   scale: 'major',
   rootNote: 'F',
   notes: ['Gb1', 'A1', 'B1', 'B1'],
-  pattern: 'xxxxxxxx',
+  pattern: 'xxx',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
   sizzle: 'cos',
@@ -63,4 +85,4 @@ const pars = {
   intervals: 'diatonic',
 };
 
-displacementAndOriginal(pars);
+sequence(pars, false, 3);
