@@ -19,15 +19,28 @@ const displacement = (params) => {
   }
   stepsAndSpacesSeparated.push('-' + '_'.repeat(removedSteps.join('').length - 1));
 
-  return { notes: notesArray.join(' '), pattern: stepsAndSpacesSeparated.join('') }; //?
+  return { notes: notesArray.join(' '), pattern: stepsAndSpacesSeparated.join('') };
 };
 
-//add original motif + displaced. I guess what I meant by it is to add 2 versionbs of displacement
+const displacementAndOriginal = (params) => {
+  const { notes, pattern } = params;
+  const displaced = displacement({ notes: [...notes], pattern });
+
+  const displacedNotes = displaced.notes;
+  const jointNotes = notes.join(' ').concat(' ').concat(displacedNotes);
+  const jointPattern = pattern.concat(displaced.pattern);
+
+  return { notes: jointNotes, pattern: jointPattern };
+};
 
 const bothAlgos = {
   displacement: {
     algo: displacement,
-    description: 'Displaces the dis.',
+    description: 'Removes the first 1/4 of the of the melody and fills the rest of it with a space of equal length.',
+  },
+  displacementAndOriginal: {
+    algo: displacementAndOriginal,
+    description: 'Adds the original melody plus the displaced melody.',
   },
 };
 
@@ -50,4 +63,4 @@ const pars = {
   intervals: 'diatonic',
 };
 
-displacement(pars);
+displacementAndOriginal(pars);

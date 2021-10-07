@@ -50,7 +50,6 @@ If its algo from bothAlgos, then return has to be an object with appropriate key
 
 ### Both Algos
 
-- Displacement - divide the phrase by 4, fill the first 1/4 by a space, ommit the last 1/4
 - sequence 3 and 4 - duplicate the current motif and transpose it by +1, then +2, do it descending as well
 - motivic expansion - add +1 to random 25% or 50% of notes
 - motivic compression - add -1 to random 25% or 50% of notes
