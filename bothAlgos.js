@@ -64,6 +64,22 @@ const bothAlgos = {
     algo: displacementAndOriginal,
     description: 'Adds the original melody plus the displaced melody.',
   },
+  ascending3partSequence: {
+    algo: (params) => sequence(params, true, 3),
+    description: 'Adds the original melody plus the displaced melody.',
+  },
+  ascending4partSequence: {
+    algo: (params) => sequence(params, true, 4),
+    description: 'Adds the original melody plus the displaced melody.',
+  },
+  descending3partSequence: {
+    algo: (params) => sequence(params, false, 3),
+    description: 'Adds the original melody plus the displaced melody.',
+  },
+  descending4partSequence: {
+    algo: (params) => sequence(params, false, 4),
+    description: 'Adds the original melody plus the displaced melody.',
+  },
 };
 
 module.exports = { bothAlgos };
