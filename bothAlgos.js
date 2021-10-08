@@ -34,7 +34,7 @@ const displacementAndOriginal = (params) => {
   return { notes: jointNotes, pattern: jointPattern };
 };
 
-const transpositorySequence = (params, up, sequenceLength) => {
+const transpositorySequence = (params, up, sequenceLength, skip) => {
   const { notes, pattern } = params;
   const notesArray = notesToArray(notes);
 
@@ -45,7 +45,7 @@ const transpositorySequence = (params, up, sequenceLength) => {
     let transposedNotes = [...notesArray];
     for (let j = 0; j < i; j++) {
       const nextSeqStep = transposeByOne({ ...params, notes: transposedNotes }, up).transposedNotes;
-      transposedNotes = nextSeqStep;
+      transposedNotes = skip ? transposeByOne({ ...params, notes: nextSeqStep }, up).transposedNotes : nextSeqStep;
     }
 
     sequenceNotes = sequenceNotes.concat(transposedNotes.join(' ')).concat(' ');
@@ -66,19 +66,43 @@ const bothAlgos = {
   },
   ascending3partSequence: {
     algo: (params) => transpositorySequence(params, true, 3),
-    description: 'Adds the original melody plus the displaced melody.',
+    description:
+      'Creates a melodic sequence where the original melody repeats 3 times while its transposed up in a stepwise motion for each sequencial repetition of this melody.',
   },
   ascending4partSequence: {
     algo: (params) => transpositorySequence(params, true, 4),
-    description: 'Adds the original melody plus the displaced melody.',
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed up in a stepwise motion for each sequencial repetition of this melody.',
   },
   descending3partSequence: {
     algo: (params) => transpositorySequence(params, false, 3),
-    description: 'Adds the original melody plus the displaced melody.',
+    description:
+      'Creates a melodic sequence where the original melody repeats 3 times while its transposed down in a stepwise motion for each sequencial repetition of this melody.',
   },
   descending4partSequence: {
     algo: (params) => transpositorySequence(params, false, 4),
-    description: 'Adds the original melody plus the displaced melody.',
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a stepwise motion for each sequencial repetition of this melody.',
+  },
+  ascending3partSequenceSkipwise: {
+    algo: (params) => transpositorySequence(params, true, 3, true),
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed up in a skipwise motion for each sequencial repetition of this melody.',
+  },
+  ascending4partSequenceSkipwise: {
+    algo: (params) => transpositorySequence(params, true, 4, true),
+    description:
+      'Creates a melodic sequence where the original melody repeats 3 times while its transposed up in a skipwise motion for each sequencial repetition of this melody.',
+  },
+  descending3partSequenceSkipwise: {
+    algo: (params) => transpositorySequence(params, false, 3, true),
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a skipwise motion for each sequencial repetition of this melody.',
+  },
+  descending4partSequenceSkipwise: {
+    algo: (params) => transpositorySequence(params, false, 4, true),
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a skipwise motion for each sequencial repetition of this melody.',
   },
 };
 
@@ -90,9 +114,9 @@ const pars = {
   splitter: 0,
   splitChop: 0,
   scale: 'major',
-  rootNote: 'F',
-  notes: ['Gb1', 'A1', 'B1', 'B1'],
-  pattern: 'xxx',
+  rootNote: 'C',
+  notes: ['C1', 'C#1'],
+  pattern: 'xx',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
   sizzle: 'cos',
@@ -101,4 +125,4 @@ const pars = {
   intervals: 'diatonic',
 };
 
-sequence(pars, false, 3);
+console.log(transpositorySequence(pars, true, 3, true));
