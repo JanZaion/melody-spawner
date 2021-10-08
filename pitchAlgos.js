@@ -94,6 +94,12 @@ const transposeByOne = (params, up) => {
   return { transposedNotes, transposedNotesString };
 };
 
+const transposeSkipStep = (params, up, skip) => {
+  const transposedOnce = transposeByOne(params, up).transposedNotes;
+  const stepOrSkip = skip ? transposeByOne({ ...params, notes: transposedOnce }, up).transposedNotes : transposedOnce;
+  return stepOrSkip;
+};
+
 const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
 
 const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
@@ -198,7 +204,7 @@ const pitchAlgos = {
   },
 };
 
-module.exports = { pitchAlgos, transposeByOne };
+module.exports = { pitchAlgos, transposeByOne, transposeSkipStep };
 
 const pars = {
   octave: 0,

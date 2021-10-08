@@ -3,7 +3,7 @@ const { makeSuperScale, makeMassiveScales } = require('./superScale');
 const { Note, Scale } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 const { splitPattern } = require('./splitPattern');
-const { transposeByOne } = require('./pitchAlgos');
+const { transposeByOne, transposeSkipStep } = require('./pitchAlgos');
 
 const displacement = (params) => {
   const { notes, pattern } = params;
@@ -44,8 +44,7 @@ const transpositorySequence = (params, up, sequenceLength, skip) => {
   for (let i = 0; i < sequenceLength; i++) {
     let transposedNotes = [...notesArray];
     for (let j = 0; j < i; j++) {
-      const nextSeqStep = transposeByOne({ ...params, notes: transposedNotes }, up).transposedNotes;
-      transposedNotes = skip ? transposeByOne({ ...params, notes: nextSeqStep }, up).transposedNotes : nextSeqStep;
+      transposedNotes = transposeSkipStep({ ...params, notes: transposedNotes }, up, skip);
     }
 
     sequenceNotes = sequenceNotes.concat(transposedNotes.join(' ')).concat(' ');
@@ -54,6 +53,17 @@ const transpositorySequence = (params, up, sequenceLength, skip) => {
 
   return { notes: sequenceNotes, pattern: sequencePattern };
 };
+
+/*
+Intervalic expression and compression
+odd vs even
+skip vs step
+if even, look at the previous note, if odd, look at the following
+mid compression or expansion - look at the realtionship between the 1st and the 2nd note. then transpose all instead of the first and the last
+do the same for the very first and the very last note
+transpose up or down based on the type
+use stransposeByOne method
+*/
 
 const bothAlgos = {
   displacement: {
@@ -115,7 +125,7 @@ const pars = {
   splitChop: 0,
   scale: 'major',
   rootNote: 'C',
-  notes: ['C1', 'C#1'],
+  notes: ['C1'],
   pattern: 'xx',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
