@@ -34,7 +34,7 @@ const displacementAndOriginal = (params) => {
   return { notes: jointNotes, pattern: jointPattern };
 };
 
-const sequence = (params, up, sequenceLength) => {
+const transpositorySequence = (params, up, sequenceLength) => {
   const { notes, pattern } = params;
   const notesArray = notesToArray(notes);
 
@@ -65,19 +65,19 @@ const bothAlgos = {
     description: 'Adds the original melody plus the displaced melody.',
   },
   ascending3partSequence: {
-    algo: (params) => sequence(params, true, 3),
+    algo: (params) => transpositorySequence(params, true, 3),
     description: 'Adds the original melody plus the displaced melody.',
   },
   ascending4partSequence: {
-    algo: (params) => sequence(params, true, 4),
+    algo: (params) => transpositorySequence(params, true, 4),
     description: 'Adds the original melody plus the displaced melody.',
   },
   descending3partSequence: {
-    algo: (params) => sequence(params, false, 3),
+    algo: (params) => transpositorySequence(params, false, 3),
     description: 'Adds the original melody plus the displaced melody.',
   },
   descending4partSequence: {
-    algo: (params) => sequence(params, false, 4),
+    algo: (params) => transpositorySequence(params, false, 4),
     description: 'Adds the original melody plus the displaced melody.',
   },
 };
