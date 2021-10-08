@@ -94,12 +94,6 @@ const transposeByOne = (params, up) => {
   return { transposedNotes, transposedNotesString };
 };
 
-const transposeSkipStep = (params, up, skip) => {
-  const transposedOnce = transposeByOne(params, up).transposedNotes;
-  const stepOrSkip = skip ? transposeByOne({ ...params, notes: transposedOnce }, up).transposedNotes : transposedOnce;
-  return stepOrSkip;
-};
-
 const reverseNotes = ({ notes }) => [...notesToArray(notes)].reverse().join(' ');
 
 const getScale = ({ scale, rootNote, octave }) => Scale.get(`${rootNote}${octave} ${scale}`).notes.join(' ');
@@ -159,6 +153,57 @@ const retrogradeInversion = (params) => {
   return reversedNotes;
 };
 
+const transposeSkipStep = (params, up, skip) => {
+  const transposedOnce = transposeByOne(params, up).transposedNotes;
+  const stepOrSkip = skip ? transposeByOne({ ...params, notes: transposedOnce }, up).transposedNotes : transposedOnce;
+  return stepOrSkip;
+};
+
+const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) => {
+  const toCompareMidi = Note.midi(noteToCompare);
+  const toTransposeMidi = Note.midi(noteToTranspose);
+  if (!toCompareMidi || !toTransposeMidi) return noteToTranspose;
+
+  let relationship = '';
+  if (toCompareMidi > toTransposeMidi) {
+    relationship = 'higher';
+  } else if (toCompareMidi < toTransposeMidi) {
+    relationship = 'lower';
+  } else if (toCompareMidi === toTransposeMidi) {
+    relationship = 'equal';
+  }
+
+  let transposedNote = '';
+  switch (relationship) {
+    case 'higher':
+      transposedNote = compress
+        ? transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip)
+        : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
+    case 'lower':
+      transposedNote = compress
+        ? transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip)
+        : transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip);
+    case 'equal':
+      transposedNote = compress
+        ? noteToTranspose
+        : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
+  }
+
+  return transposedNote.join('');
+};
+
+/*
+Intervalic expression and compression
+write an expandCompress helper function that only accepts notes. To use it right perform numsToNotes 1 level of abstraction above
+odd vs even
+skip vs step
+if even, look at the previous note, if odd, look at the following
+mid compression or expansion - look at the realtionship between the 1st and the 2nd note. then transpose all instead of the first and the last
+do the same for the very first and the very last note
+transpose up or down based on the type
+use stransposeByOne method
+*/
+
 const pitchAlgos = {
   notesToNums: {
     algo: (params) => notesToNumbers(params).numsString,
@@ -204,7 +249,7 @@ const pitchAlgos = {
   },
 };
 
-module.exports = { pitchAlgos, transposeByOne, transposeSkipStep };
+module.exports = { pitchAlgos, transposeSkipStep };
 
 const pars = {
   octave: 0,
@@ -222,4 +267,4 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-transposeByOne(pars); //?
+console.log(expandCompress(pars, 'D1', 'C1', false, false)); //?

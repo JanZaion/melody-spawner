@@ -1,9 +1,8 @@
-const dice = require('convenient-methods-of-randomness');
-const { makeSuperScale, makeMassiveScales } = require('./superScale');
-const { Note, Scale } = require('@tonaljs/tonal');
+// const dice = require('convenient-methods-of-randomness');
+// const { Note } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 const { splitPattern } = require('./splitPattern');
-const { transposeByOne, transposeSkipStep } = require('./pitchAlgos');
+const { transposeSkipStep } = require('./pitchAlgos');
 
 const displacement = (params) => {
   const { notes, pattern } = params;
@@ -53,17 +52,6 @@ const transpositorySequence = (params, up, sequenceLength, skip) => {
 
   return { notes: sequenceNotes, pattern: sequencePattern };
 };
-
-/*
-Intervalic expression and compression
-odd vs even
-skip vs step
-if even, look at the previous note, if odd, look at the following
-mid compression or expansion - look at the realtionship between the 1st and the 2nd note. then transpose all instead of the first and the last
-do the same for the very first and the very last note
-transpose up or down based on the type
-use stransposeByOne method
-*/
 
 const bothAlgos = {
   displacement: {
