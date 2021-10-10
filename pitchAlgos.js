@@ -164,17 +164,18 @@ const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) 
   const toTransposeMidi = Note.midi(noteToTranspose);
   if (!toCompareMidi || !toTransposeMidi) return noteToTranspose;
 
-  let relationship = '';
+  let comparedNoteIs = '';
   if (toCompareMidi > toTransposeMidi) {
-    relationship = 'higher';
+    comparedNoteIs = 'higher';
   } else if (toCompareMidi < toTransposeMidi) {
-    relationship = 'lower';
+    comparedNoteIs = 'lower';
   } else if (toCompareMidi === toTransposeMidi) {
-    relationship = 'equal';
+    comparedNoteIs = 'equal';
   }
 
+  //if compress is true, the note is one semitone away and skip is true, then it really isnt a compression
   let transposedNote = '';
-  switch (relationship) {
+  switch (comparedNoteIs) {
     case 'higher':
       transposedNote = compress
         ? transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip)
@@ -188,9 +189,18 @@ const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) 
         ? noteToTranspose
         : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
   }
+  //make it so that an array of notes can be transposed, not just one. Actually thats not necessary. It is possible to compare to a constant note and cycle through an array of notes to compare in map fn
 
   return transposedNote.join('');
 };
+
+const oddEvenEC = (params, odd, previous, compress, skip) => {};
+
+const midEC = (params, compress, skip) => {};
+
+const bordersEC = (params, compress, skip) => {};
+
+const firstLastEC = (params, last, compress, skip) => {};
 
 /*
 Intervalic expression and compression
