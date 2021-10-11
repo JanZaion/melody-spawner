@@ -195,7 +195,6 @@ const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) 
 
   return transposedNote.join('');
 };
-//make it so that an array of notes can be transposed, not just one. Actually thats not necessary. It is possible to compare to a constant note and cycle through an array of notes to compare in map fn
 
 const oddEvenEC = (params, odd, compress, skip) => {
   const notesNoNums = numbersToNotes(params).notes;
@@ -221,6 +220,7 @@ const oddEvenEC = (params, odd, compress, skip) => {
 
 const midEC = (params, compress, skip) => {
   const notesNoNums = numbersToNotes(params).notes;
+  if (notesNoNums.length < 3) return params.notes.join(' ');
   const firstNote = notesNoNums[0];
   const lastNote = notesNoNums[notesNoNums.length - 1];
 
@@ -233,20 +233,33 @@ const midEC = (params, compress, skip) => {
   return transposedNotes.join(' ');
 };
 
-const bordersEC = (params, compress, skip) => {};
+const halfEC = (params, latter, compress, skip) => {
+  const notesNoNums = numbersToNotes(params).notes;
+  if (notesNoNums.length < 2) return params.notes.join(' ');
+  const splitPoint = Math.floor(notesNoNums.length / 2);
+  const formerHalf = notesNoNums.slice(0, splitPoint);
+  const latterHalf = notesNoNums.slice(splitPoint);
+  const lastNoteFormerHalf = formerHalf[formerHalf.length - 1];
+  const firstNoteLatterHalf = latterHalf[0];
 
-const halfEC = (params, latter, compress, skip) => {};
-/*
-Intervalic expression and compression
-write an expandCompress helper function that only accepts notes. To use it right perform numsToNotes 1 level of abstraction above
-odd vs even
-skip vs step
-if even, look at the previous note, if odd, look at the following
-mid compression or expansion - look at the realtionship between the 1st and the 2nd note. then transpose all instead of the first and the last
-do the same for the very first and the very last note
-transpose up or down based on the type
-use stransposeByOne method
-*/
+  let transposedNotes = [];
+  switch (latter) {
+    case false:
+      const transposedFormerHalf = formerHalf.map((note) =>
+        expandCompress(params, firstNoteLatterHalf, note, compress, skip)
+      );
+      transposedNotes = [...transposedFormerHalf, ...latterHalf];
+      break;
+    case true:
+      const transposedLatterHalf = latterHalf.map((note) =>
+        expandCompress(params, lastNoteFormerHalf, note, compress, skip)
+      );
+      transposedNotes = [...formerHalf, ...transposedLatterHalf];
+      break;
+  }
+
+  return transposedNotes.join(' ');
+};
 
 const pitchAlgos = {
   notesToNums: {
@@ -326,26 +339,64 @@ const pitchAlgos = {
   intervalicExpansionMiddleNotesStepwise: {
     algo: (params) => midEC(params),
     description:
-      'Expands all the notes except for the first one and the last one based on the relationship between the first note and the second note in a stepwise motion.',
+      'Expands intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a stepwise motion.',
   },
   intervalicExpansionMiddleNotesSkipwise: {
     algo: (params) => midEC(params, false, true),
     description:
-      'Expands all the notes except for the first one and the last one based on the relationship between the first note and the second note in a skipwise motion.',
+      'Expands intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a skipwise motion.',
   },
   intervalicCompressionMiddleNotesStepwise: {
     algo: (params) => midEC(params, true),
     description:
-      'Compresses all the notes except for the first one and the last one based on the relationship between the first note and the second note in a stepwise motion.',
+      'Compresses intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a stepwise motion.',
   },
   intervalicCompressionMiddleNotesSkipwise: {
     algo: (params) => midEC(params, true, true),
     description:
-      'Compresses all the notes except for the first one and the last one based on the relationship between the first note and the second note in a skipwise motion.',
+      'Compresses intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a skipwise motion.',
+  },
+  intervalicExpansionFormerHalfStepwise: {
+    algo: (params) => halfEC(params, false),
+    description:
+      'Expands intervals between all the notes in the former half and the first note of the latter half in a stepwise motion.',
+  },
+  intervalicExpansionFormerHalfSkipwise: {
+    algo: (params) => halfEC(params, false, false, true),
+    description:
+      'Expands intervals between all the notes in the former half and the first note of the latter half in a skipwise motion.',
+  },
+  intervalicCompressionFormerHalfStepwise: {
+    algo: (params) => halfEC(params, false, true),
+    description:
+      'Compresses intervals between all the notes in the former half and the first note of the latter half in a stepwise motion.',
+  },
+  intervalicCompressionFormerHalfSkipwise: {
+    algo: (params) => halfEC(params, false, true, true),
+    description:
+      'Compresses intervals between all the notes in the former half and the first note of the latter half in a skipwise motion.',
+  },
+  intervalicExpansionLatterHalfStepwise: {
+    algo: (params) => halfEC(params, true),
+    description:
+      'Expands intervals between all the notes in the latter half and the last note of the former half in a stepwise motion.',
+  },
+  intervalicExpansionLatterHalfSkipwise: {
+    algo: (params) => halfEC(params, true, false, true),
+    description:
+      'Expands intervals between all the notes in the latter half and the last note of the former half in a skipwise motion.',
+  },
+  intervalicCompressionLatterHalfStepwise: {
+    algo: (params) => halfEC(params, true, true),
+    description:
+      'Compresses intervals between all the notes in the latter half and the last note of the former half in a stepwise motion.',
+  },
+  intervalicCompressionLatterHalfSkipwise: {
+    algo: (params) => halfEC(params, true, true, true),
+    description:
+      'Compresses intervals between all the notes in the latter half and the last note of the former half in a skipwise motion.',
   },
 };
-
-//oddEvenEC(params, odd, compress, skip)
 
 module.exports = { pitchAlgos, transposeSkipStep };
 
@@ -356,7 +407,7 @@ const pars = {
   splitChop: 0,
   scale: 'major',
   rootNote: 'C',
-  notes: ['C1', 'D1', 'F1', 'G1'],
+  notes: ['C1', 'D1', 'F1', 'G1', 'G1'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -365,6 +416,5 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-// console.log(oddEvenEC(pars, true, true, false)); //?
 
-console.log(midEC(pars, false, false));
+console.log(halfEC(pars, false));
