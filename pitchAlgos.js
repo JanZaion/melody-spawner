@@ -219,7 +219,19 @@ const oddEvenEC = (params, odd, compress, skip) => {
   return transposedNotes.join(' ');
 };
 
-const midEC = (params, compress, skip) => {};
+const midEC = (params, compress, skip) => {
+  const notesNoNums = numbersToNotes(params).notes;
+  const firstNote = notesNoNums[0];
+  const lastNote = notesNoNums[notesNoNums.length - 1];
+
+  const transposedNotes = notesNoNums.map((note) => expandCompress(params, firstNote, note, compress, skip));
+  transposedNotes.shift();
+  transposedNotes.pop();
+  transposedNotes.unshift(firstNote);
+  transposedNotes.push(lastNote);
+
+  return transposedNotes.join(' ');
+};
 
 const bordersEC = (params, compress, skip) => {};
 
@@ -311,6 +323,26 @@ const pitchAlgos = {
     algo: (params) => oddEvenEC(params, false, true, true),
     description: 'Compresses intervals between even notes and the preceeding odd notes in a skipwise motion.',
   },
+  intervalicExpansionMiddleNotesStepwise: {
+    algo: (params) => midEC(params),
+    description:
+      'Expands all the notes except for the first one and the last one based on the relationship between the first note and the second note in a stepwise motion.',
+  },
+  intervalicExpansionMiddleNotesSkipwise: {
+    algo: (params) => midEC(params, false, true),
+    description:
+      'Expands all the notes except for the first one and the last one based on the relationship between the first note and the second note in a skipwise motion.',
+  },
+  intervalicCompressionMiddleNotesStepwise: {
+    algo: (params) => midEC(params, true),
+    description:
+      'Compresses all the notes except for the first one and the last one based on the relationship between the first note and the second note in a stepwise motion.',
+  },
+  intervalicCompressionMiddleNotesSkipwise: {
+    algo: (params) => midEC(params, true, true),
+    description:
+      'Compresses all the notes except for the first one and the last one based on the relationship between the first note and the second note in a skipwise motion.',
+  },
 };
 
 //oddEvenEC(params, odd, compress, skip)
@@ -324,8 +356,7 @@ const pars = {
   splitChop: 0,
   scale: 'major',
   rootNote: 'C',
-  // notes: ['C1', 'D1', 'F1', 'G1', 3],
-  notes: ['C1', 'D1'],
+  notes: ['C1', 'D1', 'F1', 'G1'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -336,4 +367,4 @@ const pars = {
 };
 // console.log(oddEvenEC(pars, true, true, false)); //?
 
-console.log(expandCompress(pars, 'D1', 'C1', false, false));
+console.log(midEC(pars, false, false));
