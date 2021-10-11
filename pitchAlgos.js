@@ -178,30 +178,52 @@ const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) 
   switch (comparedNoteIs) {
     case 'higher':
       transposedNote = compress
-        ? transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip)
-        : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
-    case 'lower':
-      transposedNote = compress
         ? transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip)
         : transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip);
+      break;
+    case 'lower':
+      transposedNote = compress
+        ? transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip)
+        : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
+      break;
     case 'equal':
       transposedNote = compress
-        ? noteToTranspose
+        ? [noteToTranspose]
         : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
+      break;
   }
-  //make it so that an array of notes can be transposed, not just one. Actually thats not necessary. It is possible to compare to a constant note and cycle through an array of notes to compare in map fn
 
   return transposedNote.join('');
 };
+//make it so that an array of notes can be transposed, not just one. Actually thats not necessary. It is possible to compare to a constant note and cycle through an array of notes to compare in map fn
 
-const oddEvenEC = (params, odd, previous, compress, skip) => {};
+const oddEvenEC = (params, odd, compress, skip) => {
+  const notesNoNums = numbersToNotes(params).notes;
+
+  const transposedNotes = notesNoNums.map((note, noteIndex) => {
+    switch (odd) {
+      case true:
+        if (noteIndex % 2 !== 0) return note;
+        const followingNote = notesNoNums[noteIndex + 1];
+        if (!followingNote) return note;
+        return expandCompress(params, followingNote, note, compress, skip);
+
+      case false:
+        if (noteIndex % 2 === 0) return note;
+        const previousNote = notesNoNums[noteIndex - 1];
+        if (!previousNote) return note;
+        return expandCompress(params, previousNote, note, compress, skip);
+    }
+  });
+
+  return transposedNotes.join(' ');
+};
 
 const midEC = (params, compress, skip) => {};
 
 const bordersEC = (params, compress, skip) => {};
 
-const firstLastEC = (params, last, compress, skip) => {};
-
+const halfEC = (params, latter, compress, skip) => {};
 /*
 Intervalic expression and compression
 write an expandCompress helper function that only accepts notes. To use it right perform numsToNotes 1 level of abstraction above
@@ -251,13 +273,47 @@ const pitchAlgos = {
   inversionCorrective: {
     algo: (params) => inversionCorrective(params).correctedInvertedNotesString,
     description:
-      'Turns the notes upside down. If any note is out of scale, it transposes the note in the upwards dirrection until it is in scale',
+      'Turns the notes upside down. If any note is out of scale, it transposes the note in the upwards dirrection until it is in scale.',
   },
   retrogradeInversion: {
     algo: retrogradeInversion,
-    description: 'Reverses the order of the notes and turns them upside down',
+    description: 'Reverses the order of the notes and turns them upside down.',
+  },
+  intervalicExpansionOddNotesStepwise: {
+    algo: (params) => oddEvenEC(params, true, false, false),
+    description: 'Expands intervals between odd notes and the following even notes in a stepwise motion.',
+  },
+  intervalicExpansionOddNotesSkipwise: {
+    algo: (params) => oddEvenEC(params, true, false, true),
+    description: 'Expands intervals between odd notes and the following even notes in a skipwise motion.',
+  },
+  intervalicCompressionOddNotesStepwise: {
+    algo: (params) => oddEvenEC(params, true, true, false),
+    description: 'Compresses intervals between odd notes and the following even notes in a stepwise motion.',
+  },
+  intervalicCompressionOddNotesSkipwise: {
+    algo: (params) => oddEvenEC(params, true, true, true),
+    description: 'Compresses intervals between odd notes and the following even notes in a skipwise motion.',
+  },
+  intervalicExpansionEvenNotesStepwise: {
+    algo: (params) => oddEvenEC(params, false, false, false),
+    description: 'Expands intervals between even notes and the preceeding odd notes in a stepwise motion.',
+  },
+  intervalicExpansionEvenNotesSkipwise: {
+    algo: (params) => oddEvenEC(params, false, false, true),
+    description: 'Expands intervals between even notes and the preceeding odd notes in a skipwise motion.',
+  },
+  intervalicCompressionEvenNotesStepwise: {
+    algo: (params) => oddEvenEC(params, false, true, false),
+    description: 'Compresses intervals between even notes and the preceeding odd notes in a stepwise motion.',
+  },
+  intervalicCompressionEvenNotesSkipwise: {
+    algo: (params) => oddEvenEC(params, false, true, true),
+    description: 'Compresses intervals between even notes and the preceeding odd notes in a skipwise motion.',
   },
 };
+
+//oddEvenEC(params, odd, compress, skip)
 
 module.exports = { pitchAlgos, transposeSkipStep };
 
@@ -267,8 +323,9 @@ const pars = {
   splitter: 0,
   splitChop: 0,
   scale: 'major',
-  rootNote: 'F',
-  notes: ['Gb1', 'A1', 'B1'],
+  rootNote: 'C',
+  // notes: ['C1', 'D1', 'F1', 'G1', 3],
+  notes: ['C1', 'D1'],
   pattern: 'x__x__x_x',
   pitchDirrection: 'ascend',
   repeatNotes: 'on',
@@ -277,4 +334,6 @@ const pars = {
   lowerBound: 0,
   intervals: 'diatonic',
 };
-console.log(expandCompress(pars, 'D1', 'C1', false, false)); //?
+// console.log(oddEvenEC(pars, true, true, false)); //?
+
+console.log(expandCompress(pars, 'D1', 'C1', false, false));
