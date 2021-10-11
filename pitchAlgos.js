@@ -1,6 +1,6 @@
 const dice = require('convenient-methods-of-randomness');
 const { makeSuperScale, makeMassiveScales } = require('./superScale');
-const { Note, Scale } = require('@tonaljs/tonal');
+const { Note, Scale, Interval } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 
 const numToNote = (num, lowerScaleReversed, upperScale) => {
@@ -173,17 +173,32 @@ const expandCompress = (params, noteToCompare, noteToTranspose, compress, skip) 
     comparedNoteIs = 'equal';
   }
 
-  //if compress is true, the note is one semitone away and skip is true, then it really isnt a compression
+  //if compress is true, the note is one semitone away and skip is true, then it really isnt a compression, hence this fn
+  const skipCorrect = (noteToCompare, noteToTranspose, skip) => {
+    if (!skip) return false;
+    intervalicDistance = Interval.distance(noteToCompare, noteToTranspose);
+    if (intervalicDistance.match(/2M|-2M|2m|-2m/g) !== null) return false;
+    return true;
+  };
+
   let transposedNote = '';
   switch (comparedNoteIs) {
     case 'higher':
       transposedNote = compress
-        ? transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip)
+        ? transposeSkipStep(
+            { ...params, notes: noteToTranspose },
+            true,
+            skipCorrect(noteToCompare, noteToTranspose, skip)
+          )
         : transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip);
       break;
     case 'lower':
       transposedNote = compress
-        ? transposeSkipStep({ ...params, notes: noteToTranspose }, false, skip)
+        ? transposeSkipStep(
+            { ...params, notes: noteToTranspose },
+            false,
+            skipCorrect(noteToCompare, noteToTranspose, skip)
+          )
         : transposeSkipStep({ ...params, notes: noteToTranspose }, true, skip);
       break;
     case 'equal':
@@ -400,21 +415,19 @@ const pitchAlgos = {
 
 module.exports = { pitchAlgos, transposeSkipStep };
 
-const pars = {
-  octave: 0,
-  subdiv: '4n',
-  splitter: 0,
-  splitChop: 0,
-  scale: 'major',
-  rootNote: 'C',
-  notes: ['C1', 'D1', 'F1', 'G1', 'G1'],
-  pattern: 'x__x__x_x',
-  pitchDirrection: 'ascend',
-  repeatNotes: 'on',
-  sizzle: 'cos',
-  upperBound: 5,
-  lowerBound: 0,
-  intervals: 'diatonic',
-};
-
-console.log(halfEC(pars, false));
+// const pars = {
+//   octave: 0,
+//   subdiv: '4n',
+//   splitter: 0,
+//   splitChop: 0,
+//   scale: 'major',
+//   rootNote: 'C',
+//   notes: ['C1', 'D1', 'F1', 'G1', 'G1'],
+//   pattern: 'x__x__x_x',
+//   pitchDirrection: 'ascend',
+//   repeatNotes: 'on',
+//   sizzle: 'cos',
+//   upperBound: 5,
+//   lowerBound: 0,
+//   intervals: 'diatonic',
+// };
