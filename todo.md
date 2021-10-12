@@ -40,7 +40,8 @@ Adding new Algos:
 
 1. write the algo as an arrow function
 2. add the algo and the description to the algos object as an object with appropriate keys
-3. add the name of the algo to the Max frontend. The name at the frontend must match the key added to the rhythmAlgos object
+3. add the name of the algo to the Max frontend menu item.
+4. add the precise name of the algo to the options pack object. The integer in the pack list must be the same as the integer in the menu
 
 If its algo from bothAlgos, then return has to be an object with appropriate keys. Else its a string
 
