@@ -103,16 +103,29 @@ const rhythmAlgos = {
     algo: () => {
       return wildMild('wild', 'long');
     },
-    description: 'long wild I guess',
+    description:
+      'Generates a rhythm comprised of 4 xs and 12 _s while xs have a chance to appear anywhere in the pattern.',
   },
-  long_mild: () => {
-    return wildMild('mild', 'long');
+  long_mild: {
+    algo: () => {
+      return wildMild('mild', 'long');
+    },
+    description:
+      'Generates a rhythm comprised of 4 xs and 12 _s while there is always 1 x present at each quarter of the pattern.',
   },
-  short_wild: () => {
-    return wildMild('wild', 'short');
+  short_wild: {
+    algo: () => {
+      return wildMild('wild', 'short');
+    },
+    description:
+      'Generates a rhythm comprised of 4 xs and 4 _s while xs have a chance to appear anywhere in the pattern.',
   },
-  short_mild: () => {
-    return wildMild('mild', 'short');
+  short_mild: {
+    algo: () => {
+      return wildMild('mild', 'short');
+    },
+    description:
+      'Generates a rhythm comprised of 4 xs and 4 _s while there is always 1 x present at each quarter of the pattern.',
   },
   reshuffleSpaced: {
     algo: (params) => reshuffle(params, true),
