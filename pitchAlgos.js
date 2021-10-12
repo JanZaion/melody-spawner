@@ -1,4 +1,3 @@
-const dice = require('convenient-methods-of-randomness');
 const { makeSuperScale, makeMassiveScales } = require('./superScale');
 const { Note, Scale, Interval } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');

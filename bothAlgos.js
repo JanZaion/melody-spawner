@@ -1,5 +1,3 @@
-// const dice = require('convenient-methods-of-randomness');
-// const { Note } = require('@tonaljs/tonal');
 const { notesToArray } = require('./notesToArray');
 const { splitPattern } = require('./splitPattern');
 const { transposeSkipStep } = require('./pitchAlgos');
