@@ -21,7 +21,7 @@ function liveTen(clip) {
   var notesArr = [];
   var repeats = content[1] * 5;
 
-  for (var i = 2; i < repeats; i = i + 6) {
+  for (var i = 2; i < repeats + 1; i = i + 6) {
     notesArr.push({
       pitch: content[i + 1],
       start_time: content[i + 2],

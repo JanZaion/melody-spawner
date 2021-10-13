@@ -1,7 +1,6 @@
 # TODO:
 
 - fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something.
-- testLive 10 support
 - accomodate for scribble v5 updt
 - switch textedit for jweb ui. Write reges so that each character is scanned for validity. Make autorender and autosync so that its not mutually exclusive
 - make makemelody accept tonic notation intervals
