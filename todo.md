@@ -1,7 +1,6 @@
 # TODO:
 
 - fix the suck with transposing C- notes that scribbletune cant work with. Maybe in midi or something.
-- fix the bug when the clip is not cleared, or investigate whether needed at all
 - testLive 10 support
 - accomodate for scribble v5 updt
 - switch textedit for jweb ui. Write reges so that each character is scanned for validity. Make autorender and autosync so that its not mutually exclusive
