@@ -10,6 +10,7 @@
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
 - before production, check that all umenus were loaded correctly into full
+- declutter. delete magenta, checkpoints and all other trash. Figure out whether it is possible to bring in individual tone methods
 
 ## magenta:
 
