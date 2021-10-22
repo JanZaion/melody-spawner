@@ -1,0 +1,21 @@
+{
+	"subdiv" : "16n",
+	"splitter" : 0,
+	"octave" : 2,
+	"scale" : "minor",
+	"rootNote" : "D",
+	"notePatterns" : "R R R R",
+	"notes" : [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 2, 0, 3, 2, 1, 2, 4 ],
+	"patterns" : "xxxx",
+	"pattern" : "x__x__x__x__x_x_x__x__x__x__x_x_x__x__x__x__x_x_x__x__x__x__x_x_",
+	"pitchAlgo" : "notesToNums",
+	"repeatNotes" : 1,
+	"rhythmAlgo" : "long_wild",
+	"bothAlgo" : "displacement",
+	"sizzle" : "none",
+	"splitChop" : 0,
+	"upperBound" : 7,
+	"lowerBound" : -7,
+	"pitchDirrection" : "any",
+	"intervals" : "diatonic"
+}
