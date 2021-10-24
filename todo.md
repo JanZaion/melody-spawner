@@ -51,3 +51,9 @@ If its algo from bothAlgos, then return has to be an object with appropriate key
 ### Both Algos
 
 - all those finality etc suggestions, make em here with the melodic stuff as well
+
+## Transition to Int Based Menus
+
+1. Put all the algos to an array instead of to an object
+2. accomodate for this change in construct
+3. let the menusonload know this by integrating this into name, prly naming stuff like rhythmAlgosInt so it can be searched for with .indexOf
