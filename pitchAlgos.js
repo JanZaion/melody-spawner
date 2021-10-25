@@ -275,158 +275,159 @@ const halfEC = (params, latter, compress, skip) => {
   return transposedNotes.join(' ');
 };
 
-const pitchAlgos = {
-  notesToNums: {
+const pitchAlgos = [
+  {
+    name: 'notes to numbers',
     algo: (params) => notesToNumbers(params).numsString,
     description:
       'Transforms note names into numbers that signify intervalic distance from the root note. If the note is not present in the selected scale, it does not get transformed.',
   },
-  numsToNotes: {
+  {
+    name: 'numbers to notes',
     algo: (params) => numbersToNotes(params).notesString,
     description: 'Transforms intervalic numbers into note names.',
   },
-  reshuffle: {
-    algo: reshuffle,
-    description: 'Randomly reshuffles notes in the note pattern.',
-  },
-  retrograde: {
-    algo: reverseNotes,
-    description: 'Reverses the order of the notes.',
-  },
-  up: {
+  { name: 'reshuffle', algo: reshuffle, description: 'Randomly reshuffles notes in the note pattern.' },
+  { name: 'retrograde', algo: reverseNotes, description: 'Reverses the order of the notes.' },
+  {
+    name: 'up',
     algo: (params) => transposeByOne(params, true).transposedNotesString,
     description: 'Transposes all notes up by one intervalic distance in the selected scale.',
   },
-  down: {
+  {
+    name: 'down',
     algo: (params) => transposeByOne(params, false).transposedNotesString,
     description: 'Transposes all notes down by one intervalic distance in the selected scale.',
   },
-  getScale: {
-    algo: getScale,
-    description: 'Lists all the notes of the selected scale. As simple as that.',
-  },
-  inversion: {
+  { name: 'get scale', algo: getScale, description: 'Lists all the notes of the selected scale. As simple as that.' },
+  {
+    name: 'inversion',
     algo: (params) => inversion(params).invertedNotesString,
     description: 'Turns the notes upside down.',
   },
-  inversionCorrective: {
+  {
+    name: 'inversion corrective',
     algo: (params) => inversionCorrective(params).correctedInvertedNotesString,
     description:
       'Turns the notes upside down. If any note is out of scale, it transposes the note in the upwards dirrection until it is in scale.',
   },
-  retrogradeInversion: {
+  {
+    name: 'retrograde inversion',
     algo: retrogradeInversion,
     description: 'Reverses the order of the notes and turns them upside down.',
   },
-  intervalicExpansionOddNotesStepwise: {
+  {
+    name: 'intervalic expansion odd notes stepwise',
     algo: (params) => oddEvenEC(params, true, false, false),
     description: 'Expands intervals between odd notes and the following even notes in a stepwise motion.',
   },
-  intervalicExpansionOddNotesSkipwise: {
+  {
+    name: 'intervalic expansion odd notes skipwise',
     algo: (params) => oddEvenEC(params, true, false, true),
     description: 'Expands intervals between odd notes and the following even notes in a skipwise motion.',
   },
-  intervalicCompressionOddNotesStepwise: {
+  {
+    name: 'intervalic compression odd notes stepwise',
     algo: (params) => oddEvenEC(params, true, true, false),
     description: 'Compresses intervals between odd notes and the following even notes in a stepwise motion.',
   },
-  intervalicCompressionOddNotesSkipwise: {
+  {
+    name: 'intervalic compression odd notes skipwise',
     algo: (params) => oddEvenEC(params, true, true, true),
     description: 'Compresses intervals between odd notes and the following even notes in a skipwise motion.',
   },
-  intervalicExpansionEvenNotesStepwise: {
+  {
+    name: 'intervalic expansion even notes stepwise',
     algo: (params) => oddEvenEC(params, false, false, false),
     description: 'Expands intervals between even notes and the preceeding odd notes in a stepwise motion.',
   },
-  intervalicExpansionEvenNotesSkipwise: {
+  {
+    name: 'intervalic expansion even notes skipwise',
     algo: (params) => oddEvenEC(params, false, false, true),
     description: 'Expands intervals between even notes and the preceeding odd notes in a skipwise motion.',
   },
-  intervalicCompressionEvenNotesStepwise: {
+  {
+    name: 'intervalic compression even notes stepwise',
     algo: (params) => oddEvenEC(params, false, true, false),
     description: 'Compresses intervals between even notes and the preceeding odd notes in a stepwise motion.',
   },
-  intervalicCompressionEvenNotesSkipwise: {
+  {
+    name: 'intervalic compression even notes skipwise',
     algo: (params) => oddEvenEC(params, false, true, true),
     description: 'Compresses intervals between even notes and the preceeding odd notes in a skipwise motion.',
   },
-  intervalicExpansionMiddleNotesStepwise: {
+  {
+    name: 'intervalic expansion middle notes stepwise',
     algo: (params) => midEC(params),
     description:
       'Expands intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a stepwise motion.',
   },
-  intervalicExpansionMiddleNotesSkipwise: {
+  {
+    name: 'intervalic expansion middle notes skipwise',
     algo: (params) => midEC(params, false, true),
     description:
       'Expands intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a skipwise motion.',
   },
-  intervalicCompressionMiddleNotesStepwise: {
+  {
+    name: 'intervalic compression middle notes stepwise',
     algo: (params) => midEC(params, true),
     description:
       'Compresses intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a stepwise motion.',
   },
-  intervalicCompressionMiddleNotesSkipwise: {
+  {
+    name: 'intervalic compression middle notes skipwise',
     algo: (params) => midEC(params, true, true),
     description:
       'Compresses intervals of notes in between the first note and the last note one based on the relationship between the first note and the second note in a skipwise motion.',
   },
-  intervalicExpansionFormerHalfStepwise: {
+  {
+    name: 'intervalic expansion former half stepwise',
     algo: (params) => halfEC(params, false),
     description:
       'Expands intervals between all the notes in the former half and the first note of the latter half in a stepwise motion.',
   },
-  intervalicExpansionFormerHalfSkipwise: {
+  {
+    name: 'intervalic expansion former half skipwise',
     algo: (params) => halfEC(params, false, false, true),
     description:
       'Expands intervals between all the notes in the former half and the first note of the latter half in a skipwise motion.',
   },
-  intervalicCompressionFormerHalfStepwise: {
+  {
+    name: 'intervalic compression former half stepwise',
     algo: (params) => halfEC(params, false, true),
     description:
       'Compresses intervals between all the notes in the former half and the first note of the latter half in a stepwise motion.',
   },
-  intervalicCompressionFormerHalfSkipwise: {
+  {
+    name: 'intervalic compression former half skipwise',
     algo: (params) => halfEC(params, false, true, true),
     description:
       'Compresses intervals between all the notes in the former half and the first note of the latter half in a skipwise motion.',
   },
-  intervalicExpansionLatterHalfStepwise: {
+  {
+    name: 'intervalic expansion latter half stepwise',
     algo: (params) => halfEC(params, true),
     description:
       'Expands intervals between all the notes in the latter half and the last note of the former half in a stepwise motion.',
   },
-  intervalicExpansionLatterHalfSkipwise: {
+  {
+    name: 'intervalic expansion latter half skipwise',
     algo: (params) => halfEC(params, true, false, true),
     description:
       'Expands intervals between all the notes in the latter half and the last note of the former half in a skipwise motion.',
   },
-  intervalicCompressionLatterHalfStepwise: {
+  {
+    name: 'intervalic compression latter half stepwise',
     algo: (params) => halfEC(params, true, true),
     description:
       'Compresses intervals between all the notes in the latter half and the last note of the former half in a stepwise motion.',
   },
-  intervalicCompressionLatterHalfSkipwise: {
+  {
+    name: 'intervalic compression latter half skipwise',
     algo: (params) => halfEC(params, true, true, true),
     description:
       'Compresses intervals between all the notes in the latter half and the last note of the former half in a skipwise motion.',
   },
-};
+];
 
 module.exports = { pitchAlgos, transposeSkipStep };
-
-// const pars = {
-//   octave: 0,
-//   subdiv: '4n',
-//   splitter: 0,
-//   splitChop: 0,
-//   scale: 'major',
-//   rootNote: 'C',
-//   notes: ['C1', 'D1', 'F1', 'G1', 'G1'],
-//   pattern: 'x__x__x_x',
-//   pitchDirrection: 'ascend',
-//   repeatNotes: 'on',
-//   sizzle: 'cos',
-//   upperBound: 5,
-//   lowerBound: 0,
-//   intervals: 'diatonic',
-// };

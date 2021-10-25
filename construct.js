@@ -56,48 +56,48 @@ const makeClip = async () => {
 
 const generateRhythm = async () => {
   const full = await maxApi.getDict('full');
-  const { rhythmAlgo } = full;
+  const { rhythmAlgoInt } = full;
 
-  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgo].algo(full)}`);
+  maxApi.outlet(`pattern ${rhythmAlgos[rhythmAlgoInt].algo(full)}`);
   maxApi.outlet(`gatedBang`);
 };
 
 const patternDescription = async () => {
   const full = await maxApi.getDict('full');
-  const { rhythmAlgo } = full;
+  const { rhythmAlgoInt } = full;
 
-  maxApi.outlet(`description ${rhythmAlgos[rhythmAlgo].description}`);
+  maxApi.outlet(`description ${rhythmAlgos[rhythmAlgoInt].description}`);
 };
 
 const generatePitch = async () => {
   const full = await maxApi.getDict('full');
-  const { pitchAlgo } = full;
+  const { pitchAlgoInt } = full;
 
-  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgo].algo(full)}`);
+  maxApi.outlet(`noteNames ${pitchAlgos[pitchAlgoInt].algo(full)}`);
   maxApi.outlet(`gatedBang`);
 };
 
 const pitchDescription = async () => {
   const full = await maxApi.getDict('full');
-  const { pitchAlgo } = full;
+  const { pitchAlgoInt } = full;
 
-  maxApi.outlet(`description ${pitchAlgos[pitchAlgo].description}`);
+  maxApi.outlet(`description ${pitchAlgos[pitchAlgoInt].description}`);
 };
 
 const generateBoth = async () => {
   const full = await maxApi.getDict('full');
-  const { bothAlgo } = full;
+  const { bothAlgoInt } = full;
 
-  maxApi.outlet(`noteNames ${bothAlgos[bothAlgo].algo(full).notes}`);
-  maxApi.outlet(`pattern ${bothAlgos[bothAlgo].algo(full).pattern}`);
+  maxApi.outlet(`noteNames ${bothAlgos[bothAlgoInt].algo(full).notes}`);
+  maxApi.outlet(`pattern ${bothAlgos[bothAlgoInt].algo(full).pattern}`);
   maxApi.outlet(`gatedBang`);
 };
 
 const bothDescription = async () => {
   const full = await maxApi.getDict('full');
-  const { bothAlgo } = full;
+  const { bothAlgoInt } = full;
 
-  maxApi.outlet(`description ${bothAlgos[bothAlgo].description}`);
+  maxApi.outlet(`description ${bothAlgos[bothAlgoInt].description}`);
 };
 
 const init = async () => {
@@ -111,10 +111,10 @@ const init = async () => {
     notes: ['R', 'R', 'R', 'R'],
     patterns: 'xxxx',
     pattern: 'xxxx',
-    pitchAlgo: 'notesToNums',
+    pitchAlgoInt: 'notesToNums',
     repeatNotes: 1,
-    rhythmAlgo: 'long_wild',
-    bothAlgo: 'displacement',
+    rhythmAlgoInt: 'long_wild',
+    bothAlgoInt: 'displacement',
     sizzle: 'none',
     splitChop: 0,
     upperBound: 7,

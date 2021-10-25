@@ -51,74 +51,65 @@ const transpositorySequence = (params, up, sequenceLength, skip) => {
   return { notes: sequenceNotes, pattern: sequencePattern };
 };
 
-const bothAlgos = {
-  displacement: {
+const bothAlgos = [
+  {
+    name: 'displacement',
     algo: displacement,
     description: 'Removes the first 1/4 of the of the melody and fills the rest of it with a space of equal length.',
   },
-  displacementAndOriginal: {
+  {
+    name: 'original and displaced',
     algo: displacementAndOriginal,
     description: 'Adds the original melody plus the displaced melody.',
   },
-  ascending3partSequence: {
+  {
+    name: 'ascending 3 part sequence',
     algo: (params) => transpositorySequence(params, true, 3),
     description:
       'Creates a melodic sequence where the original melody repeats 3 times while its transposed up in a stepwise motion for each sequencial repetition of this melody.',
   },
-  ascending4partSequence: {
+  {
+    name: 'ascending 4 part sequence',
     algo: (params) => transpositorySequence(params, true, 4),
     description:
       'Creates a melodic sequence where the original melody repeats 4 times while its transposed up in a stepwise motion for each sequencial repetition of this melody.',
   },
-  descending3partSequence: {
+  {
+    name: 'descending 3 part sequence',
     algo: (params) => transpositorySequence(params, false, 3),
     description:
       'Creates a melodic sequence where the original melody repeats 3 times while its transposed down in a stepwise motion for each sequencial repetition of this melody.',
   },
-  descending4partSequence: {
+  {
+    name: 'descending 4 part sequence',
     algo: (params) => transpositorySequence(params, false, 4),
     description:
       'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a stepwise motion for each sequencial repetition of this melody.',
   },
-  ascending3partSequenceSkipwise: {
-    algo: (params) => transpositorySequence(params, true, 3, true),
-    description:
-      'Creates a melodic sequence where the original melody repeats 4 times while its transposed up in a skipwise motion for each sequencial repetition of this melody.',
-  },
-  ascending4partSequenceSkipwise: {
+  {
+    name: 'ascending 4 part sequence skipwise',
     algo: (params) => transpositorySequence(params, true, 4, true),
     description:
       'Creates a melodic sequence where the original melody repeats 3 times while its transposed up in a skipwise motion for each sequencial repetition of this melody.',
   },
-  descending3partSequenceSkipwise: {
+  {
+    name: 'ascending 3 part sequence skipwise',
+    algo: (params) => transpositorySequence(params, true, 3, true),
+    description:
+      'Creates a melodic sequence where the original melody repeats 4 times while its transposed up in a skipwise motion for each sequencial repetition of this melody.',
+  },
+  {
+    name: 'descending 3 part sequence skipwise',
     algo: (params) => transpositorySequence(params, false, 3, true),
     description:
-      'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a skipwise motion for each sequencial repetition of this melody.',
+      'Creates a melodic sequence where the original melody repeats 3 times while its transposed down in a skipwise motion for each sequencial repetition of this melody.',
   },
-  descending4partSequenceSkipwise: {
+  {
+    name: 'descending 4 part sequence skipwise',
     algo: (params) => transpositorySequence(params, false, 4, true),
     description:
       'Creates a melodic sequence where the original melody repeats 4 times while its transposed down in a skipwise motion for each sequencial repetition of this melody.',
   },
-};
+];
 
 module.exports = { bothAlgos };
-
-const pars = {
-  octave: 0,
-  subdiv: '4n',
-  splitter: 0,
-  splitChop: 0,
-  scale: 'major',
-  rootNote: 'C',
-  notes: ['C1'],
-  pattern: 'xx',
-  pitchDirrection: 'ascend',
-  repeatNotes: 'on',
-  sizzle: 'cos',
-  upperBound: 5,
-  lowerBound: 0,
-  intervals: 'diatonic',
-};
-
-console.log(transpositorySequence(pars, true, 3, true));
