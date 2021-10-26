@@ -48,7 +48,7 @@ const sortStartTimesAndPitches = (notes) => {
 const quantize = (number, block, allowZero) => {
   const absoluteNumber = number.toFixed(3) * 1000; //always assuming floats
   const divider = block * 1000; //need to get rid of floats for equality evaluation
-  if (absoluteNumber % divider === 0) return number;
+  if (absoluteNumber % divider === 0) return absoluteNumber / 1000;
   if (number < 0) return 0;
 
   let numberGoUp = absoluteNumber;
@@ -223,33 +223,3 @@ const getClip = ({ notes, totalDuration }) => {
 };
 
 module.exports = { getClip };
-
-// const parsed = {
-//   notes: [
-//     {
-//       note_id: 68,
-//       pitch: 66,
-//       start_time: 0.0,
-//       duration: 1.0,
-//       velocity: 100.0,
-//       mute: 0,
-//       probability: 1.0,
-//       velocity_deviation: 1.0,
-//       release_velocity: 64.0,
-//     },
-//     {
-//       note_id: 69,
-//       pitch: 66,
-//       start_time: 6.5,
-//       duration: 1.0,
-//       velocity: 100.0,
-//       mute: 0,
-//       probability: 1.0,
-//       velocity_deviation: 1.0,
-//       release_velocity: 64.0,
-//     },
-//   ],
-//   totalDuration: 10,
-// };
-
-// console.log(getClip(parsed));
