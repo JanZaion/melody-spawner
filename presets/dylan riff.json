@@ -1,0 +1,21 @@
+{
+	"subdiv" : "16n",
+	"splitter" : 0,
+	"octave" : 1,
+	"scale" : "major",
+	"rootNote" : "F",
+	"notePatterns" : "R R R R",
+	"notes" : [ "Bb1", "Bb0", "E1", "G1", "Bb1", "Bb0", "E1", "G1" ],
+	"patterns" : "xxxx",
+	"pattern" : "x__xx__xx__xx__x",
+	"pitchAlgoInt" : 0,
+	"repeatNotes" : 1,
+	"rhythmAlgoInt" : 0,
+	"bothAlgoInt" : 0,
+	"sizzle" : "none",
+	"splitChop" : 0,
+	"upperBound" : 7,
+	"lowerBound" : -7,
+	"pitchDirrection" : "any",
+	"intervals" : "diatonic"
+}
