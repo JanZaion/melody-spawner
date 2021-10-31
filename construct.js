@@ -100,38 +100,11 @@ const bothDescription = async () => {
   maxApi.outlet(`description ${bothAlgos[bothAlgoInt].description}`);
 };
 
-const init = async () => {
-  await maxApi.setDict('full', {
-    subdiv: '4m',
-    splitter: 0,
-    octave: 5,
-    scale: 'major',
-    rootNote: 'C',
-    notePatterns: 'R R R R',
-    notes: ['R', 'R', 'R', 'R'],
-    patterns: 'xxxx',
-    pattern: 'xxxx',
-    pitchAlgoInt: 0,
-    repeatNotes: 0,
-    rhythmAlgoInt: 0,
-    bothAlgoInt: 0,
-    sizzle: 'none',
-    splitChop: 0,
-    upperBound: 7,
-    lowerBound: -7,
-    pitchDirrection: 'any',
-    intervals: 'diatonic',
-  });
-
-  maxApi.outlet('Init');
-};
-
 maxApi.addHandler('makeClip', makeClip);
 maxApi.addHandler('getPattern', getPattern);
 maxApi.addHandler('getPitches', getPitches);
 maxApi.addHandler('generateRhythm', generateRhythm);
 maxApi.addHandler('generatePitch', generatePitch);
-maxApi.addHandler('Init', init);
 maxApi.addHandler('patternDescription', patternDescription);
 maxApi.addHandler('pitchDescription', pitchDescription);
 maxApi.addHandler('generateBoth', generateBoth);
