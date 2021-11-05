@@ -38,9 +38,8 @@
 Adding new Algos:
 
 1. write the algo as an arrow function
-2. add the algo and the description to the algos object as an object with appropriate keys
-3. add the name of the algo to the Max frontend menu item.
-4. add the precise name of the algo to the options pack object. The integer in the pack list must be the same as the integer in the menu
+2. add the algo and the description to the algos array as an object with appropriate keys
+3. add the name of the algo to the Max frontend menu item so that its index matches the index of the algo in the algos array.
 
 If its algo from bothAlgos, then return has to be an object with appropriate keys. Else its a string
 
