@@ -9,7 +9,6 @@
 - implement '.' in the rhythm pattern text window and getrhythm alg. Do it when it gets released in the new version
 - make parameters relevant to the selected algo highlighted
 - colorcode UI - 1 color for rhythm, 2nd color for pitch, 3rd color for both.
-- declutter. delete magenta, checkpoints and all other trash. Figure out whether it is possible to bring in individual tone methods
 
 ## magenta:
 
