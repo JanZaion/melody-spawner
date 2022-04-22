@@ -123,9 +123,6 @@ function intervalsToggles(intervals) {
   lowerBound.clear();
   scale.clear();
 
-  // lowerBound.bgfillcolor(77, 77, 77); //rgba they say in the help field
-  // lowerBound.color(5);
-
   var selectedScale = scales[intervals][0];
   var numOfIntervals = scales[intervals][1];
 

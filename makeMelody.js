@@ -244,26 +244,3 @@ const makeMelody = (params) => {
 module.exports = {
   makeMelody,
 };
-
-// const pars = {
-//   subdiv: '4n',
-//   splitter: 0,
-//   octave: 1,
-//   scale: 'Minor',
-//   rootNote: 'D#',
-//   chordPatterns: 'R R R R',
-//   notes: [1, 'R', 'R', 'R'],
-//   patterns: 'xxxx',
-//   pattern: 'x_xx_x__',
-//   pitchAlgo: 'dunno',
-//   repeatNotes: 'off',
-//   rhythmAlgo: 'short_wild',
-//   sizzle: 'none',
-//   splitChop: 2,
-//   upperBound: 1,
-//   pitchDirrection: 'ascend',
-//   lowerBound: -4,
-//   intervals: 'chromatic',
-// };
-
-// makeMelody(pars);
