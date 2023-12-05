@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/JanZaion/melody-with-magenta#readme",
   "dependencies": {
-    "@magenta/music": "^1.22.1",
     "@tonaljs/tonal": "^4.6.0",
     "convenient-methods-of-randomness": "^1.0.1",
     "scribbletune": "^4.1.1"
